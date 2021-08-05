@@ -1,0 +1,22 @@
+# Default configuration file for Fabric AntiXray mod by DrexHD
+
+[overworld]
+enabled = true
+engineMode = 2
+maxBlockHeight = 256
+updateRadius = 2
+lavaObscures = false
+hiddenBlocks = ["copper_ore", "deepslate_copper_ore", "gold_ore", "deepslate_gold_ore", "iron_ore", "deepslate_iron_ore", "coal_ore", "deepslate_coal_ore", "lapis_ore", "deepslate_lapis_ore", "mossy_cobblestone", "obsidian", "chest", "diamond_ore", "deepslate_diamond_ore", "redstone_ore", "deepslate_redstone_ore", "clay", "emerald_ore", "deepslate_emerald_ore", "ender_chest"]
+replacementBlocks = ["stone", "deepslate"]
+
+[the_nether]
+enabled = true
+engineMode = 1
+maxBlockHeight = 128
+updateRadius = 2
+lavaObscures = false
+hiddenBlocks = ["ancient_debris", "nether_quartz_ore", "nether_gold_ore"]
+replacementBlocks = ["netherrack"]
+
+[the_end]
+enabled = false

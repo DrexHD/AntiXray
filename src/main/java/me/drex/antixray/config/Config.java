@@ -13,15 +13,15 @@ public class Config {
     public static Toml toml;
 
     public static void loadConfig(File file) {
-        if (file.exists()) {
-            toml = new Toml().read(file);
-        } else {
+        if (!file.exists()) {
             try {
                 Files.copy(Objects.requireNonNull(Config.class.getResourceAsStream("/data/antixray.toml")), file.toPath());
             } catch (IOException e) {
                 AntiXray.LOGGER.error("Couldn't create default config", e);
+                return;
             }
         }
+        toml = new Toml().read(file);
     }
 
 }

@@ -7,7 +7,9 @@ import net.minecraft.world.level.chunk.ChunkAccess;
 
 public interface LevelChunkSectionInterface {
 
-    void initValues(ChunkAccess chunkAccess, Level level, boolean initializeBlocks);
+    void initValues(Level level, boolean initializeBlocks);
+
+    void initValues(ChunkAccess chunkAccess);
 
     void write(FriendlyByteBuf friendlyByteBuf, ChunkPacketInfo<BlockState> chunkPacketInfo);
 

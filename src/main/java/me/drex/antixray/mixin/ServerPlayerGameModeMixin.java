@@ -13,12 +13,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayerGameMode.class)
-public class ServerPlayerGameModeMixin {
+public abstract class ServerPlayerGameModeMixin {
 
     @Shadow protected ServerLevel level;
 
     @Inject(method = "handleBlockBreakAction", at = @At(value = "TAIL"))
-    public void onBlockBreak(BlockPos blockPos, ServerboundPlayerActionPacket.Action action, Direction direction, int i, CallbackInfo ci) {
+    public void onPlayerBreakBlock(BlockPos blockPos, ServerboundPlayerActionPacket.Action action, Direction direction, int i, CallbackInfo ci) {
         ((LevelInterface)this.level).getChunkPacketBlockController().onPlayerLeftClickBlock((ServerPlayerGameMode) (Object)this, blockPos, action, direction, i);
     }
 

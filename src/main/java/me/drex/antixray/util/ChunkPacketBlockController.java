@@ -21,7 +21,7 @@ public class ChunkPacketBlockController {
 
     }
 
-    public BlockState[] getPresetBlockStates(Level level, ChunkAccess chunk, LevelChunkSection chunkSection, boolean initializeBlocks) {
+    public BlockState[] getPresetBlockStates(Level level, LevelChunkSection chunkSection) {
         return null;
     }
 

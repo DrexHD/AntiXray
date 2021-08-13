@@ -33,8 +33,10 @@ public abstract class ClientboundLevelChunkPacketMixin implements ClientboundLev
     @Shadow
     protected abstract ByteBuf getWriteBuffer();
 
+
+    // Replace extractChunkData with our own implementation
     @Redirect(method = "<init>(Lnet/minecraft/world/level/chunk/LevelChunk;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/game/ClientboundLevelChunkPacket;extractChunkData(Lnet/minecraft/network/FriendlyByteBuf;Lnet/minecraft/world/level/chunk/LevelChunk;)Ljava/util/BitSet;"))
-    public BitSet assignAvailableSections(ClientboundLevelChunkPacket clientboundLevelChunkPacket, FriendlyByteBuf friendlyByteBuf, LevelChunk levelChunk) {
+    public BitSet replaceExtractChunkData(ClientboundLevelChunkPacket clientboundLevelChunkPacket, FriendlyByteBuf friendlyByteBuf, LevelChunk levelChunk) {
         chunkPacketInfo = ((LevelInterface) levelChunk.getLevel()).getChunkPacketBlockController().getChunkPacketInfo((ClientboundLevelChunkPacket) (Object) this, levelChunk);
         if (chunkPacketInfo != null) {
             chunkPacketInfo.setBuffer(this.buffer);
@@ -43,7 +45,7 @@ public abstract class ClientboundLevelChunkPacketMixin implements ClientboundLev
     }
 
     @Inject(method = "<init>(Lnet/minecraft/world/level/chunk/LevelChunk;)V", at = @At(value = "TAIL"))
-    public void onInitEnd(LevelChunk levelChunk, CallbackInfo ci) {
+    public void addFakeBlocks(LevelChunk levelChunk, CallbackInfo ci) {
         ((LevelInterface) levelChunk.getLevel()).getChunkPacketBlockController().modifyBlocks((ClientboundLevelChunkPacket) (Object) this, chunkPacketInfo);
     }
 
@@ -56,7 +58,8 @@ public abstract class ClientboundLevelChunkPacketMixin implements ClientboundLev
             LevelChunkSection levelChunkSection = levelChunkSections[i];
             if (levelChunkSection != LevelChunk.EMPTY_SECTION && !levelChunkSection.isEmpty()) {
                 bitSet.set(i);
-                ((LevelChunkSectionInterface)levelChunkSection).write(friendlyByteBuf, chunkPacketInfo); // Paper - Anti-Xray - Add chunk packet info
+                // Add chunk packet info
+                ((LevelChunkSectionInterface)levelChunkSection).write(friendlyByteBuf, chunkPacketInfo);
             }
         }
 

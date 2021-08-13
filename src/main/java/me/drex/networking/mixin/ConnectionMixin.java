@@ -31,20 +31,17 @@ public abstract class ConnectionMixin {
     @Shadow
     protected abstract void sendPacket(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> genericFutureListener);
 
-    private Packet<?> cachedPacket = null;
-
     private boolean flushQueue() {
         if (this.channel != null && this.channel.isOpen()) {
             synchronized (this.queue) {
                 while (!this.queue.isEmpty()) {
                     Connection.PacketHolder packetHolder = this.queue.peek(); // poll -> peek
-
-                    if (packetHolder != null) { // Fix NPE (Spigot bug caused by handleDisconnection())
-                        if (((ConnectionPacketHolderAccessor) packetHolder).getPacket() instanceof ClientboundLevelChunkPacket && !((ClientboundLevelChunkPacketInterface) ((ConnectionPacketHolderAccessor) packetHolder).getPacket()).isReady()) { // Check if the peeked packet is a chunk packet which is not ready
+                    if (packetHolder instanceof ConnectionPacketHolderAccessor packetAccessor) {
+                        if (packetAccessor.getPacket() instanceof ClientboundLevelChunkPacketInterface packet && !packet.isReady()) { // Check if the peeked packet is a chunk packet which is not ready
                             return false; // Return false if the peeked packet is a chunk packet which is not ready
                         } else {
                             this.queue.poll(); // poll here
-                            this.sendPacket(((ConnectionPacketHolderAccessor) packetHolder).getPacket(), ((ConnectionPacketHolderAccessor) packetHolder).getListener()); // dispatch the packet
+                            this.sendPacket(packetAccessor.getPacket(), packetAccessor.getListener()); // dispatch the packet
                         }
                     }
 
@@ -54,26 +51,20 @@ public abstract class ConnectionMixin {
         return true;
     }
 
-    @Inject(method = "flushQueue", at = @At(value = "HEAD"), cancellable = true)
-    public void replaceFlushQueue(CallbackInfo ci) {
-        //Calling our own implementation
+    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/Connection;flushQueue()V"))
+    public void replaceFlushQueue(Connection connection) {
+        // Calling our own implementation
         this.flushQueue();
-        ci.cancel();
-    }
-
-    @Inject(method = "send(Lnet/minecraft/network/protocol/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V", at = @At(value = "HEAD"))
-    public void captureLocals(Packet<?> packet, GenericFutureListener<? extends Future<? super Void>> genericFutureListener, CallbackInfo ci) {
-        cachedPacket = packet;
     }
 
     @Redirect(method = "send(Lnet/minecraft/network/protocol/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/Connection;flushQueue()V"))
     public void noop(Connection connection) {
-        //no-op
-        //The call to our own flushQueue method has been moved inside the previous if statement (see below)
+        // no-op
+        // The call to our own flushQueue method has been moved inside the previous if statement (see below)
     }
 
     @Redirect(method = "send(Lnet/minecraft/network/protocol/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/Connection;isConnected()Z"))
-    public boolean redirectIfStatement(Connection connection) {
-        return connection.isConnected() && this.flushQueue() && !(cachedPacket instanceof ClientboundLevelChunkPacket && !((ClientboundLevelChunkPacketInterface) cachedPacket).isReady());
+    public boolean redirectIfStatement(Connection connection, Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> callback) {
+        return connection.isConnected() && this.flushQueue() && !(packet instanceof ClientboundLevelChunkPacketInterface levelChunkPacket && !levelChunkPacket.isReady());
     }
 }

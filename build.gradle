@@ -23,15 +23,11 @@ minecraft {
 }
 
 dependencies {
-	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings minecraft.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	// Fabric API. This is technically optional, but you probably want it anyway.
-	//modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-    //Fabric API
+    // Fabric API
     Set<String> apiModules = [
             'fabric-api-base',
             'fabric-lifecycle-events-v1'
@@ -41,9 +37,6 @@ dependencies {
     }
 
     implementation(include("com.moandjiezana.toml:toml4j:${project.toml_version}"))
-
-	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
-	// You may need to force-disable transitiveness on them.
 }
 
 processResources {

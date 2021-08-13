@@ -206,7 +206,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
         LevelChunkSection[] nearbyChunkSections = new LevelChunkSection[4];
         LevelChunk chunk = chunkPacketInfoAntiXray.getChunk();
         Level level = chunk.getLevel();
-        int maxChunkSectionIndex = Math.min((maxBlockHeight >> 4) - chunk.getMinSection(), chunk.getSectionsCount() - 1);
+        int maxChunkSectionIndex = Math.min((maxBlockHeight >> 4), 15);
         boolean[] solidTemp = null;
         boolean[] obfuscateTemp = null;
         bitStorageReader.setBuffer(chunkPacketInfoAntiXray.getBuffer());
@@ -303,7 +303,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
                     // If so, obfuscate the upper layer of the current chunk section by reading blocks of the first layer from the chunk section above if it exists
                     LevelChunkSection aboveChunkSection;
 
-                    if (chunkSectionIndex != chunk.getSectionsCount() - 1 && (aboveChunkSection = chunk.getSections()[chunkSectionIndex + 1]) != LevelChunk.EMPTY_SECTION) {
+                    if (chunkSectionIndex != 15 && (aboveChunkSection = chunk.getSections()[chunkSectionIndex + 1]) != LevelChunk.EMPTY_SECTION) {
                         boolean[][] temp = current;
                         current = next;
                         next = nextNext;

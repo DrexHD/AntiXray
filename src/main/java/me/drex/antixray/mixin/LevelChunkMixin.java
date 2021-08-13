@@ -24,7 +24,7 @@ public abstract class LevelChunkMixin implements ChunkAccess {
     Level level;
 
     @Inject(method = "setBlockState", at = @At(value = "FIELD", target = "Lnet/minecraft/world/level/chunk/LevelChunk;sections:[Lnet/minecraft/world/level/chunk/LevelChunkSection;", ordinal = 1, opcode = Opcodes.GETFIELD), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void initializeChunkSection(BlockPos blockPos, BlockState blockState, boolean bl, CallbackInfoReturnable<BlockState> cir, int blockY, int sectionIndex, LevelChunkSection levelChunkSection) {
+    private void initializeChunkSection(BlockPos blockPos, BlockState blockState, boolean bl, CallbackInfoReturnable<BlockState> cir, int i, int j, int k, LevelChunkSection levelChunkSection) {
         ((LevelChunkSectionInterface) levelChunkSection).initValues(this.level, true);
     }
 

@@ -9,8 +9,8 @@ engineMode = 2
 maxBlockHeight = 256
 updateRadius = 2
 lavaObscures = false
-hiddenBlocks = ["copper_ore", "deepslate_copper_ore", "gold_ore", "deepslate_gold_ore", "iron_ore", "deepslate_iron_ore", "coal_ore", "deepslate_coal_ore", "lapis_ore", "deepslate_lapis_ore", "mossy_cobblestone", "obsidian", "chest", "diamond_ore", "deepslate_diamond_ore", "redstone_ore", "deepslate_redstone_ore", "clay", "emerald_ore", "deepslate_emerald_ore", "ender_chest"]
-replacementBlocks = ["stone", "deepslate"]
+hiddenBlocks = ["gold_ore", "iron_ore", "coal_ore", "lapis_ore", "mossy_cobblestone", "obsidian", "chest", "diamond_ore", "redstone_ore", "clay", "emerald_ore", "ender_chest"]
+replacementBlocks = ["stone"]
 
 [the_nether]
 enabled = true

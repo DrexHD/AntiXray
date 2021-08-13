@@ -1,13 +1,11 @@
 package me.drex.antixray.mixin;
 
-import me.drex.antixray.mixin.accessor.ProtoChunkAccessor;
 import me.drex.antixray.util.ChunkPacketInfo;
 import me.drex.antixray.util.LevelChunkSectionInterface;
 import me.drex.antixray.util.LevelInterface;
 import me.drex.antixray.util.PalettedContainerInterface;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.*;
 import org.spongepowered.asm.mixin.Final;
@@ -29,20 +27,6 @@ public abstract class LevelChunkSectionMixin implements LevelChunkSectionInterfa
     public void initValues(Level level, boolean initializeBlocks) {
          // Add preset block states
         ((PalettedContainerInterface<BlockState>) this.states).initValues(level == null ? null : ((LevelInterface) level).getChunkPacketBlockController().getPresetBlockStates(level, (LevelChunkSection) (Object) this), initializeBlocks);
-    }
-
-    @Override
-    public void initValues(ChunkAccess chunk) {
-        if (chunk instanceof LevelChunk levelChunk) {
-            initValues(levelChunk.getLevel(), true);
-        } else if (chunk instanceof ProtoChunkAccessor protoChunk) {
-            LevelHeightAccessor heightAccessor = protoChunk.getLevelHeightAccessor();
-            if (heightAccessor instanceof Level level) {
-                initValues(level, true);
-            } else if (heightAccessor instanceof ChunkAccess chunkAccess) {
-                initValues(chunkAccess);
-            }
-        }
     }
 
     @Override @SuppressWarnings("unchecked")

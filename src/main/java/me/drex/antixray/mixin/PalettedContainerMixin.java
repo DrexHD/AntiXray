@@ -89,7 +89,7 @@ public abstract class PalettedContainerMixin<T> implements PalettedContainerInte
             // Add chunk packet info
             if (chunkPacketInfo != null) {
                 // Bottom block to 0 based chunk section index
-                int chunkSectionIndex = (bottomBlockY >> 4) - chunkPacketInfo.getChunk().getMinSection();
+                int chunkSectionIndex = (bottomBlockY >> 4);
                 chunkPacketInfo.setBits(chunkSectionIndex, this.bits);
                 chunkPacketInfo.setPalette(chunkSectionIndex, this.palette);
                 chunkPacketInfo.setIndex(chunkSectionIndex, friendlyByteBuf.writerIndex() + FriendlyByteBuf.getVarIntSize(this.storage.getRaw().length));

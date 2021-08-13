@@ -18,8 +18,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.BitSet;
-
 @Mixin(ClientboundLevelChunkPacket.class)
 public abstract class ClientboundLevelChunkPacketMixin implements ClientboundLevelChunkPacketInterface {
 
@@ -34,36 +32,39 @@ public abstract class ClientboundLevelChunkPacketMixin implements ClientboundLev
     protected abstract ByteBuf getWriteBuffer();
 
 
+    @Shadow
+    public abstract boolean isFullChunk();
+
     // Replace extractChunkData with our own implementation
-    @Redirect(method = "<init>(Lnet/minecraft/world/level/chunk/LevelChunk;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/game/ClientboundLevelChunkPacket;extractChunkData(Lnet/minecraft/network/FriendlyByteBuf;Lnet/minecraft/world/level/chunk/LevelChunk;)Ljava/util/BitSet;"))
-    public BitSet replaceExtractChunkData(ClientboundLevelChunkPacket clientboundLevelChunkPacket, FriendlyByteBuf friendlyByteBuf, LevelChunk levelChunk) {
+    @Redirect(method = "<init>(Lnet/minecraft/world/level/chunk/LevelChunk;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/game/ClientboundLevelChunkPacket;extractChunkData(Lnet/minecraft/network/FriendlyByteBuf;Lnet/minecraft/world/level/chunk/LevelChunk;I)I"))
+    public int replaceExtractChunkData(ClientboundLevelChunkPacket clientboundLevelChunkPacket, FriendlyByteBuf friendlyByteBuf, LevelChunk levelChunk, int i) {
         chunkPacketInfo = ((LevelInterface) levelChunk.getLevel()).getChunkPacketBlockController().getChunkPacketInfo((ClientboundLevelChunkPacket) (Object) this, levelChunk);
         if (chunkPacketInfo != null) {
             chunkPacketInfo.setBuffer(this.buffer);
         }
-        return this.extractChunkData(new FriendlyByteBuf(this.getWriteBuffer()), levelChunk, chunkPacketInfo);
+        return this.extractChunkData(new FriendlyByteBuf(this.getWriteBuffer()), levelChunk, i, chunkPacketInfo);
     }
 
-    @Inject(method = "<init>(Lnet/minecraft/world/level/chunk/LevelChunk;)V", at = @At(value = "TAIL"))
-    public void addFakeBlocks(LevelChunk levelChunk, CallbackInfo ci) {
+    @Inject(method = "<init>(Lnet/minecraft/world/level/chunk/LevelChunk;I)V", at = @At(value = "TAIL"))
+    public void addFakeBlocks(LevelChunk levelChunk, int i, CallbackInfo ci) {
         ((LevelInterface) levelChunk.getLevel()).getChunkPacketBlockController().modifyBlocks((ClientboundLevelChunkPacket) (Object) this, chunkPacketInfo);
     }
 
-    public BitSet extractChunkData(FriendlyByteBuf friendlyByteBuf, LevelChunk levelChunk, ChunkPacketInfo<BlockState> chunkPacketInfo) {
-        BitSet bitSet = new BitSet();
+    public int extractChunkData(FriendlyByteBuf friendlyByteBuf, LevelChunk levelChunk, int i, ChunkPacketInfo<BlockState> chunkPacketInfo) {
+        int j = 0;
         LevelChunkSection[] levelChunkSections = levelChunk.getSections();
-        int i = 0;
+        int k = 0;
 
-        for (int j = levelChunkSections.length; i < j; ++i) {
-            LevelChunkSection levelChunkSection = levelChunkSections[i];
-            if (levelChunkSection != LevelChunk.EMPTY_SECTION && !levelChunkSection.isEmpty()) {
-                bitSet.set(i);
+        for (int l = levelChunkSections.length; k < l; ++k) {
+            LevelChunkSection levelChunkSection = levelChunkSections[k];
+            if (levelChunkSection != LevelChunk.EMPTY_SECTION && (!this.isFullChunk() || !levelChunkSection.isEmpty()) && (i & 1 << k) != 0) {
+                j |= 1 << k;
                 // Add chunk packet info
-                ((LevelChunkSectionInterface)levelChunkSection).write(friendlyByteBuf, chunkPacketInfo);
+                ((LevelChunkSectionInterface) levelChunkSection).write(friendlyByteBuf, chunkPacketInfo);
             }
         }
 
-        return bitSet;
+        return j;
     }
 
     @Override

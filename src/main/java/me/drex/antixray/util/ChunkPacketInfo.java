@@ -17,7 +17,7 @@ public class ChunkPacketInfo<T> {
     public ChunkPacketInfo(ClientboundLevelChunkPacket chunkPacket, LevelChunk chunk) {
         this.chunkPacket = chunkPacket;
         this.chunk = chunk;
-        int sections = chunk.getSectionsCount();
+        final int sections = 16;
         bits = new int[sections];
         palettes = new Object[sections];
         indexes = new int[sections];

@@ -9,8 +9,6 @@ public interface LevelChunkSectionInterface {
 
     void initValues(Level level, boolean initializeBlocks);
 
-    void initValues(ChunkAccess chunkAccess);
-
     void write(FriendlyByteBuf friendlyByteBuf, ChunkPacketInfo<BlockState> chunkPacketInfo);
 
 }

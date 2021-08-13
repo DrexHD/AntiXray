@@ -39,7 +39,7 @@ public abstract class ServerLevelMixin extends Level implements LevelInterface, 
         super(writableLevelData, resourceKey, dimensionType, supplier, bl, bl2, l);
     }
 
-    @Inject(method = "<init>", at = @At(value = "FIELD", target = "Lnet/minecraft/server/level/ServerLevel;entityTickList:Lnet/minecraft/world/level/entity/EntityTickList;"))
+    @Inject(method = "<init>", at = @At(value = "FIELD", target = "Lnet/minecraft/server/level/ServerLevel;blockTicks:Lnet/minecraft/world/level/ServerTickList;"))
     public void onInit(MinecraftServer minecraftServer, Executor executor, LevelStorageSource.LevelStorageAccess levelStorageAccess, ServerLevelData serverLevelData, ResourceKey<Level> resourceKey, DimensionType dimensionType, ChunkProgressListener chunkProgressListener, ChunkGenerator chunkGenerator, boolean bl, long l, List<CustomSpawner> list, boolean bl2, CallbackInfo ci) {
         initValues(executor);
     }

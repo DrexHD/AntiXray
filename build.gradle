@@ -37,6 +37,7 @@ dependencies {
     }
 
     implementation(include("com.moandjiezana.toml:toml4j:${project.toml_version}"))
+	implementation(include("io.netty:netty-all:${project.netty_version}"))
 }
 
 processResources {

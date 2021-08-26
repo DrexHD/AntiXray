@@ -46,7 +46,13 @@ public abstract class LevelMixin implements LevelInterface, LevelAccessor {
         return chunkPacketBlockController;
     }
 
-    @Redirect(method = "setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;II)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/chunk/LevelChunk;setBlockState(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Z)Lnet/minecraft/world/level/block/state/BlockState;"))
+    @Redirect(
+            method = "setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;II)Z",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/level/chunk/LevelChunk;setBlockState(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Z)Lnet/minecraft/world/level/block/state/BlockState;"
+            )
+    )
     public BlockState onBlockChanged(LevelChunk levelChunk, BlockPos blockPos, BlockState blockState, boolean bl) {
         BlockState blockState2 = levelChunk.setBlockState(blockPos, blockState, bl);
         this.getChunkPacketBlockController().onBlockChange((Level) (Object) this, blockPos, blockState, blockState2);

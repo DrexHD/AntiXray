@@ -23,18 +23,23 @@ public abstract class LevelChunkSectionMixin implements LevelChunkSectionInterfa
     @Shadow
     @Final
     private PalettedContainer<BlockState> states;
-    @Shadow private short nonEmptyBlockCount;
-    @Shadow @Final private int bottomBlockY;
+    @Shadow
+    private short nonEmptyBlockCount;
+    @Shadow
+    @Final
+    private int bottomBlockY;
 
-    @Override @SuppressWarnings("unchecked")
+    @Override
+    @SuppressWarnings("unchecked")
     public void initValues(Level level, boolean initializeBlocks) {
-         // Add preset block states
+        // Add preset block states
         ((PalettedContainerInterface<BlockState>) this.states).initValues(level == null ? null : ((LevelInterface) level).getChunkPacketBlockController().getPresetBlockStates(level, (LevelChunkSection) (Object) this), initializeBlocks);
     }
 
-    @Override @SuppressWarnings("unchecked")
+    @Override
+    @SuppressWarnings("unchecked")
     public void write(FriendlyByteBuf friendlyByteBuf, ChunkPacketInfo<BlockState> chunkPacketInfo) {
         friendlyByteBuf.writeShort(this.nonEmptyBlockCount);
-        ((PalettedContainerInterface<BlockState>)this.states).write(friendlyByteBuf, chunkPacketInfo, this.bottomBlockY);
+        ((PalettedContainerInterface<BlockState>) this.states).write(friendlyByteBuf, chunkPacketInfo, this.bottomBlockY);
     }
 }

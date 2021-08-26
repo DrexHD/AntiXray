@@ -22,11 +22,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ClientboundLevelChunkPacketMixin implements ClientboundLevelChunkPacketInterface {
 
     ChunkPacketInfo<BlockState> chunkPacketInfo;
+    boolean ready = false;
     @Shadow
     @Final
     private byte[] buffer;
-
-    boolean ready = false;
 
     @Shadow
     protected abstract ByteBuf getWriteBuffer();
@@ -36,7 +35,13 @@ public abstract class ClientboundLevelChunkPacketMixin implements ClientboundLev
     public abstract boolean isFullChunk();
 
     // Replace extractChunkData with our own implementation
-    @Redirect(method = "<init>(Lnet/minecraft/world/level/chunk/LevelChunk;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/game/ClientboundLevelChunkPacket;extractChunkData(Lnet/minecraft/network/FriendlyByteBuf;Lnet/minecraft/world/level/chunk/LevelChunk;I)I"))
+    @Redirect(
+            method = "<init>(Lnet/minecraft/world/level/chunk/LevelChunk;I)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/network/protocol/game/ClientboundLevelChunkPacket;extractChunkData(Lnet/minecraft/network/FriendlyByteBuf;Lnet/minecraft/world/level/chunk/LevelChunk;I)I"
+            )
+    )
     public int replaceExtractChunkData(ClientboundLevelChunkPacket clientboundLevelChunkPacket, FriendlyByteBuf friendlyByteBuf, LevelChunk levelChunk, int i) {
         chunkPacketInfo = ((LevelInterface) levelChunk.getLevel()).getChunkPacketBlockController().getChunkPacketInfo((ClientboundLevelChunkPacket) (Object) this, levelChunk);
         if (chunkPacketInfo != null) {
@@ -45,7 +50,10 @@ public abstract class ClientboundLevelChunkPacketMixin implements ClientboundLev
         return this.extractChunkData(new FriendlyByteBuf(this.getWriteBuffer()), levelChunk, i, chunkPacketInfo);
     }
 
-    @Inject(method = "<init>(Lnet/minecraft/world/level/chunk/LevelChunk;I)V", at = @At(value = "TAIL"))
+    @Inject(
+            method = "<init>(Lnet/minecraft/world/level/chunk/LevelChunk;I)V",
+            at = @At("TAIL")
+    )
     public void addFakeBlocks(LevelChunk levelChunk, int i, CallbackInfo ci) {
         ((LevelInterface) levelChunk.getLevel()).getChunkPacketBlockController().modifyBlocks((ClientboundLevelChunkPacket) (Object) this, chunkPacketInfo);
     }

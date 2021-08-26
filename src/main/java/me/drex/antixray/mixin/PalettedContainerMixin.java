@@ -59,7 +59,13 @@ public abstract class PalettedContainerMixin<T> implements PalettedContainerInte
     @Shadow
     public abstract void release();
 
-    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/chunk/PalettedContainer;setBits(I)V"))
+    @Redirect(
+            method = "<init>",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/level/chunk/PalettedContainer;setBits(I)V"
+            )
+    )
     public void onSetBits(PalettedContainer<T> palettedContainer, int i) {
         // We do our own calculations later
     }
@@ -104,7 +110,14 @@ public abstract class PalettedContainerMixin<T> implements PalettedContainerInte
         }
     }
 
-    @Inject(method = "onResize", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/chunk/PalettedContainer;setBits(I)V", shift = At.Shift.AFTER))
+    @Inject(
+            method = "onResize",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/level/chunk/PalettedContainer;setBits(I)V",
+                    shift = At.Shift.AFTER
+            )
+    )
     public void addPresetValues(int i, T object, CallbackInfoReturnable<Integer> cir) {
         this.addPresetValues();
     }
@@ -130,7 +143,7 @@ public abstract class PalettedContainerMixin<T> implements PalettedContainerInte
                 palette.read(paletteNbt);
                 BitStorage bitStorage = new BitStorage(i, 4096, data);
 
-                for(int k = 0; k < 4096; ++k) {
+                for (int k = 0; k < 4096; ++k) {
                     this.storage.set(k, this.globalPalette.idFor(palette.valueFor(bitStorage.get(k))));
                 }
             } else if (j == this.bits) {
@@ -138,7 +151,7 @@ public abstract class PalettedContainerMixin<T> implements PalettedContainerInte
             } else {
                 BitStorage bitStorage2 = new BitStorage(j, 4096, data);
 
-                for(int l = 0; l < 4096; ++l) {
+                for (int l = 0; l < 4096; ++l) {
                     this.storage.set(l, bitStorage2.get(l));
                 }
             }

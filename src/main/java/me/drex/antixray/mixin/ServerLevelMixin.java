@@ -33,13 +33,21 @@ import java.util.function.Supplier;
 @Mixin(ServerLevel.class)
 public abstract class ServerLevelMixin extends Level implements LevelInterface, ServerLevelInterface {
 
-    @Shadow @Final private ServerChunkCache chunkSource;
+    @Shadow
+    @Final
+    private ServerChunkCache chunkSource;
 
     protected ServerLevelMixin(WritableLevelData writableLevelData, ResourceKey<Level> resourceKey, DimensionType dimensionType, Supplier<ProfilerFiller> supplier, boolean bl, boolean bl2, long l) {
         super(writableLevelData, resourceKey, dimensionType, supplier, bl, bl2, l);
     }
 
-    @Inject(method = "<init>", at = @At(value = "FIELD", target = "Lnet/minecraft/server/level/ServerLevel;entityTickList:Lnet/minecraft/world/level/entity/EntityTickList;"))
+    @Inject(
+            method = "<init>",
+            at = @At(
+                    value = "FIELD",
+                    target = "Lnet/minecraft/server/level/ServerLevel;entityTickList:Lnet/minecraft/world/level/entity/EntityTickList;"
+            )
+    )
     public void onInit(MinecraftServer minecraftServer, Executor executor, LevelStorageSource.LevelStorageAccess levelStorageAccess, ServerLevelData serverLevelData, ResourceKey<Level> resourceKey, DimensionType dimensionType, ChunkProgressListener chunkProgressListener, ChunkGenerator chunkGenerator, boolean bl, long l, List<CustomSpawner> list, boolean bl2, CallbackInfo ci) {
         initValues(executor);
     }

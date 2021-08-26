@@ -28,7 +28,9 @@ public class WorldConfig {
                     ChunkPacketBlockControllerAntiXray.EngineMode mode = ChunkPacketBlockControllerAntiXray.EngineMode.getById(Math.toIntExact(toml.getLong("engineMode")));
                     if (mode != null) this.engineMode = mode;
                 }
-                if (toml.contains("maxBlockHeight")) this.maxBlockHeight = Math.toIntExact(toml.getLong("maxBlockHeight"));
+                if (toml.contains("maxBlockHeight")) {
+                    this.maxBlockHeight = Math.toIntExact(toml.getLong("maxBlockHeight"));
+                }
                 if (toml.contains("updateRadius")) this.updateRadius = Math.toIntExact(toml.getLong("updateRadius"));
                 if (toml.contains("lavaObscures")) this.lavaObscures = toml.getBoolean("lavaObscures");
                 if (toml.contains("usePermission")) this.usePermission = toml.getBoolean("usePermission");

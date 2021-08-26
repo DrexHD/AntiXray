@@ -24,18 +24,23 @@ import java.util.BitSet;
 public abstract class ClientboundLevelChunkPacketMixin implements ClientboundLevelChunkPacketInterface {
 
     ChunkPacketInfo<BlockState> chunkPacketInfo;
+    boolean ready = false;
     @Shadow
     @Final
     private byte[] buffer;
-
-    boolean ready = false;
 
     @Shadow
     protected abstract ByteBuf getWriteBuffer();
 
 
     // Replace extractChunkData with our own implementation
-    @Redirect(method = "<init>(Lnet/minecraft/world/level/chunk/LevelChunk;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/game/ClientboundLevelChunkPacket;extractChunkData(Lnet/minecraft/network/FriendlyByteBuf;Lnet/minecraft/world/level/chunk/LevelChunk;)Ljava/util/BitSet;"))
+    @Redirect(
+            method = "<init>(Lnet/minecraft/world/level/chunk/LevelChunk;)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/network/protocol/game/ClientboundLevelChunkPacket;extractChunkData(Lnet/minecraft/network/FriendlyByteBuf;Lnet/minecraft/world/level/chunk/LevelChunk;)Ljava/util/BitSet;"
+            )
+    )
     public BitSet replaceExtractChunkData(ClientboundLevelChunkPacket clientboundLevelChunkPacket, FriendlyByteBuf friendlyByteBuf, LevelChunk levelChunk) {
         chunkPacketInfo = ((LevelInterface) levelChunk.getLevel()).getChunkPacketBlockController().getChunkPacketInfo((ClientboundLevelChunkPacket) (Object) this, levelChunk);
         if (chunkPacketInfo != null) {
@@ -44,7 +49,10 @@ public abstract class ClientboundLevelChunkPacketMixin implements ClientboundLev
         return this.extractChunkData(new FriendlyByteBuf(this.getWriteBuffer()), levelChunk, chunkPacketInfo);
     }
 
-    @Inject(method = "<init>(Lnet/minecraft/world/level/chunk/LevelChunk;)V", at = @At(value = "TAIL"))
+    @Inject(
+            method = "<init>(Lnet/minecraft/world/level/chunk/LevelChunk;)V",
+            at = @At("TAIL")
+    )
     public void addFakeBlocks(LevelChunk levelChunk, CallbackInfo ci) {
         ((LevelInterface) levelChunk.getLevel()).getChunkPacketBlockController().modifyBlocks((ClientboundLevelChunkPacket) (Object) this, chunkPacketInfo);
     }
@@ -59,7 +67,7 @@ public abstract class ClientboundLevelChunkPacketMixin implements ClientboundLev
             if (levelChunkSection != LevelChunk.EMPTY_SECTION && !levelChunkSection.isEmpty()) {
                 bitSet.set(i);
                 // Add chunk packet info
-                ((LevelChunkSectionInterface)levelChunkSection).write(friendlyByteBuf, chunkPacketInfo);
+                ((LevelChunkSectionInterface) levelChunkSection).write(friendlyByteBuf, chunkPacketInfo);
             }
         }
 

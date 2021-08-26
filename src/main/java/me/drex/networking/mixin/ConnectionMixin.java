@@ -48,19 +48,37 @@ public abstract class ConnectionMixin {
         return true;
     }
 
-    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/Connection;flushQueue()V"))
+    @Redirect(
+            method = "tick",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/network/Connection;flushQueue()V"
+            )
+    )
     public void replaceFlushQueue(Connection connection) {
         // Calling our own implementation
         this.flushQueue();
     }
 
-    @Redirect(method = "send(Lnet/minecraft/network/protocol/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/Connection;flushQueue()V"))
+    @Redirect(
+            method = "send(Lnet/minecraft/network/protocol/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/network/Connection;flushQueue()V"
+            )
+    )
     public void noop(Connection connection) {
         // no-op
         // The call to our own flushQueue method has been moved inside the previous if statement (see below)
     }
 
-    @Redirect(method = "send(Lnet/minecraft/network/protocol/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/Connection;isConnected()Z"))
+    @Redirect(
+            method = "send(Lnet/minecraft/network/protocol/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/network/Connection;isConnected()Z"
+            )
+    )
     public boolean redirectIfStatement(Connection connection, Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> callback) {
         return connection.isConnected() && this.flushQueue() && !(packet instanceof ClientboundLevelChunkPacketInterface levelChunkPacket && !levelChunkPacket.isReady());
     }

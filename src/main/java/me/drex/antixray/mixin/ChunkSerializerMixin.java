@@ -23,8 +23,16 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 public abstract class ChunkSerializerMixin {
 
     // Initialize values for LevelChunkSection
-    @Inject(method = "read", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/chunk/LevelChunkSection;getStates()Lnet/minecraft/world/level/chunk/PalettedContainer;", shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
+    @Inject(
+            method = "read",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/level/chunk/LevelChunkSection;getStates()Lnet/minecraft/world/level/chunk/PalettedContainer;",
+                    shift = At.Shift.AFTER
+            ),
+            locals = LocalCapture.CAPTURE_FAILHARD
+    )
     private static void initializeChunkSection(ServerLevel serverLevel, StructureManager structureManager, PoiManager poiManager, ChunkPos chunkPos, CompoundTag compoundTag, CallbackInfoReturnable<ProtoChunk> cir, ChunkGenerator chunkGenerator, BiomeSource biomeSource, CompoundTag levelCompoundTag, ChunkBiomeContainer chunkBiomeContainer, UpgradeData upgradeData, ProtoTickList<Block> blockTickList, ProtoTickList<Fluid> fluidTickList, boolean isLightOn, ListTag listTag, int sectionCount, LevelChunkSection[] levelChunkSections, boolean hasSkyLight, ChunkSource chunkSource, LevelLightEngine levelLightEngine, int j, CompoundTag sectionCompoundTag, int sectionY, LevelChunkSection levelChunkSection) {
-        ((LevelChunkSectionInterface)levelChunkSection).initValues(serverLevel, false);
+        ((LevelChunkSectionInterface) levelChunkSection).initValues(serverLevel, false);
     }
 }

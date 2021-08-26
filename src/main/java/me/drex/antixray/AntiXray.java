@@ -15,8 +15,8 @@ import java.security.NoSuchAlgorithmException;
 
 public class AntiXray implements DedicatedServerModInitializer {
 
-    private static MinecraftServer minecraftServer;
     public static Logger LOGGER = LogManager.getLogger();
+    private static MinecraftServer minecraftServer;
 
     public static MinecraftServer getMinecraftServer() {
         return minecraftServer;

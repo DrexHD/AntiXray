@@ -33,7 +33,7 @@ public class ChunkPacketBlockController {
     }
 
     public void modifyBlocks(ClientboundLevelChunkPacket chunkPacket, ChunkPacketInfo<BlockState> chunkPacketInfo) {
-        ((ClientboundLevelChunkPacketInterface)chunkPacket).setReady();
+        ((ClientboundLevelChunkPacketInterface) chunkPacket).setReady();
     }
 
     public void onBlockChange(Level level, BlockPos blockPos, BlockState newBlockState, @Nullable BlockState oldBlockState) {

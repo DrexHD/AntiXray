@@ -21,7 +21,6 @@ public interface ChunkAccessMixin extends LevelHeightAccessor {
      */
     @Overwrite
     default LevelChunkSection getOrCreateSection(int i) {
-
         LevelChunkSection[] chunkSection = this.getSections();
         if (chunkSection[i] == LevelChunk.EMPTY_SECTION) {
             chunkSection[i] = new LevelChunkSection(this.getSectionYFromSectionIndex(i));
@@ -29,7 +28,5 @@ public interface ChunkAccessMixin extends LevelHeightAccessor {
         }
 
         return chunkSection[i];
-
     }
-
 }

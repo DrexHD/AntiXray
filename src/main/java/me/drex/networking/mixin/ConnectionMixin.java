@@ -32,8 +32,7 @@ public abstract class ConnectionMixin {
         if (this.channel != null && this.channel.isOpen()) {
             synchronized (this.queue) {
                 while (!this.queue.isEmpty()) {
-                    Connection.PacketHolder packetHolder = this.queue.peek(); // poll -> peek
-                    if (packetHolder instanceof ConnectionPacketHolderAccessor packetAccessor) {
+                    if (this.queue.peek() instanceof ConnectionPacketHolderAccessor packetAccessor) { // poll -> peek
                         if (packetAccessor.getPacket() instanceof ClientboundLevelChunkPacketInterface packet && !packet.isReady()) { // Check if the peeked packet is a chunk packet which is not ready
                             return false; // Return false if the peeked packet is a chunk packet which is not ready
                         } else {

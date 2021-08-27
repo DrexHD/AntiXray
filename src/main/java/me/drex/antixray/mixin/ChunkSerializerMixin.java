@@ -27,8 +27,7 @@ public abstract class ChunkSerializerMixin {
             method = "read",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/level/chunk/LevelChunkSection;getStates()Lnet/minecraft/world/level/chunk/PalettedContainer;",
-                    shift = At.Shift.AFTER
+                    target = "Lnet/minecraft/world/level/chunk/LevelChunkSection;getStates()Lnet/minecraft/world/level/chunk/PalettedContainer;"
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )

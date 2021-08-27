@@ -15,7 +15,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class AntiXray implements DedicatedServerModInitializer {
 
-    public static Logger LOGGER = LogManager.getLogger();
+    public static final Logger LOGGER = LogManager.getLogger();
     private static MinecraftServer minecraftServer;
 
     public static MinecraftServer getMinecraftServer() {
@@ -40,6 +40,4 @@ public class AntiXray implements DedicatedServerModInitializer {
             LOGGER.error("Failed to download dependencies:", e);
         }
     }
-
-
 }

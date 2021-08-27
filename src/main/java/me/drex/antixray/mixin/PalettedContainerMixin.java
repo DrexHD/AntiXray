@@ -2,53 +2,38 @@ package me.drex.antixray.mixin;
 
 import me.drex.antixray.util.ChunkPacketInfo;
 import me.drex.antixray.util.PalettedContainerInterface;
-import net.minecraft.core.IdMapper;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.BitStorage;
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.chunk.HashMapPalette;
 import net.minecraft.world.level.chunk.Palette;
-import net.minecraft.world.level.chunk.PaletteResize;
 import net.minecraft.world.level.chunk.PalettedContainer;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.function.Function;
 
 @Mixin(PalettedContainer.class)
 public abstract class PalettedContainerMixin<T> implements PalettedContainerInterface<T> {
+    private T[] presetValues;
 
     @Shadow
     protected BitStorage storage;
-    private T[] presetValues;
+
     @Shadow
     private Palette<T> palette;
 
     @Shadow
     @Final
     private Palette<T> globalPalette;
+
     @Shadow
     private int bits;
-    @Shadow
-    @Final
-    private IdMapper<T> registry;
-    @Shadow
-    @Final
-    private PaletteResize<T> dummyPaletteResize;
-    @Shadow
-    @Final
-    private Function<CompoundTag, T> reader;
-    @Shadow
-    @Final
-    private Function<T, CompoundTag> writer;
 
     @Shadow
     protected abstract void setBits(int i);
@@ -122,43 +107,43 @@ public abstract class PalettedContainerMixin<T> implements PalettedContainerInte
         this.addPresetValues();
     }
 
-    /**
-     * @author Drex
-     * @reason Add extra blocks to block palette
-     */
-    @Overwrite
-    public void read(ListTag paletteNbt, long[] data) {
-        try {
-            this.acquire();
-            int i = Math.max(4, Mth.ceillog2(paletteNbt.size() + (this.presetValues == null ? 0 : this.presetValues.length))); // Calculate the size with preset values
-            if (true || i != this.bits) { // Not initialized yet
-                this.setBits(i);
-            }
+    @Redirect(
+            method = "read(Lnet/minecraft/nbt/ListTag;[J)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Ljava/lang/Math;max(II)I",
+                    ordinal = 0
+            )
+    )
+    private int modifyBits(int a, int b, ListTag paletteNbt, long[] data) {
+        return Math.max(a, Mth.ceillog2(paletteNbt.size() + (this.presetValues == null ? 0 : this.presetValues.length)));
+    }
 
-            this.palette.read(paletteNbt);
-            this.addPresetValues();
-            int j = data.length * 64 / 4096;
-            if (this.palette == this.globalPalette) {
-                Palette<T> palette = new HashMapPalette<>(this.registry, i, this.dummyPaletteResize, this.reader, this.writer);
-                palette.read(paletteNbt);
-                BitStorage bitStorage = new BitStorage(i, 4096, data);
+    @Redirect(
+            method = "read(Lnet/minecraft/nbt/ListTag;[J)V",
+            at = @At(
+                    value = "FIELD",
+                    target = "Lnet/minecraft/world/level/chunk/PalettedContainer;bits:I",
+                    opcode = Opcodes.GETFIELD,
+                    ordinal = 0
+            )
+    )
+    private int redirectBits(PalettedContainer<T> palettedContainer) {
+        // i != this.bits should always return true here
+        return -1;
+    }
 
-                for (int k = 0; k < 4096; ++k) {
-                    this.storage.set(k, this.globalPalette.idFor(palette.valueFor(bitStorage.get(k))));
-                }
-            } else if (j == this.bits) {
-                System.arraycopy(data, 0, this.storage.getRaw(), 0, data.length);
-            } else {
-                BitStorage bitStorage2 = new BitStorage(j, 4096, data);
-
-                for (int l = 0; l < 4096; ++l) {
-                    this.storage.set(l, bitStorage2.get(l));
-                }
-            }
-        } finally {
-            this.release();
-        }
-
+    @Inject(
+            method = "read(Lnet/minecraft/nbt/ListTag;[J)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/level/chunk/Palette;read(Lnet/minecraft/nbt/ListTag;)V",
+                    shift = At.Shift.AFTER,
+                    ordinal = 0
+            )
+    )
+    private void addPresetValues(ListTag listTag, long[] ls, CallbackInfo ci) {
+        this.addPresetValues();
     }
 
     private void addPresetValues() {

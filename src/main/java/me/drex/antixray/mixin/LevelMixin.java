@@ -37,13 +37,13 @@ public abstract class LevelMixin implements LevelInterface, LevelAccessor {
 
     @Override
     public void initValues(Executor executor) {
-        worldConfig = new WorldConfig(this.dimension.location());
-        chunkPacketBlockController = worldConfig.enabled ? new ChunkPacketBlockControllerAntiXray((Level) (Object) this, executor) : ChunkPacketBlockControllerAntiXray.NO_OPERATION_INSTANCE;
+        this.worldConfig = new WorldConfig(this.dimension.location());
+        this.chunkPacketBlockController = worldConfig.enabled ? new ChunkPacketBlockControllerAntiXray((Level) (Object) this, executor) : ChunkPacketBlockControllerAntiXray.NO_OPERATION_INSTANCE;
     }
 
     @Override
     public ChunkPacketBlockController getChunkPacketBlockController() {
-        return chunkPacketBlockController;
+        return this.chunkPacketBlockController;
     }
 
     @Redirect(
@@ -54,9 +54,8 @@ public abstract class LevelMixin implements LevelInterface, LevelAccessor {
             )
     )
     public BlockState onBlockChanged(LevelChunk levelChunk, BlockPos blockPos, BlockState blockState, boolean bl) {
-        BlockState blockState2 = levelChunk.setBlockState(blockPos, blockState, bl);
-        this.getChunkPacketBlockController().onBlockChange((Level) (Object) this, blockPos, blockState, blockState2);
-        return blockState2;
+        BlockState oldState = levelChunk.setBlockState(blockPos, blockState, bl);
+        this.getChunkPacketBlockController().onBlockChange((Level) (Object) this, blockPos, blockState, oldState);
+        return oldState;
     }
-
 }

@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -22,10 +21,6 @@ public class ChunkPacketBlockController {
 
     public BlockState[] getPresetBlockStates(Level level, LevelChunkSection chunkSection) {
         return null;
-    }
-
-    public boolean shouldModify(ServerPlayer player, LevelChunk chunk) {
-        return false;
     }
 
     public ChunkPacketInfo<BlockState> getChunkPacketInfo(ClientboundLevelChunkPacket chunkPacket, LevelChunk chunk) {

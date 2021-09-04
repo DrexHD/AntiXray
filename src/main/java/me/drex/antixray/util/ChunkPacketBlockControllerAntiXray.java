@@ -12,7 +12,6 @@ import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -163,12 +162,6 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
         }
 
         return null;
-    }
-
-    @Override
-    public boolean shouldModify(ServerPlayer player, LevelChunk chunk) {
-        //TODO Fabric permission API
-        return true/*!usePermission*//* || !player.getBukkitEntity().hasPermission("paper.antixray.bypass")*/;
     }
 
     @Override

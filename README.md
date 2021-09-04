@@ -5,6 +5,8 @@ Fabric Anti Xray is a lightweight fabric mod that allows server owners to combat
 ## Config
 
 ```toml
+enabled = false
+
 [overworld]
 enabled = true
 engineMode = 2
@@ -22,9 +24,6 @@ updateRadius = 2
 lavaObscures = false
 hiddenBlocks = ["ancient_debris", "nether_quartz_ore", "nether_gold_ore"]
 replacementBlocks = ["netherrack"]
-
-[the_end]
-enabled = false
 ```
 
 ### Config option overview

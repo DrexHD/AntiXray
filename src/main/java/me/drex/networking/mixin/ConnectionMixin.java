@@ -3,7 +3,7 @@ package me.drex.networking.mixin;
 import io.netty.channel.Channel;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
-import me.drex.antixray.util.ClientboundLevelChunkPacketInterface;
+import me.drex.antixray.util.ClientboundLevelChunkPacketDataInterface;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import org.jetbrains.annotations.Nullable;
@@ -33,7 +33,7 @@ public abstract class ConnectionMixin {
             synchronized (this.queue) {
                 while (!this.queue.isEmpty()) {
                     if (this.queue.peek() instanceof ConnectionPacketHolderAccessor packetAccessor) { // poll -> peek
-                        if (packetAccessor.getPacket() instanceof ClientboundLevelChunkPacketInterface packet && !packet.isReady()) { // Check if the peeked packet is a chunk packet which is not ready
+                        if (packetAccessor.getPacket() instanceof ClientboundLevelChunkPacketDataInterface packet && !packet.isReady()) { // Check if the peeked packet is a chunk packet which is not ready
                             return false; // Return false if the peeked packet is a chunk packet which is not ready
                         } else {
                             this.queue.poll(); // poll here
@@ -79,6 +79,6 @@ public abstract class ConnectionMixin {
             )
     )
     public boolean redirectIfStatement(Connection connection, Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> callback) {
-        return connection.isConnected() && this.flushQueue() && !(packet instanceof ClientboundLevelChunkPacketInterface levelChunkPacket && !levelChunkPacket.isReady());
+        return connection.isConnected() && this.flushQueue() && !(packet instanceof ClientboundLevelChunkPacketDataInterface levelChunkPacket && !levelChunkPacket.isReady());
     }
 }

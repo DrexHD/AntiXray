@@ -2,7 +2,7 @@ package me.drex.antixray.util;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.protocol.game.ClientboundLevelChunkPacket;
+import net.minecraft.network.protocol.game.ClientboundLevelChunkPacketData;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.world.level.Level;
@@ -23,12 +23,12 @@ public class ChunkPacketBlockController {
         return null;
     }
 
-    public ChunkPacketInfo<BlockState> getChunkPacketInfo(ClientboundLevelChunkPacket chunkPacket, LevelChunk chunk) {
+    public ChunkPacketInfo<BlockState> getChunkPacketInfo(ClientboundLevelChunkPacketData chunkPacketData, LevelChunk chunk) {
         return null;
     }
 
-    public void modifyBlocks(ClientboundLevelChunkPacket chunkPacket, ChunkPacketInfo<BlockState> chunkPacketInfo) {
-        ((ClientboundLevelChunkPacketInterface) chunkPacket).setReady();
+    public void modifyBlocks(ClientboundLevelChunkPacketData chunkPacketData, ChunkPacketInfo<BlockState> chunkPacketInfo) {
+        ((ClientboundLevelChunkPacketDataInterface) chunkPacketData).setReady();
     }
 
     public void onBlockChange(Level level, BlockPos blockPos, BlockState newBlockState, @Nullable BlockState oldBlockState) {

@@ -6,14 +6,13 @@
   "mixins": [
     "ChunkAccessMixin",
     "ChunkSerializerMixin",
-    "ClientboundLevelChunkPacketMixin",
-    "LevelChunkMixin",
+    "ClientboundLevelChunkPacketDataMixin",
     "LevelChunkSectionMixin",
     "LevelMixin",
+    "PalettedContainerDataMixin",
     "PalettedContainerMixin",
     "ServerLevelMixin",
     "ServerPlayerGameModeMixin",
-    "accessor.LevelChunkSectionAccessor",
     "accessor.ProtoChunkAccessor",
     "accessor.ServerPlayerGameModeAccessor"
   ],

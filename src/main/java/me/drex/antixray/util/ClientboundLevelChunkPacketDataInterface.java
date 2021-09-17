@@ -1,6 +1,6 @@
 package me.drex.antixray.util;
 
-public interface ClientboundLevelChunkPacketInterface {
+public interface ClientboundLevelChunkPacketDataInterface {
 
     boolean isReady();
 

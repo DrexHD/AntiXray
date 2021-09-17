@@ -3,6 +3,8 @@ accessWidener v1 named
 #antixray
 accessible class net/minecraft/world/level/chunk/EmptyLevelChunk$EmptyChunkBiomeContainer
 accessible class net/minecraft/world/level/chunk/PaletteResize
+accessible class net/minecraft/world/level/chunk/PalettedContainer$Data
+
 
 #networking
 accessible class net/minecraft/network/Connection$PacketHolder

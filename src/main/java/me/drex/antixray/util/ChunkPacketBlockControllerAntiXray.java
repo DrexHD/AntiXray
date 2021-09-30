@@ -145,7 +145,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
     @Override
     public BlockState[] getPresetBlockStates(Level level, LevelChunkSection chunkSection) {
         // Return the block states to be added to the paletted containers so that they can be used for obfuscation
-        if (chunkSection.bottomBlockY() < maxBlockHeight) {
+        if (chunkSection.bottomBlockY() < maxBlockHeight && !chunkSection.hasOnlyAir()) {
             if (engineMode == EngineMode.HIDE) {
                 ResourceKey<Level> resourceKey = level.dimension();
                 if (resourceKey.equals(Level.NETHER)) {
@@ -153,7 +153,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
                 } else if (resourceKey.equals(Level.END)) {
                     return presetBlockStatesEndStone;
                 } else {
-                    return presetBlockStatesStone;
+                    return new BlockState[]{chunkSection.bottomBlockY() >= 0 ? Blocks.STONE.defaultBlockState() : Blocks.DEEPSLATE.defaultBlockState()};
                 }
             }
             return presetBlockStates;

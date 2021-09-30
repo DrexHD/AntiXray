@@ -1,11 +1,16 @@
 package me.drex.antixray.mixin;
 
+import com.mojang.serialization.Codec;
+import me.drex.antixray.util.LevelChunkSectionInterface;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.chunk.ProtoChunk;
+import net.minecraft.world.level.chunk.*;
 import net.minecraft.world.level.chunk.storage.ChunkSerializer;
+import net.minecraft.world.level.lighting.LevelLightEngine;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -21,10 +26,9 @@ public abstract class ChunkSerializerMixin {
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/entity/ai/village/poi/PoiManager;checkConsistencyWithBlocks(Lnet/minecraft/world/level/ChunkPos;Lnet/minecraft/world/level/chunk/LevelChunkSection;)V"
             ),
-            locals = LocalCapture.PRINT
+            locals = LocalCapture.CAPTURE_FAILHARD
     )
-    private static void initializeChunkSection(ServerLevel serverLevel, PoiManager poiManager, ChunkPos chunkPos, CompoundTag compoundTag, CallbackInfoReturnable<ProtoChunk> cir) {
-        // TODO: Add locals and initialize chunk section
+    private static void initializeChunkSection(ServerLevel serverLevel, PoiManager poiManager, ChunkPos chunkPos, CompoundTag compoundTag, CallbackInfoReturnable<ProtoChunk> cir, CompoundTag compoundTag2, UpgradeData upgradeData, ProtoTickList protoTickList, ProtoTickList protoTickList2, boolean bl, ListTag listTag, int i, LevelChunkSection levelChunkSections[], boolean bl2, ChunkSource chunkSource, LevelLightEngine levelLightEngine, Registry registry, Codec codec, int j, CompoundTag compoundTag3, int k, int l, PalettedContainer palettedContainer2, PalettedContainer palettedContainer4, LevelChunkSection levelChunkSection) {
+        ((LevelChunkSectionInterface)levelChunkSection).addBlockPresets(serverLevel);
     }
-
 }

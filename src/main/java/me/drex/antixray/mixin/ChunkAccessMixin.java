@@ -20,7 +20,7 @@ public abstract class ChunkAccessMixin {
     )
     private static void initializeChunkSections(LevelHeightAccessor levelHeightAccessor, Registry<Biome> registry, LevelChunkSection[] levelChunkSections, CallbackInfo ci) {
         for (LevelChunkSection levelChunkSection : levelChunkSections) {
-            ((LevelChunkSectionInterface) levelChunkSection).initValues((ChunkAccess) levelHeightAccessor);
+            ((LevelChunkSectionInterface) levelChunkSection).initValues(levelHeightAccessor);
         }
     }
 

@@ -1,7 +1,6 @@
 package me.drex.antixray.config;
 
 import com.moandjiezana.toml.Toml;
-import me.drex.antixray.AntiXray;
 import me.drex.antixray.util.ChunkPacketBlockControllerAntiXray;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;

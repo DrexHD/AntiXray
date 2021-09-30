@@ -529,10 +529,8 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
             return global;
         }
 
-        BlockState blockState;
-
-        for (int i = 0; (blockState = palette.valueFor(i)) != null; i++) {
-            temp[i] = global[this.globalPalette.idFor(blockState)];
+        for (int i = 0; i < palette.getSize(); i++) {
+            temp[i] = global[this.globalPalette.idFor(palette.valueFor(i))];
         }
 
         return temp;

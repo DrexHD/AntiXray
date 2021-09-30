@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '0.10.11'
+    id 'fabric-loom' version '0.10.23'
     id 'maven-publish'
 }
 
@@ -24,7 +24,10 @@ loom {
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings minecraft.officialMojangMappings()
+    mappings loom.layered {
+        officialMojangMappings()
+        signatureFix("net.fabricmc:yarn:21w39a+build.4:v2")
+    }
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     // Fabric API

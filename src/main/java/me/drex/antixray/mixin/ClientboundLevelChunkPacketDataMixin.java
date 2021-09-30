@@ -38,7 +38,7 @@ public abstract class ClientboundLevelChunkPacketDataMixin implements Clientboun
                     target = "Lnet/minecraft/network/protocol/game/ClientboundLevelChunkPacketData;extractChunkData(Lnet/minecraft/network/FriendlyByteBuf;Lnet/minecraft/world/level/chunk/LevelChunk;)V"
             )
     )
-    private static void replaceExtractChunkData(FriendlyByteBuf friendlyByteBuf, LevelChunk levelChunk) {
+    private void replaceExtractChunkData(FriendlyByteBuf friendlyByteBuf, LevelChunk levelChunk) {
         cachedFriendlyByteBuf = friendlyByteBuf;
         cachedLevelChunk = levelChunk;
     }

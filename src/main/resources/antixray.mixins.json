@@ -9,11 +9,10 @@
     "ClientboundLevelChunkPacketDataMixin",
     "LevelChunkSectionMixin",
     "LevelMixin",
-    "PalettedContainerDataMixin",
     "PalettedContainerMixin",
     "ServerLevelMixin",
     "ServerPlayerGameModeMixin",
-    "accessor.ProtoChunkAccessor",
+    "accessor.ChunkAccessAccessor",
     "accessor.ServerPlayerGameModeAccessor"
   ],
   "injectors": {

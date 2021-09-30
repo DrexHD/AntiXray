@@ -5,6 +5,5 @@ accessible class net/minecraft/world/level/chunk/EmptyLevelChunk$EmptyChunkBiome
 accessible class net/minecraft/world/level/chunk/PaletteResize
 accessible class net/minecraft/world/level/chunk/PalettedContainer$Data
 
-
 #networking
 accessible class net/minecraft/network/Connection$PacketHolder

@@ -1,15 +1,13 @@
 package me.drex.antixray.mixin;
 
-import me.drex.antixray.mixin.accessor.ProtoChunkAccessor;
-import me.drex.antixray.util.ChunkPacketInfo;
-import me.drex.antixray.util.LevelChunkSectionInterface;
-import me.drex.antixray.util.LevelInterface;
-import me.drex.antixray.util.PalettedContainerInterface;
+import me.drex.antixray.mixin.accessor.ChunkAccessAccessor;
+import me.drex.antixray.util.*;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelHeightAccessor;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.chunk.PalettedContainer;
@@ -31,31 +29,45 @@ public abstract class LevelChunkSectionMixin implements LevelChunkSectionInterfa
     @Final
     private int bottomBlockY;
 
+    @Shadow
+    @Final
+    private PalettedContainer<Biome> biomes;
+
     @Override
     @SuppressWarnings("unchecked")
-    public void initValues(Level level, boolean initializeBlocks) {
+    public void addBlockPresets(final Level level) {
         // Add preset block states
-        ((PalettedContainerInterface<BlockState>) this.states).initValues(level == null ? null : ((LevelInterface) level).getChunkPacketBlockController().getPresetBlockStates(level, (LevelChunkSection) (Object) this), initializeBlocks);
+        BlockState[] presetBlockStates = null;
+        if (level instanceof LevelInterface levelInterface) {
+            final ChunkPacketBlockController controller = levelInterface.getChunkPacketBlockController();
+            if (controller != null) {
+                presetBlockStates = controller.getPresetBlockStates(level, (LevelChunkSection) (Object) this);
+            }
+        }
+        ((PalettedContainerInterface<BlockState>) this.states).initValues(presetBlockStates);
     }
 
     @Override
-    public void initValues(ChunkAccess chunk) {
-        if (chunk instanceof LevelChunk levelChunk) {
-            initValues(levelChunk.getLevel(), true);
-        } else if (chunk instanceof ProtoChunkAccessor protoChunk) {
-            LevelHeightAccessor heightAccessor = protoChunk.getLevelHeightAccessor();
+    public void initValues(final LevelHeightAccessor chunk) {
+        if (chunk instanceof ServerLevel level) {
+            addBlockPresets(level);
+        } else if (chunk instanceof LevelChunk levelChunk) {
+            addBlockPresets(levelChunk.getLevel());
+        } else if (chunk instanceof ChunkAccessAccessor accessor) {
+            LevelHeightAccessor heightAccessor = accessor.getLevelHeightAccessor();
             if (heightAccessor instanceof Level level) {
-                initValues(level, true);
-            } else if (heightAccessor instanceof ChunkAccess chunkAccess) {
-                initValues(chunkAccess);
+                addBlockPresets(level);
+            } else {
+                initValues(heightAccessor);
             }
         }
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public void write(FriendlyByteBuf friendlyByteBuf, ChunkPacketInfo<BlockState> chunkPacketInfo) {
+    public void write(final FriendlyByteBuf friendlyByteBuf, final ChunkPacketInfo<BlockState> chunkPacketInfo) {
         friendlyByteBuf.writeShort(this.nonEmptyBlockCount);
         ((PalettedContainerInterface<BlockState>) this.states).write(friendlyByteBuf, chunkPacketInfo, this.bottomBlockY);
+        this.biomes.write(friendlyByteBuf);
     }
 }

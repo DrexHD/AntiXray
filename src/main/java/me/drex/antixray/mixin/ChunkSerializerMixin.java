@@ -28,7 +28,7 @@ public abstract class ChunkSerializerMixin {
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
-    private static void initializeChunkSection(ServerLevel serverLevel, PoiManager poiManager, ChunkPos chunkPos, CompoundTag compoundTag, CallbackInfoReturnable<ProtoChunk> cir, CompoundTag compoundTag2, UpgradeData upgradeData, ProtoTickList protoTickList, ProtoTickList protoTickList2, boolean bl, ListTag listTag, int i, LevelChunkSection levelChunkSections[], boolean bl2, ChunkSource chunkSource, LevelLightEngine levelLightEngine, Registry registry, Codec codec, int j, CompoundTag compoundTag3, int k, int l, PalettedContainer palettedContainer2, PalettedContainer palettedContainer4, LevelChunkSection levelChunkSection) {
-        ((LevelChunkSectionInterface)levelChunkSection).addBlockPresets(serverLevel);
+    private static void initializeChunkSection(ServerLevel serverLevel, PoiManager poiManager, ChunkPos chunkPos, CompoundTag compoundTag, CallbackInfoReturnable<ProtoChunk> cir, UpgradeData upgradeData, boolean bl, ListTag listTag, int i, LevelChunkSection levelChunkSections[], boolean bl2, ChunkSource chunkSource, LevelLightEngine levelLightEngine, Registry registry, Codec codec, int j, CompoundTag compoundTag2, int k, int l, PalettedContainer palettedContainer2, PalettedContainer palettedContainer4, LevelChunkSection levelChunkSection) {
+        ((LevelChunkSectionInterface) levelChunkSection).addBlockPresets(serverLevel);
     }
 }

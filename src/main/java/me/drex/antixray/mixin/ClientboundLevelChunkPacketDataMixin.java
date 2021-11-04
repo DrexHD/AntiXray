@@ -27,9 +27,6 @@ public abstract class ClientboundLevelChunkPacketDataMixin implements Clientboun
     @Final
     private byte[] buffer;
 
-    private static FriendlyByteBuf cachedFriendlyByteBuf;
-    private static LevelChunk cachedLevelChunk;
-
     // Cancel vanilla extractChunkData and store variables for our own implementation
     @Redirect(
             method = "<init>(Lnet/minecraft/world/level/chunk/LevelChunk;)V",
@@ -39,8 +36,7 @@ public abstract class ClientboundLevelChunkPacketDataMixin implements Clientboun
             )
     )
     private void replaceExtractChunkData(FriendlyByteBuf friendlyByteBuf, LevelChunk levelChunk) {
-        cachedFriendlyByteBuf = friendlyByteBuf;
-        cachedLevelChunk = levelChunk;
+        this.customExtractChunkData(friendlyByteBuf, levelChunk);
     }
 
     @Inject(
@@ -48,7 +44,6 @@ public abstract class ClientboundLevelChunkPacketDataMixin implements Clientboun
             at = @At("TAIL")
     )
     public void addFakeBlocks(LevelChunk levelChunk, CallbackInfo ci) {
-        this.customExtractChunkData(cachedFriendlyByteBuf, cachedLevelChunk);
         ((LevelInterface) levelChunk.getLevel()).getChunkPacketBlockController().modifyBlocks((ClientboundLevelChunkPacketData) (Object) this, chunkPacketInfo);
     }
 

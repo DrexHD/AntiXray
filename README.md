@@ -1,6 +1,6 @@
-# Fabric Anti Xray
+# Anti Xray
 
-Fabric Anti Xray is a lightweight fabric mod that allows server owners to combat xrayers.
+Anti Xray is a lightweight fabric mod that allows server owners to combat xrayers.
 
 ## Config
 

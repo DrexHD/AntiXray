@@ -8,13 +8,16 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.concurrent.Executor;
 
@@ -36,7 +39,7 @@ public abstract class LevelMixin implements LevelInterface, LevelAccessor {
     public abstract BlockState getBlockState(BlockPos blockPos);
 
     @Override
-    public void initValues(Executor executor) {
+    public void initValues(final Executor executor) {
         this.worldConfig = new WorldConfig(this.dimension.location());
         this.chunkPacketBlockController = worldConfig.enabled ? new ChunkPacketBlockControllerAntiXray((Level) (Object) this, executor) : ChunkPacketBlockControllerAntiXray.NO_OPERATION_INSTANCE;
     }
@@ -46,16 +49,17 @@ public abstract class LevelMixin implements LevelInterface, LevelAccessor {
         return this.chunkPacketBlockController;
     }
 
-    @Redirect(
+    @Inject(
             method = "setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;II)Z",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/level/chunk/LevelChunk;setBlockState(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Z)Lnet/minecraft/world/level/block/state/BlockState;"
-            )
+            ),
+            locals = LocalCapture.CAPTURE_FAILHARD
     )
-    public BlockState onBlockChanged(LevelChunk levelChunk, BlockPos blockPos, BlockState blockState, boolean bl) {
-        BlockState oldState = levelChunk.setBlockState(blockPos, blockState, bl);
+    public void onBlockChange(final BlockPos blockPos, final BlockState blockState, final int flags, final int maxUpdateDepth, final CallbackInfoReturnable<Boolean> cir, final LevelChunk levelChunk, final Block block) {
+        final BlockState oldState = levelChunk.getBlockState(blockPos);
         this.getChunkPacketBlockController().onBlockChange((Level) (Object) this, blockPos, blockState, oldState);
-        return oldState;
     }
+
 }

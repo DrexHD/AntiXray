@@ -49,29 +49,11 @@ public abstract class PalettedContainerMixin<T> implements PalettedContainerInte
             // Bottom block to 0 based chunk section index
             int chunkSectionIndex = (bottomBlockY >> 4) - chunkPacketInfo.getChunk().getMinSection();
             chunkPacketInfo.setBits(chunkSectionIndex, this.data.storage().getBits());
-            chunkPacketInfo.setPalette(chunkSectionIndex, this.getPaletteCopy(this.data.palette()));
+            chunkPacketInfo.setPalette(chunkSectionIndex, this.data.palette());
             chunkPacketInfo.setIndex(chunkSectionIndex, friendlyByteBuf.writerIndex() + FriendlyByteBuf.getVarIntSize(this.data.storage().getRaw().length));
             chunkPacketInfo.setPresetValues(chunkSectionIndex, presetValues);
         }
         friendlyByteBuf.writeLongArray(this.data.storage().getRaw());
-    }
-
-    /**
-    * Because obfuscation is done async, the palette might change size. This is problematic, because the size is already
-    * written to the {@link FriendlyByteBuf}. The solution is to make a copy of the palette at the point of writing
-     * and forwarding that to the ChunkPacketInfo.
-    * */
-    private Palette<T> getPaletteCopy(Palette<T> original) {
-        if (original instanceof GlobalPalette) {
-            // GlobalPalette won't change, so we don't need to copy
-            return original;
-        } else {
-            T[] values = (T[]) new Object[original.getSize()];
-            for (int i = 0; i < original.getSize(); i++) {
-                values[i] = original.valueFor(i);
-            }
-            return new SimplePalette<>(values);
-        }
     }
 
     private void addPresetValues() {

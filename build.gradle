@@ -1,10 +1,10 @@
 plugins {
-    id 'fabric-loom' version '0.10.23'
+    id 'fabric-loom' version '0.10-SNAPSHOT'
     id 'maven-publish'
 }
 
-sourceCompatibility = JavaVersion.VERSION_16
-targetCompatibility = JavaVersion.VERSION_16
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = "${project.archives_base_name}-mc${project.minecraft_version}"
 version = project.mod_version
@@ -24,11 +24,8 @@ loom {
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings loom.layered {
-        officialMojangMappings()
-        signatureFix("net.fabricmc:yarn:21w39a+build.4:v2")
-    }
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    mappings minecraft.officialMojangMappings()
 
     // Fabric API
     Set<String> apiModules = [
@@ -57,8 +54,7 @@ tasks.withType(JavaCompile).configureEach {
     // If Javadoc is generated, this must be specified in that task too.
     it.options.encoding = "UTF-8"
 
-    // Minecraft 1.17 (21w19a) upwards uses Java 16.
-    it.options.release = 16
+    it.options.release = 17
 }
 
 java {

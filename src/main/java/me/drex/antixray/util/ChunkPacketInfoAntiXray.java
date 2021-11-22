@@ -24,6 +24,10 @@ public final class ChunkPacketInfoAntiXray extends ChunkPacketInfo<BlockState> i
 
     @Override
     public void run() {
-        chunkPacketBlockControllerAntiXray.obfuscate(this);
+        try {
+            chunkPacketBlockControllerAntiXray.obfuscate(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

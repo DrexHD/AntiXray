@@ -1,5 +1,6 @@
 package me.drex.antixray.util;
 
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import me.drex.antixray.AntiXray;
 import me.drex.antixray.config.WorldConfig;
 import me.drex.antixray.mixin.accessor.LevelChunkSectionAccessor;
@@ -54,8 +55,8 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
     private final int[] presetBlockStateBitsStoneGlobal;
     private final int[] presetBlockStateBitsNetherrackGlobal;
     private final int[] presetBlockStateBitsEndStoneGlobal;
-    private final boolean[] solidGlobal = new boolean[Block.BLOCK_STATE_REGISTRY.size()];
-    private final boolean[] obfuscateGlobal = new boolean[Block.BLOCK_STATE_REGISTRY.size()];
+    private final Object2BooleanOpenHashMap<BlockState> solidGlobal = new Object2BooleanOpenHashMap<>(Block.BLOCK_STATE_REGISTRY.size());
+    private final Object2BooleanOpenHashMap<BlockState> obfuscateGlobal = new Object2BooleanOpenHashMap<>(Block.BLOCK_STATE_REGISTRY.size());
     private final LevelChunkSection[] emptyNearbyChunkSections = {LevelChunk.EMPTY_SECTION, LevelChunk.EMPTY_SECTION, LevelChunk.EMPTY_SECTION, LevelChunk.EMPTY_SECTION};
     private final int maxBlockHeightUpdatePosition;
     // Actually these fields should be variables inside the obfuscate method but in sync mode or with SingleThreadExecutor in async mode it's okay (even without ThreadLocal)
@@ -118,7 +119,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
             if (block != null && !block.defaultBlockState().isAir()) {
                 // Replace all block states of a specified block
                 for (BlockState blockState : block.getStateDefinition().getPossibleStates()) {
-                    obfuscateGlobal[LevelChunkSectionAccessor.getPalette().idFor(blockState)] = true;
+                    obfuscateGlobal.put(blockState, true);
                 }
             }
         }
@@ -126,22 +127,23 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
         EmptyLevelChunk emptyChunk = new EmptyLevelChunk(level, new ChunkPos(0, 0));
         BlockPos zeroPos = new BlockPos(0, 0, 0);
 
-        for (int i = 0; i < solidGlobal.length; i++) {
-            BlockState blockState = LevelChunkSectionAccessor.getPalette().valueFor(i);
-
-            if (blockState != null) {
-                solidGlobal[i] = blockState.isRedstoneConductor(emptyChunk, zeroPos)
-                        && blockState.getBlock() != Blocks.SPAWNER && blockState.getBlock() != Blocks.BARRIER && blockState.getBlock() != Blocks.SHULKER_BOX && blockState.getBlock() != Blocks.SLIME_BLOCK || worldConfig.lavaObscures && blockState == Blocks.LAVA.defaultBlockState();
-                // Comparing blockState == Blocks.LAVA.defaultBlockState() instead of blockState.getBlock() == Blocks.LAVA ensures that only "stationary lava" is used
-                // shulker box checks TE.
-            }
-        }
+        Block.BLOCK_STATE_REGISTRY.iterator().forEachRemaining((blockState) -> {
+                    solidGlobal.put(blockState, blockState.isRedstoneConductor(emptyChunk, zeroPos)
+                            && blockState.getBlock() != Blocks.SPAWNER && blockState.getBlock() != Blocks.BARRIER && blockState.getBlock() != Blocks.SHULKER_BOX && blockState.getBlock() != Blocks.SLIME_BLOCK || worldConfig.lavaObscures && blockState == Blocks.LAVA.defaultBlockState());
+                    // Comparing blockState == Blocks.LAVA.defaultBlockState() instead of blockState.getBlock() == Blocks.LAVA ensures that only "stationary lava" is used
+                    // shulker box checks TE.
+                }
+        );
 
         maxBlockHeightUpdatePosition = maxBlockHeight + updateRadius - 1;
     }
 
     private int getPresetBlockStatesFullLength() {
         return engineMode == EngineMode.HIDE ? 1 : presetBlockStatesFull.length;
+    }
+
+    private boolean isSolid(BlockState blockState) {
+        return solidGlobal.getOrDefault(blockState, false);
     }
 
     @Override
@@ -270,7 +272,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
                     for (int z = 0; z < 16; z++) {
                         for (int x = 0; x < 16; x++) {
                             current[z][x] = true;
-                            next[z][x] = skipFirstLayer || !solidGlobal[LevelChunkSectionAccessor.getPalette().idFor(belowChunkSection.getBlockState(x, 15, z))];
+                            next[z][x] = skipFirstLayer || !isSolid(belowChunkSection.getBlockState(x, 15, z));
                         }
                     }
 
@@ -307,7 +309,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
 
                         for (int z = 0; z < 16; z++) {
                             for (int x = 0; x < 16; x++) {
-                                if (!solidGlobal[LevelChunkSectionAccessor.getPalette().idFor(aboveChunkSection.getBlockState(x, 0, z))]) {
+                                if (!isSolid(aboveChunkSection.getBlockState(x, 0, z))) {
                                     current[z][x] = true;
                                 }
                             }
@@ -347,7 +349,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
             next[0][1] = true;
             next[1][0] = true;
         } else {
-            if (current[0][0] || nearbyChunkSections[2] == LevelChunk.EMPTY_SECTION || !solidGlobal[LevelChunkSectionAccessor.getPalette().idFor(nearbyChunkSections[2].getBlockState(0, y, 15))] || nearbyChunkSections[0] == LevelChunk.EMPTY_SECTION || !solidGlobal[LevelChunkSectionAccessor.getPalette().idFor(nearbyChunkSections[0].getBlockState(15, y, 0))]) {
+            if (current[0][0] || nearbyChunkSections[2] == LevelChunk.EMPTY_SECTION || !isSolid(nearbyChunkSections[2].getBlockState(0, y, 15)) || nearbyChunkSections[0] == LevelChunk.EMPTY_SECTION || !isSolid(nearbyChunkSections[0].getBlockState(15, y, 0))) {
                 bitStorageWriter.skip();
             } else {
                 bitStorageWriter.write(presetBlockStateBits[random.getAsInt()]);
@@ -368,7 +370,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
                 next[0][x + 1] = true;
                 next[1][x] = true;
             } else {
-                if (current[0][x] || nearbyChunkSections[2] == LevelChunk.EMPTY_SECTION || !solidGlobal[LevelChunkSectionAccessor.getPalette().idFor(nearbyChunkSections[2].getBlockState(x, y, 15))]) {
+                if (current[0][x] || nearbyChunkSections[2] == LevelChunk.EMPTY_SECTION || !isSolid(nearbyChunkSections[2].getBlockState(x, y, 15))) {
                     bitStorageWriter.skip();
                 } else {
                     bitStorageWriter.write(presetBlockStateBits[random.getAsInt()]);
@@ -388,7 +390,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
             next[0][14] = true;
             next[1][15] = true;
         } else {
-            if (current[0][15] || nearbyChunkSections[2] == LevelChunk.EMPTY_SECTION || !solidGlobal[LevelChunkSectionAccessor.getPalette().idFor(nearbyChunkSections[2].getBlockState(15, y, 15))] || nearbyChunkSections[1] == LevelChunk.EMPTY_SECTION || !solidGlobal[LevelChunkSectionAccessor.getPalette().idFor(nearbyChunkSections[1].getBlockState(0, y, 0))]) {
+            if (current[0][15] || nearbyChunkSections[2] == LevelChunk.EMPTY_SECTION || !isSolid(nearbyChunkSections[2].getBlockState(15, y, 15)) || nearbyChunkSections[1] == LevelChunk.EMPTY_SECTION || !isSolid(nearbyChunkSections[1].getBlockState(0, y, 0))) {
                 bitStorageWriter.skip();
             } else {
                 bitStorageWriter.write(presetBlockStateBits[random.getAsInt()]);
@@ -410,7 +412,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
                 next[z - 1][0] = true;
                 next[z + 1][0] = true;
             } else {
-                if (current[z][0] || nearbyChunkSections[0] == LevelChunk.EMPTY_SECTION || !solidGlobal[LevelChunkSectionAccessor.getPalette().idFor(nearbyChunkSections[0].getBlockState(15, y, z))]) {
+                if (current[z][0] || nearbyChunkSections[0] == LevelChunk.EMPTY_SECTION || !isSolid(nearbyChunkSections[0].getBlockState(15, y, z))) {
                     bitStorageWriter.skip();
                 } else {
                     bitStorageWriter.write(presetBlockStateBits[random.getAsInt()]);
@@ -453,7 +455,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
                 next[z - 1][15] = true;
                 next[z + 1][15] = true;
             } else {
-                if (current[z][15] || nearbyChunkSections[1] == LevelChunk.EMPTY_SECTION || !solidGlobal[LevelChunkSectionAccessor.getPalette().idFor(nearbyChunkSections[1].getBlockState(0, y, z))]) {
+                if (current[z][15] || nearbyChunkSections[1] == LevelChunk.EMPTY_SECTION || !isSolid(nearbyChunkSections[1].getBlockState(0, y, z))) {
                     bitStorageWriter.skip();
                 } else {
                     bitStorageWriter.write(presetBlockStateBits[random.getAsInt()]);
@@ -473,7 +475,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
             next[15][1] = true;
             next[14][0] = true;
         } else {
-            if (current[15][0] || nearbyChunkSections[3] == LevelChunk.EMPTY_SECTION || !solidGlobal[LevelChunkSectionAccessor.getPalette().idFor(nearbyChunkSections[3].getBlockState(0, y, 0))] || nearbyChunkSections[0] == LevelChunk.EMPTY_SECTION || !solidGlobal[LevelChunkSectionAccessor.getPalette().idFor(nearbyChunkSections[0].getBlockState(15, y, 15))]) {
+            if (current[15][0] || nearbyChunkSections[3] == LevelChunk.EMPTY_SECTION || !isSolid(nearbyChunkSections[3].getBlockState(0, y, 0)) || nearbyChunkSections[0] == LevelChunk.EMPTY_SECTION || !isSolid(nearbyChunkSections[0].getBlockState(15, y, 15))) {
                 bitStorageWriter.skip();
             } else {
                 bitStorageWriter.write(presetBlockStateBits[random.getAsInt()]);
@@ -494,7 +496,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
                 next[15][x + 1] = true;
                 next[14][x] = true;
             } else {
-                if (current[15][x] || nearbyChunkSections[3] == LevelChunk.EMPTY_SECTION || !solidGlobal[LevelChunkSectionAccessor.getPalette().idFor(nearbyChunkSections[3].getBlockState(x, y, 0))]) {
+                if (current[15][x] || nearbyChunkSections[3] == LevelChunk.EMPTY_SECTION || !isSolid(nearbyChunkSections[3].getBlockState(x, y, 0))) {
                     bitStorageWriter.skip();
                 } else {
                     bitStorageWriter.write(presetBlockStateBits[random.getAsInt()]);
@@ -514,7 +516,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
             next[15][14] = true;
             next[14][15] = true;
         } else {
-            if (current[15][15] || nearbyChunkSections[3] == LevelChunk.EMPTY_SECTION || !solidGlobal[LevelChunkSectionAccessor.getPalette().idFor(nearbyChunkSections[3].getBlockState(15, y, 0))] || nearbyChunkSections[1] == LevelChunk.EMPTY_SECTION || !solidGlobal[LevelChunkSectionAccessor.getPalette().idFor(nearbyChunkSections[1].getBlockState(0, y, 15))]) {
+            if (current[15][15] || nearbyChunkSections[3] == LevelChunk.EMPTY_SECTION || !isSolid(nearbyChunkSections[3].getBlockState(15, y, 0)) || nearbyChunkSections[1] == LevelChunk.EMPTY_SECTION || !isSolid(nearbyChunkSections[1].getBlockState(0, y, 15))) {
                 bitStorageWriter.skip();
             } else {
                 bitStorageWriter.write(presetBlockStateBits[random.getAsInt()]);
@@ -526,15 +528,11 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
         }
     }
 
-    private boolean[] readPalette(Palette<BlockState> palette, boolean[] temp, boolean[] global) {
-        if (palette == LevelChunkSectionAccessor.getPalette()) {
-            return global;
-        }
-
+    private boolean[] readPalette(Palette<BlockState> palette, boolean[] temp, Object2BooleanOpenHashMap<BlockState> global) {
         BlockState blockState;
 
         for (int i = 0; (blockState = palette.valueFor(i)) != null; i++) {
-            temp[i] = global[LevelChunkSectionAccessor.getPalette().idFor(blockState)];
+            temp[i] = global.getOrDefault(blockState, false);
         }
 
         return temp;
@@ -542,7 +540,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
 
     @Override
     public void onBlockChange(Level level, BlockPos blockPos, BlockState newBlockState, @Nullable BlockState oldBlockState) {
-        if (oldBlockState != null && solidGlobal[LevelChunkSectionAccessor.getPalette().idFor(oldBlockState)] && !solidGlobal[LevelChunkSectionAccessor.getPalette().idFor(newBlockState)] && blockPos.getY() <= maxBlockHeightUpdatePosition) {
+        if (oldBlockState != null && isSolid(oldBlockState) && !isSolid(newBlockState) && blockPos.getY() <= maxBlockHeightUpdatePosition) {
             updateNearbyBlocks(level, blockPos);
         }
     }
@@ -596,7 +594,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
     private void updateBlock(Level level, BlockPos blockPos) {
         BlockState blockState = level.getBlockState(blockPos);
 
-        if (obfuscateGlobal[LevelChunkSectionAccessor.getPalette().idFor(blockState)]) {
+        if (obfuscateGlobal.getOrDefault(blockState, false)) {
             ((ServerLevel) level).getChunkSource().blockChanged(blockPos);
         }
     }

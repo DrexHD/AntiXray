@@ -23,7 +23,6 @@ public abstract class PalettedContainerMixin<T> implements PalettedContainerInte
     @Shadow
     public abstract void release();
 
-
     @Override
     public void initValues(T[] presetValues) {
         this.presetValues = presetValues;

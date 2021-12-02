@@ -7,13 +7,12 @@
     "ChunkAccessMixin",
     "ChunkSerializerMixin",
     "ClientboundLevelChunkPacketDataMixin",
+    "ClientboundLevelChunkWithLightPacketMixin",
     "LevelChunkSectionMixin",
     "LevelMixin",
     "PalettedContainerMixin",
     "ServerLevelMixin",
-    "ServerPlayerGameModeMixin",
-    "accessor.ChunkAccessAccessor",
-    "accessor.ServerPlayerGameModeAccessor"
+    "ServerPlayerGameModeMixin"
   ],
   "injectors": {
     "defaultRequire": 1

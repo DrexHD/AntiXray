@@ -1,5 +1,6 @@
 package me.drex.antixray.util;
 
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import me.drex.antixray.AntiXray;
 import me.drex.antixray.config.WorldConfig;
 import me.drex.antixray.interfaces.IChunkPacket;
@@ -48,8 +49,8 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
     private final int[] presetBlockStateBitsStoneGlobal;
     private final int[] presetBlockStateBitsNetherrackGlobal;
     private final int[] presetBlockStateBitsEndStoneGlobal;
-    private final boolean[] solidGlobal = new boolean[Block.BLOCK_STATE_REGISTRY.size()];
-    private final boolean[] obfuscateGlobal = new boolean[Block.BLOCK_STATE_REGISTRY.size()];
+    private final Object2BooleanOpenHashMap<BlockState> solidGlobal = new Object2BooleanOpenHashMap<>(Block.BLOCK_STATE_REGISTRY.size());
+    private final Object2BooleanOpenHashMap<BlockState> obfuscateGlobal = new Object2BooleanOpenHashMap<>(Block.BLOCK_STATE_REGISTRY.size());
     private final LevelChunkSection[] emptyNearbyChunkSections = {EMPTY_SECTION, EMPTY_SECTION, EMPTY_SECTION, EMPTY_SECTION};
     private final int maxBlockHeightUpdatePosition;
     // Actually these fields should be variables inside the obfuscate method but in sync mode or with SingleThreadExecutor in async mode it's okay (even without ThreadLocal)
@@ -115,7 +116,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
             if (block != null && !block.defaultBlockState().isAir()) {
                 // Replace all block states of a specified block
                 for (BlockState blockState : block.getStateDefinition().getPossibleStates()) {
-                    obfuscateGlobal[GLOBAL_BLOCKSTATE_PALETTE.idFor(blockState)] = true;
+                    obfuscateGlobal.put(blockState, true);
                 }
             }
         }
@@ -123,16 +124,13 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
         EmptyLevelChunk emptyChunk = new EmptyLevelChunk(level, new ChunkPos(0, 0));
         BlockPos zeroPos = new BlockPos(0, 0, 0);
 
-        for (int i = 0; i < solidGlobal.length; i++) {
-            BlockState blockState = GLOBAL_BLOCKSTATE_PALETTE.valueFor(i);
-
-            if (blockState != null) {
-                solidGlobal[i] = blockState.isRedstoneConductor(emptyChunk, zeroPos)
-                        && blockState.getBlock() != Blocks.SPAWNER && blockState.getBlock() != Blocks.BARRIER && blockState.getBlock() != Blocks.SHULKER_BOX && blockState.getBlock() != Blocks.SLIME_BLOCK || worldConfig.lavaObscures && blockState == Blocks.LAVA.defaultBlockState();
-                // Comparing blockState == Blocks.LAVA.defaultBlockState() instead of blockState.getBlock() == Blocks.LAVA ensures that only "stationary lava" is used
-                // shulker box checks TE.
-            }
-        }
+        Block.BLOCK_STATE_REGISTRY.iterator().forEachRemaining((blockState) -> {
+                    solidGlobal.put(blockState, blockState.isRedstoneConductor(emptyChunk, zeroPos)
+                            && blockState.getBlock() != Blocks.SPAWNER && blockState.getBlock() != Blocks.BARRIER && blockState.getBlock() != Blocks.SHULKER_BOX && blockState.getBlock() != Blocks.SLIME_BLOCK || worldConfig.lavaObscures && blockState == Blocks.LAVA.defaultBlockState());
+                    // Comparing blockState == Blocks.LAVA.defaultBlockState() instead of blockState.getBlock() == Blocks.LAVA ensures that only "stationary lava" is used
+                    // shulker box checks TE.
+                }
+        );
 
         maxBlockHeightUpdatePosition = maxBlockHeight + updateRadius - 1;
     }
@@ -533,7 +531,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
         }
 
         try {
-            return !solidGlobal[GLOBAL_BLOCKSTATE_PALETTE.idFor(chunkSection.getBlockState(x, y, z))];
+            return !solidGlobal.getOrDefault(chunkSection.getBlockState(x, y, z), false);
         } catch (MissingPaletteEntryException e) {
             // Race condition / visibility issue / no happens-before relationship
             // We don't care and treat the block as transparent
@@ -542,14 +540,11 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
         }
     }
 
-    private boolean[] readPalette(Palette<BlockState> palette, boolean[] temp, boolean[] global) {
-        if (palette instanceof GlobalPalette) {
-            return global;
-        }
+    private boolean[] readPalette(Palette<BlockState> palette, boolean[] temp, Object2BooleanOpenHashMap<BlockState> global) {
 
         try {
             for (int i = 0; i < palette.getSize(); i++) {
-                temp[i] = global[GLOBAL_BLOCKSTATE_PALETTE.idFor(palette.valueFor(i))];
+                temp[i] = global.getOrDefault(palette.valueFor(i), false);
             }
         } catch (MissingPaletteEntryException e) {
             // Race condition / visibility issue / no happens-before relationship
@@ -563,7 +558,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
 
     @Override
     public void onBlockChange(Level level, BlockPos blockPos, BlockState newBlockState, BlockState oldBlockState, int flags, int maxUpdateDepth) {
-        if (oldBlockState != null && solidGlobal[GLOBAL_BLOCKSTATE_PALETTE.idFor(oldBlockState)] && !solidGlobal[GLOBAL_BLOCKSTATE_PALETTE.idFor(newBlockState)] && blockPos.getY() <= maxBlockHeightUpdatePosition) {
+        if (oldBlockState != null && solidGlobal.getOrDefault(oldBlockState, false) && !solidGlobal.getOrDefault(newBlockState, false) && blockPos.getY() <= maxBlockHeightUpdatePosition) {
             updateNearbyBlocks(level, blockPos);
         }
     }
@@ -617,7 +612,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
     private void updateBlock(Level level, BlockPos blockPos) {
         BlockState blockState = ChunkManager.getStateIfLoaded(level, blockPos);
 
-        if (blockState != null && obfuscateGlobal[GLOBAL_BLOCKSTATE_PALETTE.idFor(blockState)]) {
+        if (blockState != null && obfuscateGlobal.getOrDefault(blockState, false)) {
             ((ServerLevel) level).getChunkSource().blockChanged(blockPos);
         }
     }

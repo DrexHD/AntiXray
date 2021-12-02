@@ -39,7 +39,6 @@ public abstract class ClientboundLevelChunkWithLightPacketMixin implements IChun
         final ChunkPacketInfo<BlockState> packetInfo = controller.getChunkPacketInfo(packet, chunk);
         ((IChunkPacketData) this.chunkData).customExtractChunkData(packetInfo);
 
-        // Paper - Anti-Xray - Modify blocks
         controller.modifyBlocks(packet, packetInfo);
     }
 

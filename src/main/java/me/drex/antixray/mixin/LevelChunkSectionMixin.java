@@ -33,9 +33,6 @@ public abstract class LevelChunkSectionMixin implements IChunkSection {
     @Final
     private int bottomBlockY;
 
-    @Shadow
-    public abstract boolean hasOnlyAir();
-
     @Override
     @SuppressWarnings("unchecked")
     public void addBlockPresets(Level level) {

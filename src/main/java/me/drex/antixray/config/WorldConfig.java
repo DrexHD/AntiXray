@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WorldConfig {
-
-    private final ResourceLocation location;
     public boolean enabled = false;
     public ChunkPacketBlockControllerAntiXray.EngineMode engineMode = ChunkPacketBlockControllerAntiXray.EngineMode.HIDE;
     public int maxBlockHeight = 64;
@@ -21,7 +19,6 @@ public class WorldConfig {
     public List<String> replacementBlocks = new ArrayList<>();
 
     public WorldConfig(ResourceLocation location) {
-        this.location = location;
         Toml defaultToml = Config.toml;
         // Load default values
         this.loadValues(defaultToml);

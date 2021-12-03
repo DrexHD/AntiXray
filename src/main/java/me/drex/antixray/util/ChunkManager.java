@@ -16,7 +16,6 @@ public final class ChunkManager {
      * Returns the BlockState at {@param pos} in {@param level} if the position is loaded.
      */
 
-    @Nullable
     public static BlockState getStateIfLoaded(Level level, BlockPos pos) {
         final LevelChunk chunk = getChunkIfLoaded(level, pos);
         return chunk != null ? chunk.getBlockState(pos) : Blocks.VOID_AIR.defaultBlockState();

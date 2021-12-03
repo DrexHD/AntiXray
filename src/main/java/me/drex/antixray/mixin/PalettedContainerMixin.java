@@ -3,12 +3,17 @@ package me.drex.antixray.mixin;
 import me.drex.antixray.interfaces.IPalettedContainer;
 import me.drex.antixray.util.ChunkPacketInfo;
 import net.minecraft.core.IdMap;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.BitStorage;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.ai.village.poi.PoiManager;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.chunk.Palette;
 import net.minecraft.world.level.chunk.PalettedContainer;
+import net.minecraft.world.level.chunk.storage.ChunkSerializer;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -92,6 +97,12 @@ public abstract class PalettedContainerMixin<T> implements IPalettedContainer<T>
         return object == null ? -1 : palette.idFor(object);
     }
 
+    /**
+     * Adds preset values after initialization of this PalettedContainer.
+     * Only use this method after {@link PalettedContainer(IdMap, PalettedContainer.Strategy, PalettedContainer.Configuration, BitStorage, List)}.
+     * For now, this only used in {@link ChunkSerializer#read(ServerLevel, PoiManager, ChunkPos, CompoundTag)}
+     * if the palette gets read from NBT.
+     */
     @Override
     public void addPresetValuesWithEntries(T[] presetValues) {
         this.presetValues = presetValues;
@@ -119,6 +130,11 @@ public abstract class PalettedContainerMixin<T> implements IPalettedContainer<T>
         }
     }
 
+    /**
+     * Adds preset values after initialization of this PalettedContainer.
+     * Use this method after {@link PalettedContainer(IdMap, Object, PalettedContainer.Strategy)}.
+     * or {@link PalettedContainer(IdMap, PalettedContainer.Strategy, PalettedContainer.Data)})}.
+     */
     @Override
     public void addPresetValues(T[] presetValues) {
         this.presetValues = presetValues;

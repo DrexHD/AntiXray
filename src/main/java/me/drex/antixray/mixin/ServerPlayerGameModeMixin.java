@@ -1,6 +1,6 @@
 package me.drex.antixray.mixin;
 
-import me.drex.antixray.util.LevelInterface;
+import me.drex.antixray.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
@@ -14,16 +14,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayerGameMode.class)
 public abstract class ServerPlayerGameModeMixin {
-
     @Shadow
-    protected ServerLevel level;
+    public ServerLevel level;
 
     @Inject(
             method = "handleBlockBreakAction",
             at = @At("TAIL")
     )
     public void onPlayerBreakBlock(BlockPos blockPos, ServerboundPlayerActionPacket.Action action, Direction direction, int i, CallbackInfo ci) {
-        ((LevelInterface) this.level).getChunkPacketBlockController().onPlayerLeftClickBlock((ServerPlayerGameMode) (Object) this, blockPos, action, direction, i);
+        Util.getBlockController(this.level).onPlayerLeftClickBlock((ServerPlayerGameMode) (Object) this, blockPos, action, direction, i);
     }
-
 }

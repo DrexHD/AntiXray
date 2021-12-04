@@ -3,7 +3,7 @@ package me.drex.networking.mixin;
 import io.netty.channel.Channel;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
-import me.drex.antixray.util.ClientboundLevelChunkPacketDataInterface;
+import me.drex.antixray.interfaces.IChunkPacket;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
@@ -83,9 +83,9 @@ public abstract class ConnectionMixin {
         return connection.isConnected() && this.flushQueue() && isReady(packet);
     }
 
-    private boolean isReady(Packet<?> p) {
-        if (p instanceof ClientboundLevelChunkWithLightPacket combinedPacket) {
-            return ((ClientboundLevelChunkPacketDataInterface) combinedPacket.getChunkData()).isReady();
+    private boolean isReady(Packet<?> packet) {
+        if (packet instanceof ClientboundLevelChunkWithLightPacket combinedPacket) {
+            return ((IChunkPacket) combinedPacket).isReady();
         } else {
             return true;
         }

@@ -9,7 +9,6 @@ import java.nio.file.Files;
 import java.util.Objects;
 
 public class Config {
-
     public static Toml toml;
 
     public static void loadConfig(File file) {
@@ -23,5 +22,4 @@ public class Config {
         }
         toml = new Toml().read(file);
     }
-
 }

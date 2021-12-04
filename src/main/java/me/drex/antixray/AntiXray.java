@@ -22,5 +22,4 @@ public class AntiXray implements DedicatedServerModInitializer {
         ServerLifecycleEvents.SERVER_STARTING.register(server -> minecraftServer = server);
         Config.loadConfig(FabricLoader.getInstance().getConfigDir().resolve("antixray.toml").toFile());
     }
-
 }

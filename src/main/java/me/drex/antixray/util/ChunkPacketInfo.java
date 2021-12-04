@@ -1,12 +1,12 @@
 package me.drex.antixray.util;
 
-import net.minecraft.network.protocol.game.ClientboundLevelChunkPacketData;
+import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.Palette;
 
 public class ChunkPacketInfo<T> {
 
-    private final ClientboundLevelChunkPacketData chunkPacketData;
+    private final ClientboundLevelChunkWithLightPacket chunkPacket;
     private final LevelChunk chunk;
     private final int[] bits;
     private final Object[] palettes;
@@ -14,8 +14,8 @@ public class ChunkPacketInfo<T> {
     private final Object[][] presetValues;
     private byte[] buffer;
 
-    public ChunkPacketInfo(ClientboundLevelChunkPacketData chunkPacket, LevelChunk chunk) {
-        this.chunkPacketData = chunkPacket;
+    public ChunkPacketInfo(ClientboundLevelChunkWithLightPacket chunkPacket, LevelChunk chunk) {
+        this.chunkPacket = chunkPacket;
         this.chunk = chunk;
         int sections = chunk.getSectionsCount();
         bits = new int[sections];
@@ -24,8 +24,8 @@ public class ChunkPacketInfo<T> {
         presetValues = new Object[sections][];
     }
 
-    public ClientboundLevelChunkPacketData getChunkPacketData() {
-        return chunkPacketData;
+    public ClientboundLevelChunkWithLightPacket getChunkPacket() {
+        return chunkPacket;
     }
 
     public LevelChunk getChunk() {

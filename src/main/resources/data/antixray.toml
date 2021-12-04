@@ -18,6 +18,6 @@ enabled = true
 engineMode = 1
 maxBlockHeight = 128
 updateRadius = 2
-lavaObscures = false
+lavaObscures = true
 hiddenBlocks = ["ancient_debris", "nether_quartz_ore", "nether_gold_ore"]
 replacementBlocks = ["netherrack"]

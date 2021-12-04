@@ -1,7 +1,6 @@
 package me.drex.antixray.config;
 
 import com.moandjiezana.toml.Toml;
-import me.drex.antixray.AntiXray;
 import me.drex.antixray.util.ChunkPacketBlockControllerAntiXray;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -10,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WorldConfig {
-
     public boolean enabled = false;
     public ChunkPacketBlockControllerAntiXray.EngineMode engineMode = ChunkPacketBlockControllerAntiXray.EngineMode.HIDE;
     public int maxBlockHeight = 64;
@@ -19,10 +17,8 @@ public class WorldConfig {
     public boolean usePermission = false;
     public List<String> hiddenBlocks = new ArrayList<>();
     public List<String> replacementBlocks = new ArrayList<>();
-    private ResourceLocation location;
 
     public WorldConfig(ResourceLocation location) {
-        this.location = location;
         Toml defaultToml = Config.toml;
         // Load default values
         this.loadValues(defaultToml);
@@ -38,16 +34,7 @@ public class WorldConfig {
         if (toml.contains("engineMode")) {
             ChunkPacketBlockControllerAntiXray.EngineMode mode = ChunkPacketBlockControllerAntiXray.EngineMode.getById(Math.toIntExact(toml.getLong("engineMode")));
             if (mode != null) {
-                if (mode == ChunkPacketBlockControllerAntiXray.EngineMode.OBFUSCATE) {
-                    this.engineMode = ChunkPacketBlockControllerAntiXray.EngineMode.HIDE;
-                    AntiXray.LOGGER.info("######################## ANTI XRAY ########################");
-                    AntiXray.LOGGER.info("DETECTED ENGINE MODE 2 FOR " + location.toString() + ".");
-                    AntiXray.LOGGER.info("FALLING BACK TO ENGINE MODE 1, ");
-                    AntiXray.LOGGER.info("BECAUSE ENGINE MODE 2 IS VERY UNSTABLE!!!");
-                    AntiXray.LOGGER.info("###########################################################");
-                } else {
-                    this.engineMode = mode;
-                }
+                this.engineMode = mode;
             }
         }
         if (toml.contains("maxBlockHeight")) {

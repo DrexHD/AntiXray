@@ -15,5 +15,4 @@ public interface ConnectionPacketHolderAccessor {
 
     @Accessor("listener")
     GenericFutureListener<? extends Future<? super Void>> getListener();
-
 }

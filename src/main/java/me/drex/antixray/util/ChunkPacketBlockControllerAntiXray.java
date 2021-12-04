@@ -184,8 +184,13 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
         LevelChunk chunk = chunkPacketInfo.getChunk();
         int x = chunk.getPos().x;
         int z = chunk.getPos().z;
-        Level level = chunk.getLevel();
-        ((ChunkPacketInfoAntiXray) chunkPacketInfo).setNearbyChunks(ChunkManager.getChunkIfLoaded(level, x - 1, z), ChunkManager.getChunkIfLoaded(level, x + 1, z), ChunkManager.getChunkIfLoaded(level, x, z - 1), ChunkManager.getChunkIfLoaded(level, x, z + 1));
+        ChunkSource source = chunk.getLevel().getChunkSource();
+        ((ChunkPacketInfoAntiXray) chunkPacketInfo).setNearbyChunks(
+                source.getChunk(x - 1, z, false),
+                source.getChunk(x + 1, z, false),
+                source.getChunk(x, z - 1, false),
+                source.getChunk(x, z + 1, false)
+        );
         executor.execute((Runnable) chunkPacketInfo);
     }
 
@@ -612,11 +617,12 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
         }
     }
 
-    private void updateBlock(Level level, BlockPos blockPos) {
-        BlockState blockState = ChunkManager.getStateIfLoaded(level, blockPos);
-
-        if (blockState != null && obfuscateGlobal.getOrDefault(blockState, false)) {
-            ((ServerLevel) level).getChunkSource().blockChanged(blockPos);
+    private void updateBlock(Level level, BlockPos pos) {
+        LevelChunk chunk = level.getChunkSource().getChunk(pos.getX() >> 4, pos.getZ() >> 4, false);
+        if (chunk != null) {
+            if (obfuscateGlobal.getOrDefault(chunk.getBlockState(pos), false)) {
+                ((ServerLevel) level).getChunkSource().blockChanged(pos);
+            }
         }
     }
 

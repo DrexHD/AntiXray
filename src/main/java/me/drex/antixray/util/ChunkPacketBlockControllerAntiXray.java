@@ -46,10 +46,12 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
     private final BlockState[] presetBlockStates;
     private final BlockState[] presetBlockStatesFull;
     private final BlockState[] presetBlockStatesStone;
+    private final BlockState[] presetBlockStatesDeepslate;
     private final BlockState[] presetBlockStatesNetherrack;
     private final BlockState[] presetBlockStatesEndStone;
     private final int[] presetBlockStateBitsGlobal;
     private final int[] presetBlockStateBitsStoneGlobal;
+    private final int[] presetBlockStateBitsDeepslateGlobal;
     private final int[] presetBlockStateBitsNetherrackGlobal;
     private final int[] presetBlockStateBitsEndStoneGlobal;
     private final Object2BooleanOpenHashMap<BlockState> solidGlobal = new Object2BooleanOpenHashMap<>(Block.BLOCK_STATE_REGISTRY.size());
@@ -73,10 +75,12 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
             presetBlockStates = null;
             presetBlockStatesFull = null;
             presetBlockStatesStone = new BlockState[]{Blocks.STONE.defaultBlockState()};
+            presetBlockStatesDeepslate = new BlockState[]{Blocks.DEEPSLATE.defaultBlockState()};
             presetBlockStatesNetherrack = new BlockState[]{Blocks.NETHERRACK.defaultBlockState()};
             presetBlockStatesEndStone = new BlockState[]{Blocks.END_STONE.defaultBlockState()};
             presetBlockStateBitsGlobal = null;
             presetBlockStateBitsStoneGlobal = new int[]{GLOBAL_BLOCKSTATE_PALETTE.idFor(Blocks.STONE.defaultBlockState())};
+            presetBlockStateBitsDeepslateGlobal = new int[]{GLOBAL_BLOCKSTATE_PALETTE.idFor(Blocks.DEEPSLATE.defaultBlockState())};
             presetBlockStateBitsNetherrackGlobal = new int[]{GLOBAL_BLOCKSTATE_PALETTE.idFor(Blocks.NETHERRACK.defaultBlockState())};
             presetBlockStateBitsEndStoneGlobal = new int[]{GLOBAL_BLOCKSTATE_PALETTE.idFor(Blocks.END_STONE.defaultBlockState())};
         } else {
@@ -99,6 +103,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
             presetBlockStates = presetBlockStateSet.isEmpty() ? new BlockState[]{Blocks.DIAMOND_ORE.defaultBlockState()} : presetBlockStateSet.toArray(new BlockState[0]);
             presetBlockStatesFull = presetBlockStateSet.isEmpty() ? new BlockState[]{Blocks.DIAMOND_ORE.defaultBlockState()} : presetBlockStateList.toArray(new BlockState[0]);
             presetBlockStatesStone = null;
+            presetBlockStatesDeepslate = null;
             presetBlockStatesNetherrack = null;
             presetBlockStatesEndStone = null;
             presetBlockStateBitsGlobal = new int[presetBlockStatesFull.length];
@@ -108,6 +113,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
             }
 
             presetBlockStateBitsStoneGlobal = null;
+            presetBlockStateBitsDeepslateGlobal = null;
             presetBlockStateBitsNetherrackGlobal = null;
             presetBlockStateBitsEndStoneGlobal = null;
         }
@@ -153,7 +159,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
                 } else if (resourceKey.equals(Level.END)) {
                     return presetBlockStatesEndStone;
                 } else {
-                    return new BlockState[]{bottomBlockY >= 0 ? Blocks.STONE.defaultBlockState() : Blocks.DEEPSLATE.defaultBlockState()};
+                    return bottomBlockY >= 0 ? presetBlockStatesStone : presetBlockStatesDeepslate;
                 }
             }
 
@@ -244,7 +250,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
                         } else if (resourceKey.equals(Level.END)) {
                             presetBlockStateBitsTemp = presetBlockStateBitsEndStoneGlobal;
                         } else {
-                            presetBlockStateBitsTemp = presetBlockStateBitsStoneGlobal;
+                            presetBlockStateBitsTemp = (chunkSectionIndex + chunk.getMinSection() >= 0) ? presetBlockStateBitsStoneGlobal : presetBlockStateBitsDeepslateGlobal;
                         }
                     } else {
                         presetBlockStateBitsTemp = presetBlockStateBitsGlobal;
@@ -619,10 +625,8 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
 
     private void updateBlock(Level level, BlockPos pos) {
         LevelChunk chunk = level.getChunkSource().getChunk(pos.getX() >> 4, pos.getZ() >> 4, false);
-        if (chunk != null) {
-            if (obfuscateGlobal.getOrDefault(chunk.getBlockState(pos), false)) {
-                ((ServerLevel) level).getChunkSource().blockChanged(pos);
-            }
+        if (chunk != null && obfuscateGlobal.getOrDefault(chunk.getBlockState(pos), false)) {
+            ((ServerLevel) level).getChunkSource().blockChanged(pos);
         }
     }
 
@@ -631,11 +635,9 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
         OBFUSCATE(2, "obfuscate");
 
         private final int id;
-        private final String description;
 
         EngineMode(int id, String description) {
             this.id = id;
-            this.description = description;
         }
 
         public static EngineMode getById(int id) {

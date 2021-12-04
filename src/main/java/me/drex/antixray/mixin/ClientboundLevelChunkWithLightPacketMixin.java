@@ -38,7 +38,6 @@ public abstract class ClientboundLevelChunkWithLightPacketMixin implements IChun
         final ChunkPacketBlockController controller = Util.getBlockController(chunk.getLevel());
         final ChunkPacketInfo<BlockState> packetInfo = controller.getChunkPacketInfo(packet, chunk);
         ((IChunkPacketData) this.chunkData).customExtractChunkData(packetInfo);
-
         controller.modifyBlocks(packet, packetInfo);
     }
 

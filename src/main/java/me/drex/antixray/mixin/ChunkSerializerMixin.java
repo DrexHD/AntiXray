@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-@Mixin(ChunkSerializer.class)
+@Mixin(value = ChunkSerializer.class, priority = 1500)
 public abstract class ChunkSerializerMixin {
 
     @SuppressWarnings("unchecked")

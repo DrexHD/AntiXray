@@ -1,0 +1,29 @@
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+}
+
+dependencies {
+    // We depend on fabric loader here to use the the mixin dependencies
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+
+    // TOML
+    implementation("com.moandjiezana.toml:toml4j:${rootProject.toml_version}")
+}
+
+loom {
+    accessWidenerPath = gradle.rootProject.project("fabric").file("src/main/resources/antixray.accesswidener")
+}
+
+architectury {
+    common()
+}
+
+afterEvaluate {
+    remapJar {
+        remapAccessWidener.set(false)
+    }
+}

@@ -1,0 +1,35 @@
+modLoader = "javafml"
+loaderVersion = "[38,)"
+#issueTrackerURL = ""
+license = "MIT"
+
+[[mods]]
+modId = "antixray"
+version = "${version}"
+displayName = "AntiXray"
+authors = "Drex"
+description = '''
+This mod implements Papers 0367-Anti-Xray.patch!
+'''
+#logoFile = ""
+
+[[dependencies.antixray]]
+modId = "forge"
+mandatory = true
+versionRange = "[38,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.antixray]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.18,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.antixray]]
+modId = "architectury"
+mandatory = true
+versionRange = "[3.2.57,)"
+ordering = "AFTER"
+side = "BOTH"

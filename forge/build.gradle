@@ -1,0 +1,60 @@
+plugins {
+    id "com.github.johnrengelman.shadow" version "7.1.1" // Use Shadow to make a JAR with dependencies
+}
+
+architectury {
+    platformSetupLoomIde()
+    forge() // Tells Architectury this is a Forge mod
+}
+
+loom {
+    // Configure mixin location
+    forge {
+        mixinConfigs = ["antixray.mixins.json"]
+    }
+}
+
+configurations {
+    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+}
+
+repositories {}
+
+dependencies {
+    forge "net.minecraftforge:forge:${rootProject.forge_version}"
+
+    // Tells Gradle to use the common directory
+    implementation(project(path: ":common")) { transitive = false }
+    developmentForge(project(path: ":common")) { transitive = false }
+    // Tells Gradle to include the common directory in the JAR file
+    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+
+    // Include TOML in the jar
+    shadowCommon("com.moandjiezana.toml:toml4j:${rootProject.toml_version}") {
+        exclude(module: "gson")
+    }
+
+}
+
+processResources {
+    // Replaces the version in mods.toml with the project version
+    inputs.property "version", project.version
+
+    filesMatching("META-INF/mods.toml") {
+        expand "version": project.version
+    }
+}
+
+shadowJar {
+    // Excludes these files from the JAR file
+    exclude "antixray.accesswidener"
+
+    configurations = [project.configurations.shadowCommon]
+    classifier "dev-shadow"
+}
+
+remapJar {
+    dependsOn(shadowJar)
+    input.set(shadowJar.archivePath)
+    archiveClassifier.set("Forge-${rootProject.minecraft_version}")
+}

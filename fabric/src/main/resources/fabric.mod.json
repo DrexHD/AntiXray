@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "antixray",
+  "version": "${version}",
+  "name": "AntiXray",
+  "description": "This mod implements Papers 0367-Anti-Xray.patch!",
+  "authors": [
+    "Drex"
+  ],
+  "contact": {
+    "sources": "https://github.com/DrexHD/AntiXray"
+  },
+  "license": "MIT",
+  "environment": "server",
+  "entrypoints": {
+    "server": [
+      "me.drex.antixray.fabric.AntiXrayImpl"
+    ]
+  },
+  "mixins": [
+    "antixray.mixins.json"
+  ],
+  "accessWidener": "antixray.accesswidener",
+  "depends": {
+    "fabricloader": ">=0.12.6",
+    "minecraft": ">=1.18",
+    "java": ">=17"
+  }
+}

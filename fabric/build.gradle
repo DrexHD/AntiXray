@@ -1,0 +1,52 @@
+plugins {
+    id "com.github.johnrengelman.shadow" version "7.1.1" // Use Shadow to make a JAR with dependencies
+}
+
+architectury {
+    platformSetupLoomIde()
+    fabric() // Tells Architectury this is a Fabric mod
+}
+
+loom {
+    accessWidenerPath = file("src/main/resources/antixray.accessWidener")
+}
+
+configurations {
+    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+}
+
+repositories {}
+
+dependencies {
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+
+    // Tells Gradle to use the common directory
+    implementation(project(path: ":common")) { transitive = false }
+    developmentFabric(project(path: ":common")) { transitive = false }
+    // Tells Gradle to include the common directory in the JAR file
+    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive = false }
+
+    // Include TOML in the jar
+    shadowCommon("com.moandjiezana.toml:toml4j:${rootProject.toml_version}") {
+        exclude(module: "gson")
+    }}
+
+processResources {
+    // Replaces the version in fabric.mod.json with the project version
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+shadowJar {
+    configurations = [project.configurations.shadowCommon]
+    classifier "dev-shadow"
+}
+
+remapJar {
+    dependsOn(shadowJar)
+    input.set(shadowJar.archivePath)
+    archiveClassifier.set("Fabric-${rootProject.minecraft_version}")
+}

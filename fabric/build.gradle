@@ -8,7 +8,7 @@ architectury {
 }
 
 loom {
-    accessWidenerPath = file("src/main/resources/antixray.accessWidener")
+    accessWidenerPath.set(file("src/main/resources/antixray.accesswidener"))
 }
 
 configurations {

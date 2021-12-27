@@ -15,7 +15,7 @@ dependencies {
 }
 
 loom {
-    accessWidenerPath = gradle.rootProject.project("fabric").file("src/main/resources/antixray.accesswidener")
+    accessWidenerPath.set(gradle.rootProject.project("fabric").file("src/main/resources/antixray.accesswidener"))
 }
 
 architectury {

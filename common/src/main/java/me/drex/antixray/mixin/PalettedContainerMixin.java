@@ -14,7 +14,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.chunk.Palette;
 import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.level.chunk.storage.ChunkSerializer;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -56,7 +55,7 @@ public abstract class PalettedContainerMixin<T> implements IPalettedContainer<T>
     public abstract int onResize(int i, T object);
 
     @Shadow
-    protected abstract PalettedContainer.Data<T> createOrReuseData(PalettedContainer.@Nullable Data<T> data, int i);
+    protected abstract PalettedContainer.Data<T> createOrReuseData(PalettedContainer.Data<T> data, int i);
 
     @Inject(
             method = "<init>(Lnet/minecraft/core/IdMap;Lnet/minecraft/world/level/chunk/PalettedContainer$Strategy;Lnet/minecraft/world/level/chunk/PalettedContainer$Configuration;Lnet/minecraft/util/BitStorage;Ljava/util/List;)V",

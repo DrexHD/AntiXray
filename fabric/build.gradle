@@ -1,52 +1,52 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "7.1.1" // Use Shadow to make a JAR with dependencies
+    id 'fabric-loom' version '0.11-SNAPSHOT'
+    id 'idea'
 }
 
-architectury {
-    platformSetupLoomIde()
-    fabric() // Tells Architectury this is a Fabric mod
+archivesBaseName = "${rootProject.archives_base_name}-${rootProject.mod_version}-Fabric-${rootProject.minecraft_version}"
+
+dependencies {
+    minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+    implementation project(":common")
+    include("com.moandjiezana.toml:toml4j:${rootProject.toml_version}")
 }
 
 loom {
-    accessWidenerPath.set(file("src/main/resources/antixray.accesswidener"))
+    runs {
+        client {
+            client()
+            setConfigName("Fabric Client")
+            ideConfigGenerated(true)
+            runDir("run")
+        }
+        server {
+            server()
+            setConfigName("Fabric Server")
+            ideConfigGenerated(true)
+            runDir("run")
+        }
+    }
+    accessWidenerPath.set(project(":fabric").file("src/main/resources/antixray.accesswidener"))
 }
 
-configurations {
-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
-}
-
-repositories {}
-
-dependencies {
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-
-    // Tells Gradle to use the common directory
-    implementation(project(path: ":common")) { transitive = false }
-    developmentFabric(project(path: ":common")) { transitive = false }
-    // Tells Gradle to include the common directory in the JAR file
-    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive = false }
-
-    // Include TOML in the jar
-    shadowCommon("com.moandjiezana.toml:toml4j:${rootProject.toml_version}") {
-        exclude(module: "gson")
-    }}
 
 processResources {
-    // Replaces the version in fabric.mod.json with the project version
-    inputs.property "version", project.version
+    inputs.property "version", rootProject.mod_version
 
     filesMatching("fabric.mod.json") {
-        expand "version": project.version
+        expand "version": rootProject.mod_version
     }
+    from project(":common").sourceSets.main.resources
 }
 
-shadowJar {
-    configurations = [project.configurations.shadowCommon]
-    classifier "dev-shadow"
+tasks.withType(JavaCompile) {
+    source(project(":common").sourceSets.main.allSource)
 }
 
-remapJar {
-    dependsOn(shadowJar)
-    input.set(shadowJar.archivePath)
-    archiveClassifier.set("Fabric-${rootProject.minecraft_version}")
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.archivesBaseName}" }
+    }
 }

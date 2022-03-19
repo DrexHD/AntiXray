@@ -14,7 +14,7 @@
   "environment": "server",
   "entrypoints": {
     "server": [
-      "me.drex.antixray.fabric.AntiXrayImpl"
+      "me.drex.antixray.fabric.AntiXrayMod"
     ]
   },
   "mixins": [

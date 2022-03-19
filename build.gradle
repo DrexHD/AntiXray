@@ -1,45 +1,32 @@
-plugins {
-    id "architectury-plugin" version "3.4-SNAPSHOT" // Uses Architectury plugin https://github.com/architectury/architectury-plugin
-    id "dev.architectury.loom" version "0.10.0-SNAPSHOT" apply false // Uses Architectury Loom
-    // (fork of Fabric Loom) https://github.com/architectury/architectury-loom - does not apply to root project
-}
-
-architectury {
-    minecraft = rootProject.minecraft_version // Sets Minecraft version from gradle.properties
-}
-
 subprojects {
-    apply plugin: "dev.architectury.loom" // Applies Architectury Loom to subprojects
 
-    loom {
-        silentMojangMappingsLicense() // Silences the annoying as hell Mojang License text
+    apply plugin: 'java'
+
+    java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+    java.withSourcesJar()
+
+    repositories {
+        mavenCentral()
+        maven {
+            name = 'Sponge / Mixin'
+            url = 'https://repo.spongepowered.org/repository/maven-public/'
+        }
     }
 
     dependencies {
-        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}" // Minecraft dependency
-        mappings loom.officialMojangMappings() // Maps Minecraft so we can tell what classes are what - official mappings
+        implementation("com.moandjiezana.toml:toml4j:${rootProject.toml_version}")
     }
-}
 
-allprojects {
-    apply plugin: "java"
-    apply plugin: "architectury-plugin" // Applies architectury plugin to all projects
-
-    archivesBaseName = rootProject.archives_base_name // sets the archive name from gradle.properties
-    version = rootProject.mod_version // sets the version from gradle.properties
-    group = rootProject.maven_group // sets the maven group from gradle.properties
-
-    java {
-        withSourcesJar()
-    }
 
     tasks.withType(JavaCompile).configureEach {
-        it.options.encoding = "UTF-8"
+        it.options.encoding = 'UTF-8'
         it.options.release = 17
     }
 
-    compileJava {
-        options.compilerArgs +=	"-Xlint:-processing" // Fixes "no processor claimed any of these annotations" warning
+    // Disables Gradle's custom module metadata from being published to maven. The
+    // metadata includes mapped dependencies which are not reasonably consumable by
+    // other mod developers.
+    tasks.withType(GenerateModuleMetadata) {
+        enabled = false
     }
-
 }

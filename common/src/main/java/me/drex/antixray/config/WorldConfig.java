@@ -3,7 +3,6 @@ package me.drex.antixray.config;
 import com.moandjiezana.toml.Toml;
 import me.drex.antixray.util.ChunkPacketBlockControllerAntiXray;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +28,7 @@ public class WorldConfig {
         }
     }
 
-    private void loadValues(@NotNull Toml toml) {
+    private void loadValues(Toml toml) {
         if (toml.contains("enabled")) this.enabled = toml.getBoolean("enabled");
         if (toml.contains("engineMode")) {
             ChunkPacketBlockControllerAntiXray.EngineMode mode = ChunkPacketBlockControllerAntiXray.EngineMode.getById(Math.toIntExact(toml.getLong("engineMode")));

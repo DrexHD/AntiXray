@@ -7,7 +7,6 @@ import me.drex.antixray.interfaces.IChunkPacket;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -27,7 +26,7 @@ public abstract class ConnectionMixin {
     private Queue<Connection.PacketHolder> queue;
 
     @Shadow
-    protected abstract void sendPacket(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> genericFutureListener);
+    protected abstract void sendPacket(Packet<?> packet, GenericFutureListener<? extends Future<? super Void>> genericFutureListener);
 
     private boolean flushQueue() {
         if (this.channel != null && this.channel.isOpen()) {
@@ -79,7 +78,7 @@ public abstract class ConnectionMixin {
                     target = "Lnet/minecraft/network/Connection;isConnected()Z"
             )
     )
-    public boolean redirectIfStatement(Connection connection, Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> callback) {
+    public boolean redirectIfStatement(Connection connection, Packet<?> packet, GenericFutureListener<? extends Future<? super Void>> callback) {
         return connection.isConnected() && this.flushQueue() && isReady(packet);
     }
 

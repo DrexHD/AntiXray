@@ -1,60 +1,122 @@
-plugins {
-    id "com.github.johnrengelman.shadow" version "7.1.1" // Use Shadow to make a JAR with dependencies
-}
-
-architectury {
-    platformSetupLoomIde()
-    forge() // Tells Architectury this is a Forge mod
-}
-
-loom {
-    // Configure mixin location
-    forge {
-        mixinConfigs = ["antixray.mixins.json"]
+buildscript {
+    repositories {
+        maven { url = 'https://maven.minecraftforge.net' }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath 'org.spongepowered:mixingradle:0.7.+'
     }
 }
 
-configurations {
-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+plugins {
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'java'
 }
 
-repositories {}
+repositories {
+    mavenCentral()
+}
+
+apply plugin: 'java'
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
+apply plugin: 'org.spongepowered.mixin'
+
+archivesBaseName = "${rootProject.archives_base_name}-${rootProject.mod_version}-Forge-${rootProject.minecraft_version}"
+
+minecraft {
+    mappings channel: 'official', version: minecraft_version
+
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName 'Client'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            mods {
+                modClientRun {
+                    source sourceSets.main
+                    source project(":common").sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName 'Server'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            mods {
+                modServerRun {
+                    source sourceSets.main
+                    source project(":common").sourceSets.main
+                }
+            }
+        }
+
+        data {
+            workingDirectory project.file('run')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            args '--mod', 'antixray', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            taskName 'Data'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            mods {
+                modDataRun {
+                    source sourceSets.main
+                    source project(":common").sourceSets.main
+                }
+            }
+        }
+    }
+}
 
 dependencies {
-    forge "net.minecraftforge:forge:${rootProject.forge_version}"
-
-    // Tells Gradle to use the common directory
-    implementation(project(path: ":common")) { transitive = false }
-    developmentForge(project(path: ":common")) { transitive = false }
-    // Tells Gradle to include the common directory in the JAR file
-    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
-
-    // Include TOML in the jar
-    shadowCommon("com.moandjiezana.toml:toml4j:${rootProject.toml_version}") {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    compileOnly project(":common")
+    shadow ("com.moandjiezana.toml:toml4j:${rootProject.toml_version}") {
         exclude(module: "gson")
     }
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+}
 
+mixin {
+    add sourceSets.main, "antixray.refmap.json"
+    config "antixray.mixins.json"
+}
+
+tasks.withType(JavaCompile) {
+    source(project(":common").sourceSets.main.allSource)
 }
 
 processResources {
-    // Replaces the version in mods.toml with the project version
-    inputs.property "version", project.version
+    inputs.property "version", rootProject.mod_version
 
     filesMatching("META-INF/mods.toml") {
-        expand "version": project.version
+        expand "version": rootProject.mod_version
     }
+
+    from project(":common").sourceSets.main.resources
 }
 
 shadowJar {
-    // Excludes these files from the JAR file
-    exclude "antixray.accesswidener"
-
-    configurations = [project.configurations.shadowCommon]
-    classifier "dev-shadow"
+    configurations = [project.configurations.shadow]
+    minimize()
+    classifier "" // Shadowed jar should be the main jar
 }
 
-remapJar {
-    dependsOn(shadowJar)
-    input.set(shadowJar.archivePath)
-    archiveClassifier.set("Forge-${rootProject.minecraft_version}")
+reobf {
+    shadowJar {} // Reobfuscate the shadowed JAR
 }
+
+tasks.shadowJar.dependsOn tasks.processResources
+shadowJar.dependsOn('classes')
+jar.finalizedBy('reobfJar')

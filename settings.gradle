@@ -15,4 +15,4 @@ pluginManagement {
 rootProject.name = 'AntiXray'
 include "common"
 include "fabric"
-include "forge"
+//include "forge"

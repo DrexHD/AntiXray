@@ -3,6 +3,7 @@ package me.drex.antixray.mixin;
 import com.mojang.serialization.Codec;
 import me.drex.antixray.interfaces.IPalettedContainer;
 import me.drex.antixray.util.Util;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -32,10 +33,10 @@ public abstract class ChunkSerializerMixin {
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
-    private static void addPresetValues(ServerLevel serverLevel, PoiManager poiManager, ChunkPos chunkPos, CompoundTag compoundTag, CallbackInfoReturnable<ProtoChunk> cir, ChunkPos chunkPos2, UpgradeData upgradeData, boolean bl, ListTag listTag, int i, LevelChunkSection[] levelChunkSections, boolean bl2, ChunkSource chunkSource, LevelLightEngine levelLightEngine, Registry registry, Codec codec, int j, CompoundTag compoundTag2, int k, int l, PalettedContainer<BlockState> palettedContainer, PalettedContainer<Biome> palettedContainer2, LevelChunkSection levelChunkSection) {
-        final IPalettedContainer<BlockState> container = (IPalettedContainer<BlockState>) palettedContainer;
+    private static void addPresetValues(ServerLevel serverLevel, PoiManager poiManager, ChunkPos chunkPos, CompoundTag compoundTag, CallbackInfoReturnable<ProtoChunk> cir, ChunkPos chunkPos2, UpgradeData upgradeData, boolean b, ListTag listTag, int i, LevelChunkSection[] levelChunkSections, boolean b2, ChunkSource chunkSource, LevelLightEngine levelLightEngine, Registry<Biome> registry, Codec<PalettedContainer<Holder<Biome>>> codec, boolean b3, int j, CompoundTag tag, int k, int l, PalettedContainer<BlockState> blockStatePalette, PalettedContainer<Biome> biomePalette, LevelChunkSection levelChunkSection) {
+        final IPalettedContainer<BlockState> container = (IPalettedContainer<BlockState>) blockStatePalette;
         final BlockState[] presetValues = Util.getBlockController(serverLevel).getPresetBlockStates(serverLevel, k << 4);
-        if (compoundTag2.contains("block_states", 10)) {
+        if (tag.contains("block_states", 10)) {
             container.addPresetValuesWithEntries(presetValues);
         } else {
             container.addPresetValues(presetValues);

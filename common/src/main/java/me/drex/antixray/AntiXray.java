@@ -15,6 +15,7 @@ public abstract class AntiXray {
     public AntiXray(Platform platform) {
         AntiXray.platform = platform;
         Config.loadConfig(getConfigDirectory().resolve("antixray.toml").toFile());
+        LOGGER.info("Successfully initialized {} on {}", MOD_ID, platform.name().toLowerCase());
     }
 
     public abstract Path getConfigDirectory();

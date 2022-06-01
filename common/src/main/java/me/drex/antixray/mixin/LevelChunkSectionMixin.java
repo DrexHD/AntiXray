@@ -5,12 +5,14 @@ import me.drex.antixray.interfaces.ILevel;
 import me.drex.antixray.interfaces.IPalettedContainer;
 import me.drex.antixray.util.ChunkPacketBlockController;
 import me.drex.antixray.util.ChunkPacketInfo;
+import net.minecraft.core.Holder;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.chunk.PalettedContainer;
+import net.minecraft.world.level.chunk.PalettedContainerRO;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -24,7 +26,7 @@ public abstract class LevelChunkSectionMixin implements IChunkSection {
 
     @Shadow
     @Final
-    private PalettedContainer<Biome> biomes;
+    private PalettedContainerRO<Holder<Biome>> biomes;
 
     @Shadow
     private short nonEmptyBlockCount;

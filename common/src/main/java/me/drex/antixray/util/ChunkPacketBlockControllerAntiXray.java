@@ -12,6 +12,8 @@ import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ChunkHolder;
+import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.world.level.ChunkPos;
@@ -178,7 +180,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
 
     @Override
     public void modifyBlocks(ClientboundLevelChunkWithLightPacket chunkPacket, ChunkPacketInfo<BlockState> chunkPacketInfo) {
-        if (!(chunkPacketInfo instanceof ChunkPacketInfoAntiXray)) {
+        if (!(chunkPacketInfo instanceof ChunkPacketInfoAntiXray antiXrayInfo)) {
             ((IChunkPacket) chunkPacket).setReady(true);
             return;
         }
@@ -193,14 +195,30 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
         LevelChunk chunk = chunkPacketInfo.getChunk();
         int x = chunk.getPos().x;
         int z = chunk.getPos().z;
-        ChunkSource source = chunk.getLevel().getChunkSource();
-        ((ChunkPacketInfoAntiXray) chunkPacketInfo).setNearbyChunks(
-                source.getChunk(x - 1, z, false),
-                source.getChunk(x + 1, z, false),
-                source.getChunk(x, z - 1, false),
-                source.getChunk(x, z + 1, false)
+        ServerChunkCache chunkCache = ((ServerLevel) chunk.getLevel()).getChunkSource();
+        antiXrayInfo.setNearbyChunks(
+                getChunkAccess(chunkCache, x - 1, z),
+                getChunkAccess(chunkCache, x + 1, z),
+                getChunkAccess(chunkCache, x, z - 1),
+                getChunkAccess(chunkCache, x, z + 1)
         );
         executor.execute((Runnable) chunkPacketInfo);
+    }
+
+    private ChunkAccess getChunkAccess(ServerChunkCache chunkCache, int chunkX, int chunkZ) {
+        ChunkHolder chunkHolder = chunkCache.getVisibleChunkIfPresent(ChunkPos.asLong(chunkX, chunkZ));
+        if (chunkHolder != null) {
+            ChunkAccess chunkAccess = chunkHolder.getLastAvailable();
+            if (chunkAccess != null) {
+                return chunkAccess;
+            } else {
+                AntiXray.LOGGER.warn("Chunk at [{}, {}] not available, falling back to getChunk", chunkX, chunkZ);
+            }
+        } else {
+            AntiXray.LOGGER.warn("Chunk at [{}, {}] not visible, falling back to getChunk", chunkX, chunkZ);
+        }
+        // Slow fallback
+        return chunkCache.getChunk(chunkX, chunkZ, ChunkStatus.LIGHT, true);
     }
 
     public void obfuscate(ChunkPacketInfoAntiXray chunkPacketInfoAntiXray) {

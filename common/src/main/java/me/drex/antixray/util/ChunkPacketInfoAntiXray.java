@@ -2,23 +2,24 @@ package me.drex.antixray.util;
 
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
 
 public final class ChunkPacketInfoAntiXray extends ChunkPacketInfo<BlockState> implements Runnable {
 
     private final ChunkPacketBlockControllerAntiXray chunkPacketBlockControllerAntiXray;
-    private LevelChunk[] nearbyChunks;
+    private ChunkAccess[] nearbyChunks;
 
     public ChunkPacketInfoAntiXray(ClientboundLevelChunkWithLightPacket chunkPacket, LevelChunk chunk, ChunkPacketBlockControllerAntiXray chunkPacketBlockControllerAntiXray) {
         super(chunkPacket, chunk);
         this.chunkPacketBlockControllerAntiXray = chunkPacketBlockControllerAntiXray;
     }
 
-    public LevelChunk[] getNearbyChunks() {
+    public ChunkAccess[] getNearbyChunks() {
         return nearbyChunks;
     }
 
-    public void setNearbyChunks(LevelChunk... nearbyChunks) {
+    public void setNearbyChunks(ChunkAccess... nearbyChunks) {
         this.nearbyChunks = nearbyChunks;
     }
 

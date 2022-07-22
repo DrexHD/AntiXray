@@ -178,6 +178,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
 
     @Override
     public void modifyBlocks(ClientboundLevelChunkWithLightPacket chunkPacket, ChunkPacketInfo<BlockState> chunkPacketInfo) {
+        AntiXray.LOGGER.info("Modifying packet for chunk at [{}, {}]", chunkPacket.getX(), chunkPacket.getZ());
         if (!(chunkPacketInfo instanceof ChunkPacketInfoAntiXray)) {
             ((IChunkPacket) chunkPacket).setReady(true);
             return;

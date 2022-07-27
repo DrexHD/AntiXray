@@ -1,10 +1,9 @@
 package me.drex.antixray.mixin;
 
 import io.netty.channel.Channel;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
 import me.drex.antixray.interfaces.IChunkPacket;
 import net.minecraft.network.Connection;
+import net.minecraft.network.PacketSendListener;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import org.spongepowered.asm.mixin.Final;
@@ -25,8 +24,7 @@ public abstract class ConnectionMixin {
     @Final
     private Queue<Connection.PacketHolder> queue;
 
-    @Shadow
-    protected abstract void sendPacket(Packet<?> packet, GenericFutureListener<? extends Future<? super Void>> genericFutureListener);
+    @Shadow protected abstract void sendPacket(Packet<?> $$0, PacketSendListener $$1);
 
     private boolean flushQueue() {
         if (this.channel != null && this.channel.isOpen()) {
@@ -60,7 +58,7 @@ public abstract class ConnectionMixin {
     }
 
     @Redirect(
-            method = "send(Lnet/minecraft/network/protocol/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V",
+            method = "send(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketSendListener;)V",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/network/Connection;flushQueue()V"
@@ -72,13 +70,13 @@ public abstract class ConnectionMixin {
     }
 
     @Redirect(
-            method = "send(Lnet/minecraft/network/protocol/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V",
+            method = "send(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketSendListener;)V",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/network/Connection;isConnected()Z"
             )
     )
-    public boolean redirectIfStatement(Connection connection, Packet<?> packet, GenericFutureListener<? extends Future<? super Void>> callback) {
+    public boolean redirectIfStatement(Connection connection, Packet<?> packet, PacketSendListener listener) {
         return connection.isConnected() && this.flushQueue() && isReady(packet);
     }
 

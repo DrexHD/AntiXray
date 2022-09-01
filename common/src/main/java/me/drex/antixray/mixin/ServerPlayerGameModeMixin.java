@@ -19,7 +19,11 @@ public abstract class ServerPlayerGameModeMixin {
 
     @Inject(
             method = "handleBlockBreakAction",
-            at = @At("TAIL")
+            at = @At(
+                    value = "FIELD",
+                    target = "Lnet/minecraft/server/level/ServerPlayerGameMode;lastSentState:I",
+                    ordinal = 0
+            )
     )
     public void onPlayerBreakBlock(BlockPos blockPos, ServerboundPlayerActionPacket.Action action, Direction direction, int i, int j, CallbackInfo ci) {
         Util.getBlockController(this.level).onPlayerLeftClickBlock((ServerPlayerGameMode) (Object) this, blockPos, action, direction, i);

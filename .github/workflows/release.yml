@@ -1,0 +1,55 @@
+name: release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*.*.*-1.*'
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Grant execute permission to gradlew
+        run: chmod +x gradlew
+      - name: Build with Gradle
+        run: ./gradlew build
+      - name: Set up Environment Variables
+        run: |
+          echo "MINECRAFT_VERSION="$(grep 'minecraft_version' gradle.properties | cut -f2- -d=)"" >> $GITHUB_ENV
+          echo "MOD_VERSION="$(grep 'mod_version' gradle.properties | cut -f2- -d=)"" >> $GITHUB_ENV
+          echo "ARCHIVE_BASE_NAME="$(grep 'archives_base_name' gradle.properties | cut -f2- -d=)"" >> $GITHUB_ENV
+      - name: Install changelog parser
+        uses: taiki-e/install-action@parse-changelog
+      - name: Parse changelog
+        run: parse-changelog CHANGELOG.md ${{ env.MOD_VERSION }} > changes.md
+      - name: Release Forge
+        uses: Kir-Antipov/mc-publish@v3.1
+        with:
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          changelog-file: changes.md
+          name: ${{ env.ARCHIVE_BASE_NAME }}-${{ env.MOD_VERSION }}-Forge-${{ env.MINECRAFT_VERSION }}.jar
+          files: forge/build/libs/!(*-@(dev|sources)).jar
+      - name: Release Fabric
+        uses: Kir-Antipov/mc-publish@v3.1
+        with:
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          changelog-file: changes.md
+          name: ${{ env.ARCHIVE_BASE_NAME }}-${{ env.MOD_VERSION }}-Fabric-${{ env.MINECRAFT_VERSION }}.jar
+          files: fabric/build/libs/!(*-@(dev|sources)).jar
+      - name: Release to GitHub
+      uses: Kir-Antipov/mc-publish@v3.0
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        files: {forge,fabric}/build/libs/!(*-@(dev|sources)).jar
+        changelog-file: changes.md
+        name: AntiXray ${{ env.MOD_VERSION }} for ${{ env.MINECRAFT_VERSION }}

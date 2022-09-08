@@ -26,3 +26,7 @@ mandatory=true
 versionRange="[1.19.1]"
 ordering="NONE"
 side="BOTH"
+
+[custom.mc-publish]
+modrinth="sml2FMaA"
+curseforge=560511

@@ -17,6 +17,15 @@
       "me.drex.antixray.fabric.AntiXrayMod"
     ]
   },
+  "custom": {
+    "modmanager": {
+      "curseforge": 511697,
+      "modrinth": "sml2FMaA"
+    },
+    "mc-publish": {
+      "quilt": true
+    }
+  },
   "mixins": [
     "antixray.mixins.json"
   ],

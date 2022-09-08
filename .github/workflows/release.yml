@@ -36,7 +36,7 @@ jobs:
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
           changelog-file: changes.md
-          name: ${{ env.MOD_NAME }}-${{ env.MOD_VERSION }}
+          name: ${{ env.MOD_NAME }} ${{ env.MOD_VERSION }}
           files: forge/build/libs/!(*-@(dev|sources)).jar
       - name: Release Fabric
         uses: Kir-Antipov/mc-publish@v3.1

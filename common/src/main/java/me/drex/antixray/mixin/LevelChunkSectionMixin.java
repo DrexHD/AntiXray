@@ -25,7 +25,6 @@ public abstract class LevelChunkSectionMixin implements IChunkSection {
     private PalettedContainer<BlockState> states;
 
     @Shadow
-    @Final
     private PalettedContainerRO<Holder<Biome>> biomes;
 
     @Shadow

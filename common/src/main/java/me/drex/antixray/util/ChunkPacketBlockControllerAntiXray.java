@@ -8,6 +8,8 @@ import me.drex.antixray.interfaces.ILevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.resources.ResourceKey;
@@ -91,7 +93,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
             List<BlockState> presetBlockStateList = new LinkedList<>();
 
             for (String id : worldConfig.hiddenBlocks) {
-                Block block = Registry.BLOCK.getOptional(new ResourceLocation(id)).orElse(null);
+                Block block = BuiltInRegistries.BLOCK.getOptional(new ResourceLocation(id)).orElse(null);
 
                 if (block != null && !(block instanceof EntityBlock)) {
                     toObfuscate.add(id);
@@ -122,7 +124,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
         }
 
         for (String id : toObfuscate) {
-            Block block = Registry.BLOCK.getOptional(new ResourceLocation(id)).orElse(null);
+            Block block = BuiltInRegistries.BLOCK.getOptional(new ResourceLocation(id)).orElse(null);
 
             // Don't obfuscate air because air causes unnecessary block updates and causes block updates to fail in the void
             if (block != null && !block.defaultBlockState().isAir()) {
@@ -133,7 +135,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
             }
         }
 
-        EmptyLevelChunk emptyChunk = new EmptyLevelChunk(level, new ChunkPos(0, 0), level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getHolderOrThrow(Biomes.PLAINS));
+        EmptyLevelChunk emptyChunk = new EmptyLevelChunk(level, new ChunkPos(0, 0), level.registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(Biomes.PLAINS));
         BlockPos zeroPos = new BlockPos(0, 0, 0);
 
         Block.BLOCK_STATE_REGISTRY.iterator().forEachRemaining((blockState) -> {

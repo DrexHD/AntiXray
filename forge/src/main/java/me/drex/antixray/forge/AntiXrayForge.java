@@ -3,8 +3,11 @@ package me.drex.antixray.forge;
 import me.drex.antixray.AntiXray;
 import me.drex.antixray.util.Platform;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.server.permission.PermissionAPI;
+import net.minecraftforge.server.permission.events.PermissionGatherEvent;
 import net.minecraftforge.server.permission.nodes.PermissionNode;
 import net.minecraftforge.server.permission.nodes.PermissionTypes;
 
@@ -16,6 +19,7 @@ public class AntiXrayForge extends AntiXray {
 
     public AntiXrayForge() {
         super(Platform.FORGE);
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Override
@@ -26,5 +30,10 @@ public class AntiXrayForge extends AntiXray {
     @Override
     public Path getConfigDirectory() {
         return FMLPaths.CONFIGDIR.get();
+    }
+
+    @SubscribeEvent
+    public void handlePermissionNodesGather(PermissionGatherEvent.Nodes event) {
+        event.addNodes(ANTIXRAY_BYPASS);
     }
 }

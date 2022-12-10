@@ -58,6 +58,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           game-versions: |
             1.19.2
-            1.19.1          changelog-file: changes.md
+            1.19.1          
+          changelog-file: changes.md
           name: AntiXray ${{ env.MOD_VERSION }} for ${{ env.MINECRAFT_VERSION }}
           files: '{forge,fabric}/build/libs/!(*-@(dev|sources)).jar'

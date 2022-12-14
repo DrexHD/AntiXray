@@ -53,7 +53,7 @@ it is recommended to increase this value)
 **Legit player view:** Legit players wont notice any changes when this mod is installed (unless they have high ping or modify a lot of blocks at once, eg: explosions) |  ![](https://i.imgur.com/HRC0heX.png)
 
 ## Other
-Players with `antixray.bypass` permission will be excluded 
+Players with `antixray.bypass` permission will be excluded from anti xray measurements!
 
 ## About
 

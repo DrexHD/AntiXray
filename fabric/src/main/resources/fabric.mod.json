@@ -32,11 +32,7 @@
   "accessWidener": "antixray.accesswidener",
   "depends": {
     "fabricloader": ">=0.12.6",
-    "minecraft": [
-      "1.19.1",
-      "1.19.2",
-      "1.19.3"
-    ],
+    "minecraft": "1.19.3",
     "java": ">=17"
   }
 }

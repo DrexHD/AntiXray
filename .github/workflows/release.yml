@@ -35,6 +35,8 @@ jobs:
         with:
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          game-versions: |
+            1.19.3
           changelog-file: changes.md
           name: ${{ env.MOD_NAME }} ${{ env.MOD_VERSION }}
           files: forge/build/libs/!(*-@(dev|sources)).jar
@@ -43,6 +45,8 @@ jobs:
         with:
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          game-versions: |
+            1.19.3
           changelog-file: changes.md
           name: ${{ env.MOD_NAME }} ${{ env.MOD_VERSION }}
           files: fabric/build/libs/!(*-@(dev|sources)).jar
@@ -50,7 +54,8 @@ jobs:
         uses: Kir-Antipov/mc-publish@v3.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          game-versions: |
+            1.19.3
           changelog-file: changes.md
           name: AntiXray ${{ env.MOD_VERSION }} for ${{ env.MINECRAFT_VERSION }}
           files: '{forge,fabric}/build/libs/!(*-@(dev|sources)).jar'

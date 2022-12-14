@@ -52,6 +52,9 @@ it is recommended to increase this value)
 **EngineMode 2 (recommended):** This mode will replace all blocks from `hiddenBlocks` and `replacementBlocks` with random blocks from `hiddenBlocks` |  ![](https://i.imgur.com/Sx49SFD.png)
 **Legit player view:** Legit players wont notice any changes when this mod is installed (unless they have high ping or modify a lot of blocks at once, eg: explosions) |  ![](https://i.imgur.com/HRC0heX.png)
 
+## Other
+Players with `antixray.bypass` permission will be excluded 
+
 ## About
 
 This mod is a port of

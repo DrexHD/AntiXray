@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Typo in forge release names
 
+### Added
+- Bypass permission: "antixray.bypass"
+
 ## [1.2.6] - 2022-09-08
 ### Added
 - Automatic Modrinth, CurseForge and GitHub releases

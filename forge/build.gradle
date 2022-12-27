@@ -110,6 +110,7 @@ processResources {
 shadowJar {
     configurations = [project.configurations.shadow]
     minimize()
+    relocate("com.moandjiezana.toml", "me.drex.libs.com.moandjiezana.toml")
     classifier "" // Shadowed jar should be the main jar
 }
 

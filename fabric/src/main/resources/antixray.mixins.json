@@ -5,7 +5,6 @@
   "compatibilityLevel": "JAVA_16",
   "server": [
     "ChunkAccessMixin",
-    "ChunkMapMixin",
     "ChunkSerializerMixin",
     "ClientboundLevelChunkPacketDataMixin",
     "ClientboundLevelChunkWithLightPacketMixin",

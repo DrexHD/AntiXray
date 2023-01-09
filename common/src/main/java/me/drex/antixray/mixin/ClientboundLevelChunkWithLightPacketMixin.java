@@ -29,21 +29,13 @@ public abstract class ClientboundLevelChunkWithLightPacketMixin implements IChun
     @Final
     private ClientboundLevelChunkPacketData chunkData;
 
-    @Unique
-    private LevelChunk chunk;
-
     @Inject(
             method = "<init>(Lnet/minecraft/world/level/chunk/LevelChunk;Lnet/minecraft/world/level/lighting/LevelLightEngine;Ljava/util/BitSet;Ljava/util/BitSet;Z)V",
             at = @At("TAIL")
     )
-    private void captureChunk(LevelChunk chunk, LevelLightEngine levelLightEngine, BitSet bitSet, BitSet bitSet2, boolean bl, CallbackInfo ci) {
-        this.chunk = chunk;
-    }
-
-    @Override
-    public void modifyPacket(boolean shouldModify) {
+    private void onInit(LevelChunk chunk, LevelLightEngine levelLightEngine, BitSet bitSet, BitSet bitSet2, boolean bl, CallbackInfo ci) {
         final ClientboundLevelChunkWithLightPacket packet = (ClientboundLevelChunkWithLightPacket) (Object) this;
-        final ChunkPacketBlockController controller = shouldModify ? ChunkPacketBlockController.NO_OPERATION_INSTANCE : Util.getBlockController(chunk.getLevel());
+        final ChunkPacketBlockController controller = Util.getBlockController(chunk.getLevel());
         final ChunkPacketInfo<BlockState> packetInfo = controller.getChunkPacketInfo(packet, chunk);
         ((IChunkPacketData) this.chunkData).customExtractChunkData(packetInfo);
         controller.modifyBlocks(packet, packetInfo);

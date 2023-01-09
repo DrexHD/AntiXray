@@ -1,7 +1,6 @@
 package me.drex.antixray.interfaces;
 
-import me.drex.antixray.config.WorldConfig;
-import me.drex.antixray.util.ChunkPacketBlockController;
+import me.drex.antixray.util.controller.ChunkPacketBlockController;
 
 import java.util.concurrent.Executor;
 
@@ -11,5 +10,4 @@ public interface ILevel {
 
     ChunkPacketBlockController getChunkPacketBlockController();
 
-    WorldConfig getWorldConfig();
 }

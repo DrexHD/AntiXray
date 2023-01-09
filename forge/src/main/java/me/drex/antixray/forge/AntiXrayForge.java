@@ -16,4 +16,9 @@ public class AntiXrayForge extends AntiXray {
     public Path getConfigDirectory() {
         return FMLPaths.CONFIGDIR.get();
     }
+
+    @Override
+    public String getConfigFileName() {
+        return "antixray-forge.toml";
+    }
 }

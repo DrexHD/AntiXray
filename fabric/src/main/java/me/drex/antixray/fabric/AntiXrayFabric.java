@@ -16,4 +16,9 @@ public class AntiXrayFabric extends AntiXray {
     public Path getConfigDirectory() {
         return FabricLoader.getInstance().getConfigDir();
     }
+
+    @Override
+    public String getConfigFileName() {
+        return "antixray-fabric.toml";
+    }
 }

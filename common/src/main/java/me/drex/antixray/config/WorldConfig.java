@@ -1,21 +1,35 @@
 package me.drex.antixray.config;
 
 import com.moandjiezana.toml.Toml;
-import me.drex.antixray.util.ChunkPacketBlockControllerAntiXray;
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import me.drex.antixray.AntiXray;
+import me.drex.antixray.util.EngineMode;
+import me.drex.antixray.util.controller.*;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.Executor;
 
 public class WorldConfig {
     public boolean enabled = false;
-    public ChunkPacketBlockControllerAntiXray.EngineMode engineMode = ChunkPacketBlockControllerAntiXray.EngineMode.HIDE;
+    public EngineMode engineMode = EngineMode.HIDE;
     public int maxBlockHeight = 64;
     public int updateRadius = 2;
     public boolean lavaObscures = false;
     public boolean usePermission = false;
-    public List<String> hiddenBlocks = new ArrayList<>();
-    public List<String> replacementBlocks = new ArrayList<>();
+    public Set<Block> hiddenBlocks = new HashSet<>();
+    public Set<Block> replacementBlocks = new HashSet<>();
 
     public WorldConfig(ResourceLocation location) {
         Toml defaultToml = Config.toml;
@@ -31,19 +45,67 @@ public class WorldConfig {
     private void loadValues(Toml toml) {
         if (toml.contains("enabled")) this.enabled = toml.getBoolean("enabled");
         if (toml.contains("engineMode")) {
-            ChunkPacketBlockControllerAntiXray.EngineMode mode = ChunkPacketBlockControllerAntiXray.EngineMode.getById(Math.toIntExact(toml.getLong("engineMode")));
+            EngineMode mode = EngineMode.getById(Math.toIntExact(toml.getLong("engineMode")));
             if (mode != null) {
                 this.engineMode = mode;
             }
         }
         if (toml.contains("maxBlockHeight")) {
-            this.maxBlockHeight = Math.toIntExact(toml.getLong("maxBlockHeight"));
+            this.maxBlockHeight = Math.toIntExact(toml.getLong("maxBlockHeight")) >> 4 << 4;
         }
         if (toml.contains("updateRadius")) this.updateRadius = Math.toIntExact(toml.getLong("updateRadius"));
         if (toml.contains("lavaObscures")) this.lavaObscures = toml.getBoolean("lavaObscures");
         if (toml.contains("usePermission")) this.usePermission = toml.getBoolean("usePermission");
-        if (toml.contains("hiddenBlocks")) this.hiddenBlocks = toml.getList("hiddenBlocks");
-        if (toml.contains("replacementBlocks")) this.replacementBlocks = toml.getList("replacementBlocks");
+        if (toml.contains("hiddenBlocks")) this.hiddenBlocks = parseBlocks(toml.getList("hiddenBlocks"));
+        if (toml.contains("replacementBlocks")) this.replacementBlocks = parseBlocks(toml.getList("replacementBlocks"));
+
+    }
+
+    private Set<Block> parseBlocks(List<String> blocks) {
+        Set<Block> result = new HashSet<>();
+        for (String blockId : blocks) {
+            try {
+                StringReader stringReader = new StringReader(blockId);
+                boolean isTag = false;
+                if (stringReader.canRead() && stringReader.peek() == '#') {
+                    isTag = true;
+                    stringReader.skip();
+                }
+                ResourceLocation location = ResourceLocation.read(stringReader);
+                if (isTag) {
+                    TagKey<Block> tagKey = TagKey.create(Registries.BLOCK, location);
+                    Optional<HolderSet.Named<Block>> optional = BuiltInRegistries.BLOCK.getTag(tagKey);
+                    if (optional.isPresent()) {
+                        for (Holder<Block> holder : optional.get()) {
+                            result.add(holder.value());
+                        }
+                    } else {
+                        AntiXray.LOGGER.warn("Unknown block tag id: \"{}\"", blockId);
+                    }
+                } else {
+                    Optional<Block> optional = BuiltInRegistries.BLOCK.getOptional(location);
+                    optional.ifPresentOrElse(
+                            result::add,
+                            () -> AntiXray.LOGGER.warn("Unknown block id: \"{}\"", blockId)
+                    );
+                }
+            } catch (CommandSyntaxException exception) {
+                AntiXray.LOGGER.warn("Failed to parse block: \"{}\"", blockId, exception);
+            }
+        }
+        return result;
+    }
+
+    public ChunkPacketBlockController createChunkPacketBlockController(Level level, Executor executor) {
+        if (!this.enabled) return DisabledChunkPacketBlockController.NO_OPERATION_INSTANCE;
+        return switch (engineMode) {
+            case HIDE ->
+                    new HideChunkPacketBlockController(level, executor, hiddenBlocks, maxBlockHeight, updateRadius, lavaObscures);
+            case OBFUSCATE ->
+                    new ObfuscateChunkPacketBlockController(level, executor, replacementBlocks, hiddenBlocks, maxBlockHeight, updateRadius, lavaObscures);
+            case OBFUSCATE_LAYER ->
+                    new ObfuscateLayerChunkPacketBlockController(level, executor, replacementBlocks, hiddenBlocks, maxBlockHeight, updateRadius, lavaObscures);
+        };
     }
 
 }

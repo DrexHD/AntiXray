@@ -14,7 +14,7 @@ public class Config {
     public static void loadConfig(File file) {
         if (!file.exists()) {
             try {
-                Files.copy(Objects.requireNonNull(Config.class.getResourceAsStream("/data/antixray.toml")), file.toPath());
+                Files.copy(Objects.requireNonNull(Config.class.getResourceAsStream("/data/" + AntiXray.INSTANCE.getConfigFileName())), file.toPath());
             } catch (IOException e) {
                 AntiXray.LOGGER.error("Couldn't create default config", e);
                 return;

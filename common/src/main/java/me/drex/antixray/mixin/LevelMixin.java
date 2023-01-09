@@ -2,13 +2,11 @@ package me.drex.antixray.mixin;
 
 import me.drex.antixray.config.WorldConfig;
 import me.drex.antixray.interfaces.ILevel;
-import me.drex.antixray.util.ChunkPacketBlockController;
-import me.drex.antixray.util.ChunkPacketBlockControllerAntiXray;
+import me.drex.antixray.util.controller.ChunkPacketBlockController;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import org.spongepowered.asm.mixin.Final;
@@ -28,25 +26,17 @@ public abstract class LevelMixin implements ILevel, LevelAccessor {
     @Unique
     public ChunkPacketBlockController chunkPacketBlockController;
 
-    @Unique
-    private WorldConfig worldConfig;
-
     @Shadow
     @Final
     private ResourceKey<Level> dimension;
-
-    @Override
-    public WorldConfig getWorldConfig() {
-        return worldConfig;
-    }
 
     @Shadow
     public abstract BlockState getBlockState(BlockPos blockPos);
 
     @Override
     public void initValues(final Executor executor) {
-        this.worldConfig = new WorldConfig(this.dimension.location());
-        this.chunkPacketBlockController = this.worldConfig.enabled ? new ChunkPacketBlockControllerAntiXray((Level) (Object) this, executor) : ChunkPacketBlockControllerAntiXray.NO_OPERATION_INSTANCE;
+        WorldConfig worldConfig = new WorldConfig(this.dimension.location());
+        this.chunkPacketBlockController = worldConfig.createChunkPacketBlockController((Level) (Object) this, executor);
     }
 
     @Override
@@ -62,7 +52,7 @@ public abstract class LevelMixin implements ILevel, LevelAccessor {
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
-    public void onBlockChange(final BlockPos blockPos, final BlockState blockState, final int flags, final int maxUpdateDepth, final CallbackInfoReturnable<Boolean> cir, final LevelChunk levelChunk, final Block block) {
+    public void onBlockChange(final BlockPos blockPos, final BlockState blockState, final int flags, final int maxUpdateDepth, final CallbackInfoReturnable<Boolean> cir, final LevelChunk levelChunk) {
         final BlockState oldState = levelChunk.getBlockState(blockPos);
         this.chunkPacketBlockController.onBlockChange((Level) (Object) this, blockPos, blockState, oldState, flags, maxUpdateDepth);
     }

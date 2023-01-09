@@ -99,7 +99,7 @@ public abstract class PalettedContainerMixin<T> implements IPalettedContainer<T>
     /**
      * Adds preset values after initialization of this PalettedContainer.
      * Only use this method after {@link PalettedContainer#PalettedContainer(IdMap, PalettedContainer.Strategy, PalettedContainer.Configuration, BitStorage, List)}.
-     * For now, this only used in {@link ChunkSerializer#read(ServerLevel, PoiManager, ChunkPos, CompoundTag)}
+     * For now, this is only used in {@link ChunkSerializer#read(ServerLevel, PoiManager, ChunkPos, CompoundTag)}
      * if the palette gets read from NBT.
      */
     @Override

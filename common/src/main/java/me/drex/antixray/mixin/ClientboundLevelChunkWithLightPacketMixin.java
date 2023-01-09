@@ -2,9 +2,9 @@ package me.drex.antixray.mixin;
 
 import me.drex.antixray.interfaces.IChunkPacket;
 import me.drex.antixray.interfaces.IChunkPacketData;
-import me.drex.antixray.util.ChunkPacketBlockController;
 import me.drex.antixray.util.ChunkPacketInfo;
 import me.drex.antixray.util.Util;
+import me.drex.antixray.util.controller.ChunkPacketBlockController;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkPacketData;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.world.level.block.state.BlockState;

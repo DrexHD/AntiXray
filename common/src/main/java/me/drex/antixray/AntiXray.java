@@ -10,14 +10,18 @@ import java.nio.file.Path;
 public abstract class AntiXray {
     public static final String MOD_ID = "antixray";
     public static final Logger LOGGER = LogManager.getLogger();
-    private static Platform platform;
+    private Platform platform;
+    public static AntiXray INSTANCE;
 
     public AntiXray(Platform platform) {
-        AntiXray.platform = platform;
+        INSTANCE = this;
+        this.platform = platform;
         Config.loadConfig(getConfigDirectory().resolve("antixray.toml").toFile());
         LOGGER.info("Successfully initialized {} on {}", MOD_ID, platform.name().toLowerCase());
     }
 
     public abstract Path getConfigDirectory();
+
+    public abstract String getConfigFileName();
 
 }

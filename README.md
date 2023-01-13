@@ -52,6 +52,7 @@ it is recommended to increase this value)
 **EngineMode 1:** This mode will replace all fully obscured (no air around) blocks from `hiddenBlocks` with blocks from `replacementBlocks` |  ![](media/enginemode-1.png)
 **EngineMode 2:** This mode will replace all blocks from `hiddenBlocks` and `replacementBlocks` with random blocks from `hiddenBlocks` |  ![](media/enginemode-2.png)
 **EngineMode 3 (recommended):** Works very similar to engine mode 2, but works better with slow connections |  ![](media/enginemode-3.png)
+
 **Legit player view:** Legit players wont notice any changes when this mod is installed (unless they have high ping or modify a lot of blocks at once, eg: explosions)
 
 ## About

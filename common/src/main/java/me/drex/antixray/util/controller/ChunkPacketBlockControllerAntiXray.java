@@ -9,7 +9,7 @@ import me.drex.antixray.util.ChunkPacketInfo;
 import me.drex.antixray.util.ChunkPacketInfoAntiXray;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.server.level.ChunkHolder;
@@ -57,7 +57,7 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
             }
         }
 
-        EmptyLevelChunk emptyChunk = new EmptyLevelChunk(level, new ChunkPos(0, 0), level.registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(Biomes.PLAINS));
+        EmptyLevelChunk emptyChunk = new EmptyLevelChunk(level, new ChunkPos(0, 0), level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getHolderOrThrow(Biomes.PLAINS));
 
         Block.BLOCK_STATE_REGISTRY.iterator().forEachRemaining((blockState) -> {
                     solidGlobal.put(blockState, blockState.isRedstoneConductor(emptyChunk, BlockPos.ZERO)

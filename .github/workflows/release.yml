@@ -36,7 +36,8 @@ jobs:
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
           game-versions: |
-            1.19.3
+            1.19.1
+            1.19.2
           changelog-file: changes.md
           name: ${{ env.MOD_NAME }} ${{ env.MOD_VERSION }}
           files: forge/build/libs/!(*-@(dev|sources)).jar
@@ -46,7 +47,8 @@ jobs:
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
           game-versions: |
-            1.19.3
+            1.19.1
+            1.19.2
           changelog-file: changes.md
           name: ${{ env.MOD_NAME }} ${{ env.MOD_VERSION }}
           files: fabric/build/libs/!(*-@(dev|sources)).jar
@@ -55,7 +57,8 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           game-versions: |
-            1.19.3
+            1.19.1
+            1.19.2
           changelog-file: changes.md
           name: AntiXray ${{ env.MOD_VERSION }} for ${{ env.MINECRAFT_VERSION }}
           files: '{forge,fabric}/build/libs/!(*-@(dev|sources)).jar'

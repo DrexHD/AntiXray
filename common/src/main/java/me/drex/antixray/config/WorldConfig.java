@@ -8,8 +8,7 @@ import me.drex.antixray.util.EngineMode;
 import me.drex.antixray.util.controller.*;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.Level;
@@ -73,8 +72,8 @@ public class WorldConfig {
                 }
                 ResourceLocation location = ResourceLocation.read(stringReader);
                 if (isTag) {
-                    TagKey<Block> tagKey = TagKey.create(Registries.BLOCK, location);
-                    Optional<HolderSet.Named<Block>> optional = BuiltInRegistries.BLOCK.getTag(tagKey);
+                    TagKey<Block> tagKey = TagKey.create(Registry.BLOCK_REGISTRY, location);
+                    Optional<HolderSet.Named<Block>> optional = Registry.BLOCK.getTag(tagKey);
                     if (optional.isPresent()) {
                         for (Holder<Block> holder : optional.get()) {
                             result.add(holder.value());
@@ -83,7 +82,7 @@ public class WorldConfig {
                         AntiXray.LOGGER.warn("Unknown block tag id: \"{}\"", blockId);
                     }
                 } else {
-                    Optional<Block> optional = BuiltInRegistries.BLOCK.getOptional(location);
+                    Optional<Block> optional = Registry.BLOCK.getOptional(location);
                     optional.ifPresentOrElse(
                             result::add,
                             () -> AntiXray.LOGGER.warn("Unknown block id: \"{}\"", blockId)

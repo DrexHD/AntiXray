@@ -37,6 +37,7 @@ jobs:
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
           game-versions: |
             1.19.3
+            1.19.4
           changelog-file: changes.md
           name: ${{ env.MOD_NAME }} ${{ env.MOD_VERSION }}
           files: forge/build/libs/!(*-@(dev|sources)).jar
@@ -47,6 +48,7 @@ jobs:
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
           game-versions: |
             1.19.3
+            1.19.4
           changelog-file: changes.md
           name: ${{ env.MOD_NAME }} ${{ env.MOD_VERSION }}
           files: fabric/build/libs/!(*-@(dev|sources)).jar
@@ -56,6 +58,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           game-versions: |
             1.19.3
+            1.19.4
           changelog-file: changes.md
           name: AntiXray ${{ env.MOD_VERSION }} for ${{ env.MINECRAFT_VERSION }}
           files: '{forge,fabric}/build/libs/!(*-@(dev|sources)).jar'

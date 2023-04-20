@@ -16,9 +16,13 @@ import net.minecraft.world.level.chunk.PalettedContainerRO;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(LevelChunkSection.class)
 public abstract class LevelChunkSectionMixin implements IChunkSection {
+
+    @Unique
+    private int bottomBlockY;
 
     @Shadow
     @Final
@@ -30,9 +34,10 @@ public abstract class LevelChunkSectionMixin implements IChunkSection {
     @Shadow
     private short nonEmptyBlockCount;
 
-    @Shadow
-    @Final
-    private int bottomBlockY;
+    @Override
+    public void init(int bottomBlockY) {
+        this.bottomBlockY = bottomBlockY;
+    }
 
     @Override
     @SuppressWarnings("unchecked")

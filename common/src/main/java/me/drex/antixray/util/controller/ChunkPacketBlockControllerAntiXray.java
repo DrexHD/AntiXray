@@ -135,41 +135,24 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
     }
 
     private void updateNearbyBlocks(Level level, BlockPos blockPos) {
-        if (updateRadius >= 2) {
-            BlockPos temp = blockPos.west();
-            updateBlock(level, temp);
-            updateBlock(level, temp.west());
-            updateBlock(level, temp.below());
-            updateBlock(level, temp.above());
-            updateBlock(level, temp.north());
-            updateBlock(level, temp.south());
-            updateBlock(level, temp = blockPos.east());
-            updateBlock(level, temp.east());
-            updateBlock(level, temp.below());
-            updateBlock(level, temp.above());
-            updateBlock(level, temp.north());
-            updateBlock(level, temp.south());
-            updateBlock(level, temp = blockPos.below());
-            updateBlock(level, temp.below());
-            updateBlock(level, temp.north());
-            updateBlock(level, temp.south());
-            updateBlock(level, temp = blockPos.above());
-            updateBlock(level, temp.above());
-            updateBlock(level, temp.north());
-            updateBlock(level, temp.south());
-            updateBlock(level, temp = blockPos.north());
-            updateBlock(level, temp.north());
-            updateBlock(level, temp = blockPos.south());
-            updateBlock(level, temp.south());
-        } else if (updateRadius == 1) {
-            updateBlock(level, blockPos.west());
-            updateBlock(level, blockPos.east());
-            updateBlock(level, blockPos.below());
-            updateBlock(level, blockPos.above());
-            updateBlock(level, blockPos.north());
-            updateBlock(level, blockPos.south());
-        } else {
-            // Do nothing if updateRadius <= 0 (test mode)
+        for (int i = 0; i <= updateRadius; i++) {
+            updateNearbyBlocks2d(level, blockPos.above(updateRadius - i), i);
+        }
+        for (int i = 0; i < updateRadius; i++) {
+            updateNearbyBlocks2d(level, blockPos.below(updateRadius - i), i);
+        }
+    }
+
+    private void updateNearbyBlocks2d(Level level, BlockPos blockPos, int diamondSize) {
+        for (int i = 0; i <= diamondSize; i++) {
+            for (int j = 0; j < 2 * i + 1; j++) {
+                updateBlock(level, blockPos.offset(diamondSize - i, 0, j - i));
+            }
+        }
+        for (int i = 0; i < diamondSize; i++) {
+            for (int j = 0; j < 2 * i + 1; j++) {
+                updateBlock(level, blockPos.offset(-diamondSize + i, 0, j - i));
+            }
         }
     }
 

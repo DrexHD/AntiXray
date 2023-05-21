@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Allow negating blocks / block tags in the config
+- Allow `updateRadius` config option to be set to higher than 2
 
 ### Fixed
 - Potential networking issues

@@ -31,13 +31,10 @@ jobs:
       - name: Parse changelog
         run: parse-changelog CHANGELOG.md ${{ env.MOD_VERSION }} > changes.md
       - name: Release Forge
-        uses: Kir-Antipov/mc-publish@v3.1
+        uses: Kir-Antipov/mc-publish@v3.3
         with:
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-          game-versions: |
-            1.19.3
-            1.19.4
           changelog-file: changes.md
           name: ${{ env.MOD_NAME }} ${{ env.MOD_VERSION }}
           files: forge/build/libs/!(*-@(dev|sources)).jar
@@ -46,9 +43,6 @@ jobs:
         with:
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-          game-versions: |
-            1.19.3
-            1.19.4
           changelog-file: changes.md
           name: ${{ env.MOD_NAME }} ${{ env.MOD_VERSION }}
           files: fabric/build/libs/!(*-@(dev|sources)).jar
@@ -56,9 +50,6 @@ jobs:
         uses: Kir-Antipov/mc-publish@v3.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          game-versions: |
-            1.19.3
-            1.19.4
           changelog-file: changes.md
           name: AntiXray ${{ env.MOD_VERSION }} for ${{ env.MINECRAFT_VERSION }}
           files: '{forge,fabric}/build/libs/!(*-@(dev|sources)).jar'

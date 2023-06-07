@@ -30,14 +30,14 @@ jobs:
         uses: taiki-e/install-action@parse-changelog
       - name: Parse changelog
         run: parse-changelog CHANGELOG.md ${{ env.MOD_VERSION }} > changes.md
-      - name: Release Forge
-        uses: Kir-Antipov/mc-publish@v3.3
-        with:
-          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-          changelog-file: changes.md
-          name: ${{ env.MOD_NAME }} ${{ env.MOD_VERSION }}
-          files: forge/build/libs/!(*-@(dev|sources)).jar
+#      - name: Release Forge
+#        uses: Kir-Antipov/mc-publish@v3.3
+#        with:
+#          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+#          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+#          changelog-file: changes.md
+#          name: ${{ env.MOD_NAME }} ${{ env.MOD_VERSION }}
+#          files: forge/build/libs/!(*-@(dev|sources)).jar
       - name: Release Fabric
         uses: Kir-Antipov/mc-publish@v3.1
         with:

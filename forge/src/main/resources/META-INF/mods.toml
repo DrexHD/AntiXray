@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[44,)"
+loaderVersion="[46,)"
 #issueTrackerURL=""
 license="MIT"
 
@@ -16,7 +16,7 @@ This mod implements Papers 0367-Anti-Xray.patch!
 [[dependencies.antixray]]
 modId="forge"
 mandatory=true
-versionRange="[44,)"
+versionRange="[46,)"
 ordering="NONE"
 side="BOTH"
 

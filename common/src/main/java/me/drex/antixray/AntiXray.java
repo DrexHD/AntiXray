@@ -16,7 +16,7 @@ public abstract class AntiXray {
     public AntiXray(Platform platform) {
         INSTANCE = this;
         this.platform = platform;
-        Config.loadConfig(getConfigDirectory().resolve("antixray.toml").toFile());
+        Config.loadConfig(getConfigDirectory().resolve("antixray.toml"));
         LOGGER.info("Successfully initialized {} on {}", MOD_ID, platform.name().toLowerCase());
     }
 

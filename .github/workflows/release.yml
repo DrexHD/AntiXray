@@ -39,7 +39,7 @@ jobs:
           name: ${{ env.MOD_NAME }} ${{ env.MOD_VERSION }}
           files: forge/build/libs/!(*-@(dev|sources)).jar
       - name: Release Fabric
-        uses: Kir-Antipov/mc-publish@v3.1
+        uses: Kir-Antipov/mc-publish@v3.3
         with:
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
@@ -47,7 +47,7 @@ jobs:
           name: ${{ env.MOD_NAME }} ${{ env.MOD_VERSION }}
           files: fabric/build/libs/!(*-@(dev|sources)).jar
       - name: Release to GitHub
-        uses: Kir-Antipov/mc-publish@v3.1
+        uses: Kir-Antipov/mc-publish@v3.3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           changelog-file: changes.md

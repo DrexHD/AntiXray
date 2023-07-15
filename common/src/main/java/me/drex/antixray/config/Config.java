@@ -6,20 +6,25 @@ import me.drex.antixray.AntiXray;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Objects;
 
 public class Config {
     public static Toml toml;
 
-    public static void loadConfig(File file) {
-        if (!file.exists()) {
+    public static void loadConfig(Path path) {
+        if (Files.notExists(path)) {
             try {
-                Files.copy(Objects.requireNonNull(Config.class.getResourceAsStream("/data/" + AntiXray.INSTANCE.getConfigFileName())), file.toPath());
+                Files.copy(Objects.requireNonNull(Config.class.getResourceAsStream("/data/" + AntiXray.INSTANCE.getConfigFileName())), path);
             } catch (IOException e) {
-                AntiXray.LOGGER.error("Couldn't create default config", e);
+                AntiXray.LOGGER.error("Failed to create default config", e);
                 return;
             }
         }
-        toml = new Toml().read(file);
+        try {
+            toml = new Toml().read(Files.newInputStream(path));
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read antixray config file", e);
+        }
     }
 }

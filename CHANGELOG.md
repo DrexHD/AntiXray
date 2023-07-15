@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.1] - 2023-07-14
+### Added
+- Allow custom dimension id's to be specified in the config
+
 ## [1.3.0] - 2023-01-13
 ### Added
 - Block tag support (in configs)

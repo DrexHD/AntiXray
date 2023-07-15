@@ -39,10 +39,14 @@ public class WorldConfig {
         // Overwrite default configurations with world specific configurations
         if (worldToml != null) {
             this.loadValues(worldToml);
+        } else {
+            this.loadValues(defaultToml.getTable("'" + location + "'"));
+            this.loadValues(defaultToml.getTable("\"" + location + "\""));
         }
     }
 
     private void loadValues(Toml toml) {
+        if (toml == null) return;
         if (toml.contains("enabled")) this.enabled = toml.getBoolean("enabled");
         if (toml.contains("engineMode")) {
             EngineMode mode = EngineMode.getById(Math.toIntExact(toml.getLong("engineMode")));

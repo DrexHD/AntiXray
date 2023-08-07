@@ -5,6 +5,7 @@ import me.drex.antixray.util.ChunkPacketInfo;
 import net.minecraft.core.IdMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.VarInt;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.BitStorage;
 import net.minecraft.util.Mth;
@@ -150,7 +151,7 @@ public abstract class PalettedContainerMixin<T> implements IPalettedContainer<T>
                 int chunkSectionIndex = (bottomBlockY >> 4) - chunkPacketInfo.getChunk().getMinSection();
                 chunkPacketInfo.setBits(chunkSectionIndex, this.data.configuration().bits());
                 chunkPacketInfo.setPalette(chunkSectionIndex, this.data.palette());
-                chunkPacketInfo.setIndex(chunkSectionIndex, buf.writerIndex() + FriendlyByteBuf.getVarIntSize(this.data.storage().getRaw().length));
+                chunkPacketInfo.setIndex(chunkSectionIndex, buf.writerIndex() + VarInt.getByteSize(this.data.storage().getRaw().length));
             }
 
             buf.writeLongArray(this.data.storage().getRaw());

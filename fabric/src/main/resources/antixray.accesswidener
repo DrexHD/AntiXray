@@ -11,6 +11,3 @@ accessible method net/minecraft/world/level/chunk/PalettedContainer$Strategy cal
 accessible field net/minecraft/world/level/chunk/PalettedContainer$Strategy GLOBAL_PALETTE_FACTORY Lnet/minecraft/world/level/chunk/Palette$Factory;
 accessible field net/minecraft/world/level/chunk/ChunkAccess levelHeightAccessor Lnet/minecraft/world/level/LevelHeightAccessor;
 accessible field net/minecraft/server/level/ServerPlayerGameMode level Lnet/minecraft/server/level/ServerLevel;
-
-# networking
-accessible class net/minecraft/network/Connection$PacketHolder

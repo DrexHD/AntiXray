@@ -8,7 +8,6 @@
     "ClientboundLevelChunkPacketDataMixin",
     "ClientboundLevelChunkWithLightPacketMixin",
     "ConnectionMixin",
-    "ConnectionPacketHolderAccessor",
     "LevelChunkSectionMixin",
     "LevelMixin",
     "PalettedContainerMixin",

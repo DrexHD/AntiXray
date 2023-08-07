@@ -27,7 +27,6 @@ public class WorldConfig {
     public int maxBlockHeight = 64;
     public int updateRadius = 2;
     public boolean lavaObscures = false;
-    public boolean usePermission = false;
     public Set<Block> hiddenBlocks = new HashSet<>();
     public Set<Block> replacementBlocks = new HashSet<>();
 
@@ -59,7 +58,6 @@ public class WorldConfig {
         }
         if (toml.contains("updateRadius")) this.updateRadius = Math.toIntExact(toml.getLong("updateRadius"));
         if (toml.contains("lavaObscures")) this.lavaObscures = toml.getBoolean("lavaObscures");
-        if (toml.contains("usePermission")) this.usePermission = toml.getBoolean("usePermission");
         if (toml.contains("hiddenBlocks")) this.hiddenBlocks = parseBlocks(toml.getList("hiddenBlocks"));
         if (toml.contains("replacementBlocks")) this.replacementBlocks = parseBlocks(toml.getList("replacementBlocks"));
 

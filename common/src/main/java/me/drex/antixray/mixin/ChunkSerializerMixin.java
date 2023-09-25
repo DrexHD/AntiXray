@@ -36,6 +36,7 @@ public abstract class ChunkSerializerMixin {
     )
     private static void addPresetValues(ServerLevel serverLevel, PoiManager poiManager, ChunkPos chunkPos, CompoundTag compoundTag, CallbackInfoReturnable<ProtoChunk> cir, ChunkPos chunkPos2, UpgradeData upgradeData, boolean b, ListTag listTag, int i, LevelChunkSection[] levelChunkSections, boolean b2, ChunkSource chunkSource, LevelLightEngine levelLightEngine, Registry<Biome> registry, Codec<PalettedContainer<Holder<Biome>>> codec, boolean b3, int j, CompoundTag tag, int k, int l, PalettedContainer<BlockState> blockStatePalette) {
         ((IChunkSection) levelChunkSections[l]).init(serverLevel.getSectionYFromSectionIndex(l) << 4);
+        //noinspection unchecked
         final IPalettedContainer<BlockState> container = (IPalettedContainer<BlockState>) blockStatePalette;
         final BlockState[] presetValues = Util.getBlockController(serverLevel).getPresetBlockStates(serverLevel, k << 4);
         if (tag.contains("block_states", 10)) {

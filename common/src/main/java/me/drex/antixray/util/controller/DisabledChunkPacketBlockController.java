@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -16,6 +17,11 @@ public class DisabledChunkPacketBlockController implements ChunkPacketBlockContr
     public static final DisabledChunkPacketBlockController NO_OPERATION_INSTANCE = new DisabledChunkPacketBlockController();
 
     private DisabledChunkPacketBlockController() {
+    }
+
+    @Override
+    public boolean shouldModify(ServerPlayer player) {
+        return false;
     }
 
     @Override

@@ -3,7 +3,6 @@ package me.drex.antixray.config;
 import com.moandjiezana.toml.Toml;
 import me.drex.antixray.AntiXray;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

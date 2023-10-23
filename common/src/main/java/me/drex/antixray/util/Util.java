@@ -2,6 +2,8 @@ package me.drex.antixray.util;
 
 import me.drex.antixray.interfaces.ILevel;
 import me.drex.antixray.util.controller.ChunkPacketBlockController;
+import me.drex.antixray.util.controller.DisabledChunkPacketBlockController;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -11,6 +13,11 @@ public final class Util {
 
     public static ChunkPacketBlockController getBlockController(Level level) {
         return ((ILevel) level).getChunkPacketBlockController();
+    }
+
+    public static ChunkPacketBlockController getBlockController(ServerPlayer player) {
+        ChunkPacketBlockController controller = getBlockController(player.level());
+        return controller.shouldModify(player) ? controller : DisabledChunkPacketBlockController.NO_OPERATION_INSTANCE;
     }
 
     // Converts height accessors from ChunkAccess into levels.

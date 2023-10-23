@@ -12,10 +12,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
-import net.minecraft.server.level.ChunkHolder;
-import net.minecraft.server.level.ServerChunkCache;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayerGameMode;
+import net.minecraft.server.level.*;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biomes;
@@ -37,15 +34,17 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
     protected final int maxBlockHeight;
     private final int maxBlockHeightUpdatePosition;
     private final int updateRadius;
+    private final boolean usePermission;
     private final Object2BooleanOpenHashMap<BlockState> solidGlobal = new Object2BooleanOpenHashMap<>(Block.BLOCK_STATE_REGISTRY.size());
     private final Object2BooleanOpenHashMap<BlockState> obfuscateGlobal = new Object2BooleanOpenHashMap<>(Block.BLOCK_STATE_REGISTRY.size());
     private final Executor executor;
     private final LevelChunkSection[] emptyNearbyChunkSections = {EMPTY_SECTION, EMPTY_SECTION, EMPTY_SECTION, EMPTY_SECTION};
 
-    protected ChunkPacketBlockControllerAntiXray(Level level, Executor executor, Set<Block> toObfuscate, int maxBlockHeight, int updateRadius, boolean lavaObscures) {
+    protected ChunkPacketBlockControllerAntiXray(Level level, Executor executor, Set<Block> toObfuscate, int maxBlockHeight, int updateRadius, boolean lavaObscures, boolean usePermission) {
         this.executor = executor;
         this.maxBlockHeight = maxBlockHeight;
         this.updateRadius = updateRadius;
+        this.usePermission = usePermission;
 
         for (Block block : toObfuscate) {
             // Don't obfuscate air because air causes unnecessary block updates and causes block updates to fail in the void
@@ -69,6 +68,14 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
 
         this.maxBlockHeightUpdatePosition = maxBlockHeight + updateRadius - 1;
 
+    }
+
+    @Override
+    public boolean shouldModify(ServerPlayer player) {
+        if (this.usePermission && player.hasPermissions(2)) {
+            return false;
+        }
+        return !AntiXray.INSTANCE.canBypassXray(player);
     }
 
     @Override

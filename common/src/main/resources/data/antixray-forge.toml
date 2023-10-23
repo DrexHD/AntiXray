@@ -2,6 +2,7 @@
 
 # Default values
 enabled = false
+usePermission = false
 
 # World specific values
 [overworld]

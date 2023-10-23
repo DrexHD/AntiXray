@@ -6,7 +6,6 @@ import me.drex.antixray.interfaces.IPalettedContainer;
 import me.drex.antixray.util.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
-import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;

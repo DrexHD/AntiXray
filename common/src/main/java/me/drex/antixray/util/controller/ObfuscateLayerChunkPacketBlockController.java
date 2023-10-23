@@ -9,8 +9,8 @@ import java.util.function.IntSupplier;
 
 public class ObfuscateLayerChunkPacketBlockController extends ObfuscateChunkPacketBlockController {
 
-    public ObfuscateLayerChunkPacketBlockController(Level level, Executor executor, Set<Block> replacementBlocks, Set<Block> hiddenBlocks, int maxBlockHeight, int updateRadius, boolean lavaObscures) {
-        super(level, executor, replacementBlocks, hiddenBlocks, maxBlockHeight, updateRadius, lavaObscures);
+    public ObfuscateLayerChunkPacketBlockController(Level level, Executor executor, Set<Block> replacementBlocks, Set<Block> hiddenBlocks, int maxBlockHeight, int updateRadius, boolean lavaObscures, boolean usePermission) {
+        super(level, executor, replacementBlocks, hiddenBlocks, maxBlockHeight, updateRadius, lavaObscures, usePermission);
     }
 
     @Override

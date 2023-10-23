@@ -25,7 +25,7 @@ public class AntiXrayFabric extends AntiXray {
     }
 
     @Override
-    public boolean canBypassXray(ServerPlayer player) {
+    public boolean hasBypassPermission(ServerPlayer player) {
         return Permissions.check(player, "antixray.bypass");
     }
 }

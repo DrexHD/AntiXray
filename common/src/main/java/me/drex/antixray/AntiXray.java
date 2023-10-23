@@ -25,5 +25,5 @@ public abstract class AntiXray {
 
     public abstract String getConfigFileName();
 
-    public abstract boolean canBypassXray(ServerPlayer player);
+    public abstract boolean hasBypassPermission(ServerPlayer player);
 }

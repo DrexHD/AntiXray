@@ -32,7 +32,7 @@ public class AntiXrayForge extends AntiXray {
     }
 
     @Override
-    public boolean canBypassXray(ServerPlayer player) {
+    public boolean hasBypassPermission(ServerPlayer player) {
         return PermissionAPI.getPermission(player, ANTIXRAY_BYPASS);
     }
 

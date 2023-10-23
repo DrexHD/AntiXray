@@ -72,10 +72,7 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
 
     @Override
     public boolean shouldModify(ServerPlayer player) {
-        if (this.usePermission && player.hasPermissions(2)) {
-            return false;
-        }
-        return !AntiXray.INSTANCE.canBypassXray(player);
+        return !this.usePermission || (!player.hasPermissions(2) && !AntiXray.INSTANCE.hasBypassPermission(player));
     }
 
     @Override

@@ -5,12 +5,20 @@ plugins {
 
 archivesBaseName = "${rootProject.archives_base_name}-${rootProject.mod_version}-Fabric-${rootProject.minecraft_version}"
 
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
 dependencies {
     minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     implementation project(":common")
     include("com.moandjiezana.toml:toml4j:${rootProject.toml_version}")
+    modCompileOnly ("com.github.iPortalTeam.ImmersivePortalsMod:imm_ptl_core:${rootProject.fabric_imm_ptl_core_version}"){
+        exclude(group: "net.fabricmc.fabric-api")
+        transitive(false)
+    }
 }
 
 loom {

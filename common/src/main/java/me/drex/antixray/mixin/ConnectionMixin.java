@@ -2,11 +2,10 @@ package me.drex.antixray.mixin;
 
 import com.google.common.collect.Queues;
 import io.netty.channel.Channel;
-import me.drex.antixray.interfaces.IChunkPacket;
+import me.drex.antixray.util.Util;
 import net.minecraft.network.Connection;
 import net.minecraft.network.PacketSendListener;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -59,11 +58,11 @@ public abstract class ConnectionMixin {
         )
     )
     public void redirectSendPacket(Connection instance, Packet<?> packet, PacketSendListener listener, boolean flush) {
-        if (isReady(packet)) {
+        if (Util.isReady(packet)) {
             this.sendPacket(packet, listener, flush);
         } else {
             pendingActions.add(connection -> this.sendPacket(packet, listener, flush));
-            antiXray$isActionReady.add(() -> isReady(packet));
+            antiXray$isActionReady.add(() -> Util.isReady(packet));
         }
     }
 
@@ -75,7 +74,7 @@ public abstract class ConnectionMixin {
         )
     )
     public void addToActionReadyQueue(Packet<?> packet, PacketSendListener listener, boolean flush, CallbackInfo ci) {
-        antiXray$isActionReady.add(() -> isReady(packet));
+        antiXray$isActionReady.add(() -> Util.isReady(packet));
     }
 
     @Inject(
@@ -87,14 +86,6 @@ public abstract class ConnectionMixin {
     )
     public void addToActionReadyQueue(CallbackInfo ci) {
         antiXray$isActionReady.add(() -> true);
-    }
-
-    private boolean isReady(Packet<?> packet) {
-        if (packet instanceof ClientboundLevelChunkWithLightPacket combinedPacket) {
-            return ((IChunkPacket) combinedPacket).isReady();
-        } else {
-            return true;
-        }
     }
 
 }

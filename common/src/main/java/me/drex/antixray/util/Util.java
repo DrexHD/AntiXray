@@ -1,7 +1,9 @@
 package me.drex.antixray.util;
 
 import me.drex.antixray.interfaces.ILevel;
+import me.drex.antixray.interfaces.IPacket;
 import me.drex.antixray.util.controller.ChunkPacketBlockController;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -25,5 +27,12 @@ public final class Util {
             // If we return null, chunks will not get properly obfuscated.
             throw new IllegalStateException("Failed to add block presets as height accessor was an instance of " + heightAccessor.getClass().getSimpleName());
         }
+    }
+
+    public static boolean isReady(Packet<?> packet) {
+        if (packet instanceof IPacket iPacket) {
+            return iPacket.isReady();
+        }
+        return true;
     }
 }

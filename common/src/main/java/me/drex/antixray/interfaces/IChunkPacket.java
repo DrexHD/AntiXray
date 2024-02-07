@@ -1,8 +1,5 @@
 package me.drex.antixray.interfaces;
 
-public interface IChunkPacket {
-
-    boolean isReady();
-
+public interface IChunkPacket extends IPacket {
     void setReady(boolean ready);
 }

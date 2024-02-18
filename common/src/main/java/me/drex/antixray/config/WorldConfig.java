@@ -19,7 +19,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.Executor;
 
 public class WorldConfig {
     public boolean enabled = false;
@@ -87,8 +86,8 @@ public class WorldConfig {
                 } else {
                     Optional<Block> optional = BuiltInRegistries.BLOCK.getOptional(location);
                     optional.ifPresentOrElse(
-                            result::add,
-                            () -> AntiXray.LOGGER.warn("Unknown block id: \"{}\"", blockId)
+                        result::add,
+                        () -> AntiXray.LOGGER.warn("Unknown block id: \"{}\"", blockId)
                     );
                 }
             } catch (CommandSyntaxException exception) {
@@ -102,11 +101,11 @@ public class WorldConfig {
         if (!this.enabled) return DisabledChunkPacketBlockController.NO_OPERATION_INSTANCE;
         return switch (engineMode) {
             case HIDE ->
-                    new HideChunkPacketBlockController(level, hiddenBlocks, maxBlockHeight, updateRadius, lavaObscures);
+                new HideChunkPacketBlockController(level, hiddenBlocks, maxBlockHeight, updateRadius, lavaObscures);
             case OBFUSCATE ->
-                    new ObfuscateChunkPacketBlockController(level, replacementBlocks, hiddenBlocks, maxBlockHeight, updateRadius, lavaObscures);
+                new ObfuscateChunkPacketBlockController(level, replacementBlocks, hiddenBlocks, maxBlockHeight, updateRadius, lavaObscures);
             case OBFUSCATE_LAYER ->
-                    new ObfuscateLayerChunkPacketBlockController(level, replacementBlocks, hiddenBlocks, maxBlockHeight, updateRadius, lavaObscures);
+                new ObfuscateLayerChunkPacketBlockController(level, replacementBlocks, hiddenBlocks, maxBlockHeight, updateRadius, lavaObscures);
         };
     }
 

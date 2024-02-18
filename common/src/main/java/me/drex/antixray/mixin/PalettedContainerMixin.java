@@ -59,19 +59,19 @@ public abstract class PalettedContainerMixin<T> implements IPalettedContainer<T>
     protected abstract PalettedContainer.Data<T> createOrReuseData(PalettedContainer.Data<T> data, int i);
 
     @Inject(
-            method = "<init>(Lnet/minecraft/core/IdMap;Lnet/minecraft/world/level/chunk/PalettedContainer$Strategy;Lnet/minecraft/world/level/chunk/PalettedContainer$Configuration;Lnet/minecraft/util/BitStorage;Ljava/util/List;)V",
-            at = @At("TAIL")
+        method = "<init>(Lnet/minecraft/core/IdMap;Lnet/minecraft/world/level/chunk/PalettedContainer$Strategy;Lnet/minecraft/world/level/chunk/PalettedContainer$Configuration;Lnet/minecraft/util/BitStorage;Ljava/util/List;)V",
+        at = @At("TAIL")
     )
     private void prepareVariables(IdMap<T> idMap, PalettedContainer.Strategy strategy, PalettedContainer.Configuration<T> configuration, BitStorage bitStorage, List<T> list, CallbackInfo ci) {
         this.paletteEntries = list;
     }
 
     @Redirect(
-            method = "onResize",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/world/level/chunk/PalettedContainer;createOrReuseData(Lnet/minecraft/world/level/chunk/PalettedContainer$Data;I)Lnet/minecraft/world/level/chunk/PalettedContainer$Data;"
-            )
+        method = "onResize",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/world/level/chunk/PalettedContainer;createOrReuseData(Lnet/minecraft/world/level/chunk/PalettedContainer$Data;I)Lnet/minecraft/world/level/chunk/PalettedContainer$Data;"
+        )
     )
     private PalettedContainer.Data<T> addPresetValues(PalettedContainer<T> container, PalettedContainer.Data<T> data, int bits, int i, T object) {
         if (this.presetValues != null && object != null && data.configuration().factory() == PalettedContainer.Strategy.SINGLE_VALUE_PALETTE_FACTORY) {
@@ -86,11 +86,11 @@ public abstract class PalettedContainerMixin<T> implements IPalettedContainer<T>
     }
 
     @Redirect(
-            method = "onResize",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/world/level/chunk/Palette;idFor(Ljava/lang/Object;)I"
-            )
+        method = "onResize",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/world/level/chunk/Palette;idFor(Ljava/lang/Object;)I"
+        )
     )
     private int addPresetValues(Palette<T> palette, T object) {
         this.addPresetValues();

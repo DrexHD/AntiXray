@@ -10,8 +10,8 @@ import java.nio.file.Path;
 public abstract class AntiXray {
     public static final String MOD_ID = "antixray";
     public static final Logger LOGGER = LogManager.getLogger();
-    private Platform platform;
     public static AntiXray INSTANCE;
+    private Platform platform;
 
     public AntiXray(Platform platform) {
         INSTANCE = this;

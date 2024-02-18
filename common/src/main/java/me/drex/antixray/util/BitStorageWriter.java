@@ -28,13 +28,13 @@ public final class BitStorageWriter {
     private void init() {
         if (buffer.length > longInBufferIndex + 7) {
             current = ((((long) buffer[longInBufferIndex]) << 56)
-                    | (((long) buffer[longInBufferIndex + 1] & 0xff) << 48)
-                    | (((long) buffer[longInBufferIndex + 2] & 0xff) << 40)
-                    | (((long) buffer[longInBufferIndex + 3] & 0xff) << 32)
-                    | (((long) buffer[longInBufferIndex + 4] & 0xff) << 24)
-                    | (((long) buffer[longInBufferIndex + 5] & 0xff) << 16)
-                    | (((long) buffer[longInBufferIndex + 6] & 0xff) << 8)
-                    | (((long) buffer[longInBufferIndex + 7] & 0xff)));
+                | (((long) buffer[longInBufferIndex + 1] & 0xff) << 48)
+                | (((long) buffer[longInBufferIndex + 2] & 0xff) << 40)
+                | (((long) buffer[longInBufferIndex + 3] & 0xff) << 32)
+                | (((long) buffer[longInBufferIndex + 4] & 0xff) << 24)
+                | (((long) buffer[longInBufferIndex + 5] & 0xff) << 16)
+                | (((long) buffer[longInBufferIndex + 6] & 0xff) << 8)
+                | (((long) buffer[longInBufferIndex + 7] & 0xff)));
         }
 
         dirty = false;

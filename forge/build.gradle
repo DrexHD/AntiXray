@@ -82,7 +82,7 @@ minecraft {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     compileOnly project(":common")
-    shadow ("com.moandjiezana.toml:toml4j:${rootProject.toml_version}") {
+    shadow("com.moandjiezana.toml:toml4j:${rootProject.toml_version}") {
         exclude(module: "gson")
     }
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'

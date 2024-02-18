@@ -28,11 +28,11 @@ public abstract class ClientboundLevelChunkPacketDataMixin implements IChunkPack
     private LevelChunk chunk;
 
     @Redirect(
-            method = "<init>(Lnet/minecraft/world/level/chunk/LevelChunk;)V",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/network/protocol/game/ClientboundLevelChunkPacketData;extractChunkData(Lnet/minecraft/network/FriendlyByteBuf;Lnet/minecraft/world/level/chunk/LevelChunk;)V"
-            )
+        method = "<init>(Lnet/minecraft/world/level/chunk/LevelChunk;)V",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/network/protocol/game/ClientboundLevelChunkPacketData;extractChunkData(Lnet/minecraft/network/FriendlyByteBuf;Lnet/minecraft/world/level/chunk/LevelChunk;)V"
+        )
     )
     private void prepareVariables(FriendlyByteBuf friendlyByteBuf, LevelChunk levelChunk) {
         this.byteBuf = friendlyByteBuf;

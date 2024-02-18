@@ -19,17 +19,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(ChunkAccess.class)
 public abstract class ChunkAccessMixin {
 
-    @Redirect(
-            method = "<init>",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/world/level/chunk/ChunkAccess;replaceMissingSections(Lnet/minecraft/core/Registry;[Lnet/minecraft/world/level/chunk/LevelChunkSection;)V"
-            )
-    )
-    private void initializeChunkSection(Registry<Biome> registry, LevelChunkSection[] levelChunkSections, ChunkPos chunkPos, UpgradeData upgradeData, LevelHeightAccessor levelHeightAccessor) {
-        replaceMissingSections(levelHeightAccessor, registry, levelChunkSections);
-    }
-
     @Unique
     private static void replaceMissingSections(LevelHeightAccessor accessor, Registry<Biome> registry, LevelChunkSection[] levelChunkSections) {
         // [VanillaCopy] Re-added LevelHeightAccessor, which was removed from replaceMissingSections in 23w16a (1.20)
@@ -43,7 +32,17 @@ public abstract class ChunkAccessMixin {
                 }
             }
         }
+    }
 
+    @Redirect(
+        method = "<init>",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/world/level/chunk/ChunkAccess;replaceMissingSections(Lnet/minecraft/core/Registry;[Lnet/minecraft/world/level/chunk/LevelChunkSection;)V"
+        )
+    )
+    private void initializeChunkSection(Registry<Biome> registry, LevelChunkSection[] levelChunkSections, ChunkPos chunkPos, UpgradeData upgradeData, LevelHeightAccessor levelHeightAccessor) {
+        replaceMissingSections(levelHeightAccessor, registry, levelChunkSections);
     }
 
 }

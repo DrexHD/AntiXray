@@ -33,13 +33,21 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
 
     protected static final Palette<BlockState> GLOBAL_BLOCKSTATE_PALETTE = new GlobalPalette<>(Block.BLOCK_STATE_REGISTRY);
     private static final LevelChunkSection EMPTY_SECTION = null;
-
+    private static final ThreadLocal<boolean[]> SOLID = ThreadLocal.withInitial(() -> new boolean[Block.BLOCK_STATE_REGISTRY.size()]);
+    private static final ThreadLocal<boolean[]> OBFUSCATE = ThreadLocal.withInitial(() -> new boolean[Block.BLOCK_STATE_REGISTRY.size()]);
+    // These boolean arrays represent chunk layers, true means don't obfuscate, false means obfuscate
+    private static final ThreadLocal<boolean[][]> CURRENT = ThreadLocal.withInitial(() -> new boolean[16][16]);
+    private static final ThreadLocal<boolean[][]> NEXT = ThreadLocal.withInitial(() -> new boolean[16][16]);
+    private static final ThreadLocal<boolean[][]> NEXT_NEXT = ThreadLocal.withInitial(() -> new boolean[16][16]);
     protected final int maxBlockHeight;
     private final int maxBlockHeightUpdatePosition;
     private final int updateRadius;
     private final Object2BooleanOpenHashMap<BlockState> solidGlobal = new Object2BooleanOpenHashMap<>(Block.BLOCK_STATE_REGISTRY.size());
     private final Object2BooleanOpenHashMap<BlockState> obfuscateGlobal = new Object2BooleanOpenHashMap<>(Block.BLOCK_STATE_REGISTRY.size());
     private final LevelChunkSection[] emptyNearbyChunkSections = {EMPTY_SECTION, EMPTY_SECTION, EMPTY_SECTION, EMPTY_SECTION};
+    // Actually these fields should be variables inside the obfuscate method but in sync mode or with SingleThreadExecutor in async mode it's okay (even without ThreadLocal)
+    // If an ExecutorService with multiple threads is used, ThreadLocal must be used here
+    private final ThreadLocal<int[]> presetBlockStateBits = ThreadLocal.withInitial(() -> new int[getPresetBlockStatesLength()]);
 
     protected ChunkPacketBlockControllerAntiXray(Level level, Set<Block> toObfuscate, int maxBlockHeight, int updateRadius, boolean lavaObscures) {
         this.maxBlockHeight = maxBlockHeight;
@@ -58,11 +66,11 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
         EmptyLevelChunk emptyChunk = new EmptyLevelChunk(level, new ChunkPos(0, 0), level.registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(Biomes.PLAINS));
 
         Block.BLOCK_STATE_REGISTRY.iterator().forEachRemaining((blockState) -> {
-                    solidGlobal.put(blockState, blockState.isRedstoneConductor(emptyChunk, BlockPos.ZERO)
-                            && blockState.getBlock() != Blocks.SPAWNER && blockState.getBlock() != Blocks.BARRIER && blockState.getBlock() != Blocks.SHULKER_BOX && blockState.getBlock() != Blocks.SLIME_BLOCK && blockState.getBlock() != Blocks.MANGROVE_ROOTS || lavaObscures && blockState == Blocks.LAVA.defaultBlockState());
-                    // Comparing blockState == Blocks.LAVA.defaultBlockState() instead of blockState.getBlock() == Blocks.LAVA ensures that only "stationary lava" is used
-                    // shulker box checks TE.
-                }
+                solidGlobal.put(blockState, blockState.isRedstoneConductor(emptyChunk, BlockPos.ZERO)
+                    && blockState.getBlock() != Blocks.SPAWNER && blockState.getBlock() != Blocks.BARRIER && blockState.getBlock() != Blocks.SHULKER_BOX && blockState.getBlock() != Blocks.SLIME_BLOCK && blockState.getBlock() != Blocks.MANGROVE_ROOTS || lavaObscures && blockState == Blocks.LAVA.defaultBlockState());
+                // Comparing blockState == Blocks.LAVA.defaultBlockState() instead of blockState.getBlock() == Blocks.LAVA ensures that only "stationary lava" is used
+                // shulker box checks TE.
+            }
         );
 
         this.maxBlockHeightUpdatePosition = maxBlockHeight + updateRadius - 1;
@@ -101,10 +109,10 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
         int z = chunk.getPos().z;
         ServerChunkCache chunkCache = ((ServerLevel) chunk.getLevel()).getChunkSource();
         antiXrayInfo.setNearbyChunks(
-                getChunkAccess(chunkCache, x - 1, z),
-                getChunkAccess(chunkCache, x + 1, z),
-                getChunkAccess(chunkCache, x, z - 1),
-                getChunkAccess(chunkCache, x, z + 1)
+            getChunkAccess(chunkCache, x - 1, z),
+            getChunkAccess(chunkCache, x + 1, z),
+            getChunkAccess(chunkCache, x, z - 1),
+            getChunkAccess(chunkCache, x, z + 1)
         );
         Util.backgroundExecutor().execute((Runnable) chunkPacketInfo);
     }
@@ -181,16 +189,6 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
             level.getChunkSource().blockChanged(pos);
         }
     }
-
-    // Actually these fields should be variables inside the obfuscate method but in sync mode or with SingleThreadExecutor in async mode it's okay (even without ThreadLocal)
-    // If an ExecutorService with multiple threads is used, ThreadLocal must be used here
-    private final ThreadLocal<int[]> presetBlockStateBits = ThreadLocal.withInitial(() -> new int[getPresetBlockStatesLength()]);
-    private static final ThreadLocal<boolean[]> SOLID = ThreadLocal.withInitial(() -> new boolean[Block.BLOCK_STATE_REGISTRY.size()]);
-    private static final ThreadLocal<boolean[]> OBFUSCATE = ThreadLocal.withInitial(() -> new boolean[Block.BLOCK_STATE_REGISTRY.size()]);
-    // These boolean arrays represent chunk layers, true means don't obfuscate, false means obfuscate
-    private static final ThreadLocal<boolean[][]> CURRENT = ThreadLocal.withInitial(() -> new boolean[16][16]);
-    private static final ThreadLocal<boolean[][]> NEXT = ThreadLocal.withInitial(() -> new boolean[16][16]);
-    private static final ThreadLocal<boolean[][]> NEXT_NEXT = ThreadLocal.withInitial(() -> new boolean[16][16]);
 
     public void obfuscate(ChunkPacketInfoAntiXray chunkPacketInfoAntiXray) {
         int[] presetBlockStateBits = this.presetBlockStateBits.get();

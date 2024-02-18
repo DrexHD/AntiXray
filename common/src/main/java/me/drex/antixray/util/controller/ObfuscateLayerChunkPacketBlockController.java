@@ -4,7 +4,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 
 import java.util.Set;
-import java.util.concurrent.Executor;
 import java.util.function.IntSupplier;
 
 public class ObfuscateLayerChunkPacketBlockController extends ObfuscateChunkPacketBlockController {

@@ -46,18 +46,24 @@ it is recommended to increase this value)
 
 ### Engine Modes
 
-| Info | Image |
-:-------------------------:|:-------------------------:
-**Anti xray disabled:** This is just for reference |  ![](media/disabled.png)
-**EngineMode 1:** This mode will replace all fully obscured (no air around) blocks from `hiddenBlocks` with blocks from `replacementBlocks` |  ![](media/enginemode-1.png)
-**EngineMode 2:** This mode will replace all blocks from `hiddenBlocks` and `replacementBlocks` with random blocks from `hiddenBlocks` |  ![](media/enginemode-2.png)
-**EngineMode 3 (recommended):** Works very similar to engine mode 2, but works better with slow connections |  ![](media/enginemode-3.png)
+|                                                                    Info                                                                     |            Image            |
+|:-------------------------------------------------------------------------------------------------------------------------------------------:|:---------------------------:|
+|                                             **Anti xray disabled:** This is just for reference                                              |   ![](media/disabled.png)   |
+| **EngineMode 1:** This mode will replace all fully obscured (no air around) blocks from `hiddenBlocks` with blocks from `replacementBlocks` | ![](media/enginemode-1.png) |
+|   **EngineMode 2:** This mode will replace all blocks from `hiddenBlocks` and `replacementBlocks` with random blocks from `hiddenBlocks`    | ![](media/enginemode-2.png) |
+|                 **EngineMode 3 (recommended):** Works very similar to engine mode 2, but works better with slow connections                 | ![](media/enginemode-3.png) |
 
-**Legit player view:** Legit players wont notice any changes when this mod is installed (unless they have high ping or modify a lot of blocks at once, eg: explosions)
+**Legit player view:** Legit players wont notice any changes when this mod is installed (unless they have high ping or
+modify a lot of blocks at once, eg: explosions)
 
 ### Custom Dimensions
+
 To configure antixray in custom dimensions, specify the dimension id like this: `["custom:cool_world"]`
 
 ## About
 
-This mod is a port of Papers [Async Anti Xray Patch](https://github.com/PaperMC/Paper/blob/7a64b85f9274f9a01103faafcfceb89a8b5777de/patches/server/0344-Anti-Xray.patch) from 1.17 and [it's 1.14 patch](https://github.com/PaperMC/Paper/blob/ver/1.14/Spigot-Server-Patches/0397-Anti-Xray.patch#L1379) for networking code, to fabric and forge
+This mod is a port of
+Papers [Async Anti Xray Patch](https://github.com/PaperMC/Paper/blob/7a64b85f9274f9a01103faafcfceb89a8b5777de/patches/server/0344-Anti-Xray.patch)
+from 1.17
+and [it's 1.14 patch](https://github.com/PaperMC/Paper/blob/ver/1.14/Spigot-Server-Patches/0397-Anti-Xray.patch#L1379)
+for networking code, to fabric and forge

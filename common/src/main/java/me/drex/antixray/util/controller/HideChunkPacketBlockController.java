@@ -7,7 +7,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Set;
-import java.util.concurrent.Executor;
 
 public class HideChunkPacketBlockController extends ChunkPacketBlockControllerAntiXray {
 

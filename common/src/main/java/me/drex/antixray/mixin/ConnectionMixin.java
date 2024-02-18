@@ -19,19 +19,16 @@ import java.util.function.Consumer;
 @Mixin(Connection.class)
 public abstract class ConnectionMixin {
 
+    @Unique
+    private final Queue<BooleanSupplier> antiXray$isActionReady = Queues.newConcurrentLinkedQueue();
     @Shadow
     private Channel channel;
-
-
     @Shadow
     @Final
     private Queue<Consumer<Connection>> pendingActions;
 
     @Shadow
     protected abstract void sendPacket(Packet<?> $$0, PacketSendListener $$1, boolean $$2);
-
-    @Unique
-    private final Queue<BooleanSupplier> antiXray$isActionReady = Queues.newConcurrentLinkedQueue();
 
     /**
      * @author Drex

@@ -98,15 +98,15 @@ public class WorldConfig {
         return result;
     }
 
-    public ChunkPacketBlockController createChunkPacketBlockController(Level level, Executor executor) {
+    public ChunkPacketBlockController createChunkPacketBlockController(Level level) {
         if (!this.enabled) return DisabledChunkPacketBlockController.NO_OPERATION_INSTANCE;
         return switch (engineMode) {
             case HIDE ->
-                    new HideChunkPacketBlockController(level, executor, hiddenBlocks, maxBlockHeight, updateRadius, lavaObscures);
+                    new HideChunkPacketBlockController(level, hiddenBlocks, maxBlockHeight, updateRadius, lavaObscures);
             case OBFUSCATE ->
-                    new ObfuscateChunkPacketBlockController(level, executor, replacementBlocks, hiddenBlocks, maxBlockHeight, updateRadius, lavaObscures);
+                    new ObfuscateChunkPacketBlockController(level, replacementBlocks, hiddenBlocks, maxBlockHeight, updateRadius, lavaObscures);
             case OBFUSCATE_LAYER ->
-                    new ObfuscateLayerChunkPacketBlockController(level, executor, replacementBlocks, hiddenBlocks, maxBlockHeight, updateRadius, lavaObscures);
+                    new ObfuscateLayerChunkPacketBlockController(level, replacementBlocks, hiddenBlocks, maxBlockHeight, updateRadius, lavaObscures);
         };
     }
 

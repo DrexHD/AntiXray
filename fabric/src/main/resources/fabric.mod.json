@@ -11,9 +11,9 @@
     "sources": "https://github.com/DrexHD/AntiXray"
   },
   "license": "MIT",
-  "environment": "server",
+  "environment": "*",
   "entrypoints": {
-    "server": [
+    "main": [
       "me.drex.antixray.fabric.AntiXrayMod"
     ]
   },

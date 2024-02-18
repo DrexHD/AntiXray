@@ -3,7 +3,9 @@ package me.drex.antixray.mixin;
 import me.drex.antixray.interfaces.IChunkSection;
 import me.drex.antixray.util.Util;
 import net.minecraft.core.Registry;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -34,8 +36,11 @@ public abstract class ChunkAccessMixin {
         for (int i = 0; i < levelChunkSections.length; i++) {
             if (levelChunkSections[i] == null) {
                 levelChunkSections[i] = new LevelChunkSection(registry);
-                ((IChunkSection) levelChunkSections[i]).init(accessor.getSectionYFromSectionIndex(i) << 4);
-                ((IChunkSection) levelChunkSections[i]).addBlockPresets(Util.getLevel(accessor));
+                Level level = Util.getLevel(accessor);
+                if (level instanceof ServerLevel serverLevel) {
+                    ((IChunkSection) levelChunkSections[i]).init(accessor.getSectionYFromSectionIndex(i) << 4);
+                    ((IChunkSection) levelChunkSections[i]).addBlockPresets(serverLevel);
+                }
             }
         }
 

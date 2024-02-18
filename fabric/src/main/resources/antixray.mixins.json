@@ -3,7 +3,7 @@
   "package": "me.drex.antixray.mixin",
   "compatibilityLevel": "JAVA_17",
   "plugin": "me.drex.antixray.fabric.FabricMixinPlugin",
-  "server": [
+  "mixins": [
     "ChunkAccessMixin",
     "ChunkSerializerMixin",
     "ClientboundLevelChunkPacketDataMixin",
@@ -14,8 +14,8 @@
     "PalettedContainerMixin",
     "ServerLevelMixin",
     "ServerPlayerGameModeMixin",
-    "compat.imm_ptl_core.PacketRedirection$PayloadMixin",
-    "compat.imm_ptl_core.ClientboundCustomPayloadPacketMixin"
+    "compat.imm_ptl_core.ClientboundCustomPayloadPacketMixin",
+    "compat.imm_ptl_core.PacketRedirection$PayloadMixin"
   ],
   "injectors": {
     "defaultRequire": 1

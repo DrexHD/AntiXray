@@ -7,6 +7,7 @@ import me.drex.antixray.util.BitStorageReader;
 import me.drex.antixray.util.BitStorageWriter;
 import me.drex.antixray.util.ChunkPacketInfo;
 import me.drex.antixray.util.ChunkPacketInfoAntiXray;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -25,7 +26,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.*;
 
 import java.util.Set;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.IntSupplier;
 
@@ -39,11 +39,9 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
     private final int updateRadius;
     private final Object2BooleanOpenHashMap<BlockState> solidGlobal = new Object2BooleanOpenHashMap<>(Block.BLOCK_STATE_REGISTRY.size());
     private final Object2BooleanOpenHashMap<BlockState> obfuscateGlobal = new Object2BooleanOpenHashMap<>(Block.BLOCK_STATE_REGISTRY.size());
-    private final Executor executor;
     private final LevelChunkSection[] emptyNearbyChunkSections = {EMPTY_SECTION, EMPTY_SECTION, EMPTY_SECTION, EMPTY_SECTION};
 
-    protected ChunkPacketBlockControllerAntiXray(Level level, Executor executor, Set<Block> toObfuscate, int maxBlockHeight, int updateRadius, boolean lavaObscures) {
-        this.executor = executor;
+    protected ChunkPacketBlockControllerAntiXray(Level level, Set<Block> toObfuscate, int maxBlockHeight, int updateRadius, boolean lavaObscures) {
         this.maxBlockHeight = maxBlockHeight;
         this.updateRadius = updateRadius;
 
@@ -78,7 +76,7 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
     }
 
     @Override
-    public void onBlockChange(Level level, BlockPos blockPos, BlockState newBlockState, BlockState oldBlockState, int flags, int maxUpdateDepth) {
+    public void onBlockChange(ServerLevel level, BlockPos blockPos, BlockState newBlockState, BlockState oldBlockState, int flags, int maxUpdateDepth) {
         if (oldBlockState != null && solidGlobal.getOrDefault(oldBlockState, false) && !solidGlobal.getOrDefault(newBlockState, false) && blockPos.getY() <= maxBlockHeightUpdatePosition) {
             updateNearbyBlocks(level, blockPos);
         }
@@ -108,7 +106,7 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
                 getChunkAccess(chunkCache, x, z - 1),
                 getChunkAccess(chunkCache, x, z + 1)
         );
-        executor.execute((Runnable) chunkPacketInfo);
+        Util.backgroundExecutor().execute((Runnable) chunkPacketInfo);
     }
 
     private ChunkAccess getChunkAccess(ServerChunkCache chunkCache, int chunkX, int chunkZ) {
@@ -134,7 +132,7 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
         }
     }
 
-    private void updateNearbyBlocks(Level level, BlockPos blockPos) {
+    private void updateNearbyBlocks(ServerLevel level, BlockPos blockPos) {
         if (updateRadius >= 2) {
             BlockPos temp = blockPos.west();
             updateBlock(level, temp);
@@ -177,10 +175,10 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
 
     protected abstract int[] getPresetBlockStateBits(Level level, int bottomBlockY);
 
-    private void updateBlock(Level level, BlockPos pos) {
+    private void updateBlock(ServerLevel level, BlockPos pos) {
         LevelChunk chunk = level.getChunkSource().getChunk(pos.getX() >> 4, pos.getZ() >> 4, false);
         if (chunk != null && obfuscateGlobal.getOrDefault(chunk.getBlockState(pos), false)) {
-            ((ServerLevel) level).getChunkSource().blockChanged(pos);
+            level.getChunkSource().blockChanged(pos);
         }
     }
 

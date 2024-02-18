@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.3] - 2024-02-18
+### Added
+- Antixray can now be used client-side (useful for LAN)
+
 ## [1.3.2] - 2024-02-08
 ### Fixed
 - Incompatibility with Immersive Portals (Fabric only)

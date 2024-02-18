@@ -4,6 +4,7 @@ import me.drex.antixray.interfaces.ILevel;
 import me.drex.antixray.interfaces.IPacket;
 import me.drex.antixray.util.controller.ChunkPacketBlockController;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.chunk.ChunkAccess;

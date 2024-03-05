@@ -84,7 +84,7 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
     }
 
     @Override
-    public void onBlockChange(ServerLevel level, BlockPos blockPos, BlockState newBlockState, BlockState oldBlockState, int flags, int maxUpdateDepth) {
+    public void onBlockChange(ServerLevel level, BlockPos blockPos, BlockState newBlockState, BlockState oldBlockState) {
         if (oldBlockState != null && solidGlobal.getOrDefault(oldBlockState, false) && !solidGlobal.getOrDefault(newBlockState, false) && blockPos.getY() <= maxBlockHeightUpdatePosition) {
             updateNearbyBlocks(level, blockPos);
         }

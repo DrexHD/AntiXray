@@ -35,7 +35,7 @@ public class DisabledChunkPacketBlockController implements ChunkPacketBlockContr
     }
 
     @Override
-    public void onBlockChange(ServerLevel level, BlockPos blockPos, BlockState newBlockState, BlockState oldBlockState, int flags, int maxUpdateDepth) {
+    public void onBlockChange(ServerLevel level, BlockPos blockPos, BlockState newBlockState, BlockState oldBlockState) {
     }
 
     @Override

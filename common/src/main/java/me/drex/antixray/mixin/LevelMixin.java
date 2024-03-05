@@ -9,15 +9,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.LevelChunk;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(Level.class)
 public abstract class LevelMixin implements ILevel, LevelAccessor {
@@ -45,20 +40,5 @@ public abstract class LevelMixin implements ILevel, LevelAccessor {
     @Override
     public ChunkPacketBlockController getChunkPacketBlockController() {
         return this.chunkPacketBlockController;
-    }
-
-    @Inject(
-        method = "setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;II)Z",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/world/level/chunk/LevelChunk;setBlockState(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Z)Lnet/minecraft/world/level/block/state/BlockState;"
-        ),
-        locals = LocalCapture.CAPTURE_FAILHARD
-    )
-    public void onBlockChange(final BlockPos blockPos, final BlockState blockState, final int flags, final int maxUpdateDepth, final CallbackInfoReturnable<Boolean> cir, final LevelChunk levelChunk) {
-        if ((Object) this instanceof ServerLevel serverLevel) {
-            final BlockState oldState = levelChunk.getBlockState(blockPos);
-            this.chunkPacketBlockController.onBlockChange(serverLevel, blockPos, blockState, oldState, flags, maxUpdateDepth);
-        }
     }
 }

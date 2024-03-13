@@ -55,7 +55,7 @@ public abstract class ConnectionMixin {
         )
     )
     public void redirectSendPacket(Connection instance, Packet<?> packet, PacketSendListener listener, boolean flush) {
-        if (Util.isReady(packet)) {
+        if (this.antiXray$isActionReady.isEmpty() && Util.isReady(packet)) {
             this.sendPacket(packet, listener, flush);
         } else {
             pendingActions.add(connection -> this.sendPacket(packet, listener, flush));

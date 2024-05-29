@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "package": "me.drex.antixray.common.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "ChunkAccessMixin",
+    "ChunkSerializerMixin",
+    "ClientboundBundlePacketMixin",
+    "ClientboundLevelChunkPacketDataMixin",
+    "ClientboundLevelChunkWithLightPacketMixin",
+    "ConnectionMixin",
+    "LevelChunkSectionMixin",
+    "LevelMixin",
+    "PalettedContainerMixin",
+    "ServerLevelMixin",
+    "ServerPlayerGameModeMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

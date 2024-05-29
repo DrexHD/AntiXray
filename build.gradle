@@ -1,32 +1,168 @@
+import org.jetbrains.changelog.Changelog
+
+plugins {
+    id "architectury-plugin" version "3.4-SNAPSHOT"
+    id "dev.architectury.loom" version "1.6-SNAPSHOT" apply false
+    id "me.modmuss50.mod-publish-plugin" version "0.+"
+    id 'org.jetbrains.changelog' version '2.+'
+}
+
 subprojects {
+    apply plugin: "dev.architectury.loom"
 
-    apply plugin: 'java'
-
-    java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-    java.withSourcesJar()
+    loom {
+        silentMojangMappingsLicense()
+        accessWidenerPath.set(project(":common").file("src/main/resources/antixray.accesswidener"))
+    }
 
     repositories {
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
         mavenCentral()
-        maven {
-            name = 'Sponge / Mixin'
-            url = 'https://repo.spongepowered.org/repository/maven-public/'
-        }
     }
 
     dependencies {
-        implementation("com.moandjiezana.toml:toml4j:${rootProject.toml_version}")
-    }
+        minecraft "com.mojang:minecraft:${project.minecraft}"
+        mappings loom.officialMojangMappings()
 
+        compileOnly("com.moandjiezana.toml:toml4j:${project.toml_version}")
+
+        // Mixin Extras
+        compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${project.mixin_extras}"))
+    }
+}
+
+allprojects {
+    apply plugin: "java"
+    apply plugin: "architectury-plugin"
+    apply plugin: "maven-publish"
+
+    var formattedVersion = "${mod_version}+${minecraft}"
+    archivesBaseName = project.archives_base_name
+
+    version = formattedVersion
+    group = project.maven_group
 
     tasks.withType(JavaCompile).configureEach {
-        it.options.encoding = 'UTF-8'
-        it.options.release.set(17)
+        options.encoding = "UTF-8"
+        options.release.set(21)
     }
 
-    // Disables Gradle's custom module metadata from being published to maven. The
-    // metadata includes mapped dependencies which are not reasonably consumable by
-    // other mod developers.
-    tasks.withType(GenerateModuleMetadata) {
-        enabled = false
+    tasks.withType(org.gradle.jvm.tasks.Jar).configureEach {
+        archiveVersion.set(formattedVersion)
+    }
+
+    java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+}
+
+publishMods {
+    changelog = fetchChangelog()
+    type = BETA
+
+    def nameFormat = "AntiXray %s ${version.get()}"
+    def fabric = findProject(':fabric')
+    def forge = findProject(':forge')
+    def neoforge = findProject(':neoforge')
+
+    def curseforgeOpts = curseforgeOptions {
+        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+        minecraftVersions.add(project.minecraft)
+    }
+
+    def modrinthOpts = modrinthOptions {
+        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+        minecraftVersions.add(project.minecraft)
+        projectId = "sml2FMaA"
+    }
+
+    def githubFiles = []
+
+    if (fabric != null) {
+        def fabricJar = fabric.remapJar.archiveFile
+        githubFiles.add(fabricJar)
+
+        curseforge("CurseForge - Fabric") {
+            from curseforgeOpts
+            projectId = "511697"
+            file = fabricJar
+            modLoaders.add("fabric")
+            displayName = nameFormat.formatted("Fabric")
+        }
+
+        modrinth("Modrinth - Fabric") {
+            from modrinthOpts
+            file = fabricJar
+            modLoaders.add("fabric")
+            displayName = nameFormat.formatted("Fabric")
+        }
+    }
+
+    if (forge != null) {
+        def forgeJar = forge.remapJar.archiveFile
+        githubFiles.add(forgeJar)
+
+        curseforge("CurseForge - Forge") {
+            from curseforgeOpts
+            projectId = "560511"
+            file = forgeJar
+            modLoaders.add("forge")
+            displayName = nameFormat.formatted("Forge")
+        }
+
+        modrinth("Modrinth - Forge") {
+            from modrinthOpts
+            file = forgeJar
+            modLoaders.add("forge")
+            displayName = nameFormat.formatted("Forge")
+        }
+    }
+
+    if (neoforge != null) {
+        def neoforgeJar = neoforge.remapJar.archiveFile
+        githubFiles.add(neoforgeJar)
+
+        curseforge("CurseForge - NeoForge") {
+            from curseforgeOpts
+            projectId = "560511"
+            file = neoforgeJar
+            modLoaders.add("neoforge")
+            displayName = nameFormat.formatted("NeoForge")
+        }
+
+        modrinth("Modrinth - NeoForge") {
+            from modrinthOpts
+            file = neoforgeJar
+            modLoaders.add("neoforge")
+            displayName = nameFormat.formatted("NeoForge")
+        }
+    }
+
+    github {
+        accessToken = providers.environmentVariable("GITHUB_TOKEN")
+        repository = providers.environmentVariable("GITHUB_REPOSITORY").getOrElse("DrexHD/dryrun")
+        commitish = providers.environmentVariable("GITHUB_REF_NAME").getOrElse("dryrun")
+        // Workaround for https://github.com/modmuss50/mod-publish-plugin/issues/29
+        githubFiles.each {
+            if (it != null) {
+                if (!file.isPresent()) {
+                    file.set(it)
+                } else {
+                    additionalFiles.from(it)
+                }
+            }
+        }
+    }
+
+    dryRun = githubFiles.isEmpty() || curseforgeOpts.get().accessToken.getOrNull() == null || modrinthOpts.get().accessToken.getOrNull() == null || curseforgeOpts.get().accessToken.getOrNull() == null
+}
+
+private String fetchChangelog() {
+    def log = getChangelog.changelog.get()
+    if (log.has(project.mod_version)) {
+        return log.renderItem(
+                log.get(project.mod_version).withHeader(false),
+                Changelog.OutputType.MARKDOWN
+        )
+    } else {
+        return ""
     }
 }

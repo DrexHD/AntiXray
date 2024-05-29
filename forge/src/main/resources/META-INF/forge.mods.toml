@@ -1,0 +1,16 @@
+modLoader = "javafml"
+loaderVersion = "[46,)"
+#issueTrackerURL=""
+license = "MIT"
+
+[[mods]]
+modId = "antixray"
+version = "${version}"
+displayName = "AntiXray"
+authors = "Drex"
+description = '''
+This mod implements Papers 0367-Anti-Xray.patch!
+'''
+
+[custom.mc-publish]
+modrinth = "sml2FMaA"

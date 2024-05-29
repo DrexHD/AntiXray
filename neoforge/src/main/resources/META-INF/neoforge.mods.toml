@@ -1,0 +1,16 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+#issueTrackerURL=""
+license = "MIT"
+
+[[mods]]
+modId = "antixray"
+version = "${version}"
+displayName = "AntiXray"
+authors = "Drex"
+description = '''
+This mod implements Papers 0367-Anti-Xray.patch!
+'''
+
+[[mixins]]
+config = "antixray.common.mixins.json"

@@ -1,0 +1,30 @@
+{
+  "accessWidener": "antixray.accesswidener",
+  "injected_interfaces": {
+    "net/minecraft/class_2672": [
+      "me/drex/antixray/common/interfaces/IChunkPacket",
+      "me/drex/antixray/common/interfaces/IPacket"
+    ],
+    "net/minecraft/class_6603": [
+      "me/drex/antixray/common/interfaces/IChunkPacketData"
+    ],
+    "net/minecraft/class_2826": [
+      "me/drex/antixray/common/interfaces/IChunkSection"
+    ],
+    "net/minecraft/class_1937": [
+      "me/drex/antixray/common/interfaces/ILevel"
+    ],
+    "net/minecraft/class_3218": [
+      "me/drex/antixray/common/interfaces/ILevel"
+    ],
+    "net/minecraft/class_2658": [
+      "me/drex/antixray/common/interfaces/IPacket"
+    ],
+    "net/minecraft/class_2841": [
+      "me/drex/antixray/common/interfaces/IPalettedContainer"
+    ],
+    "net/minecraft/class_8042": [
+      "me/drex/antixray/common/interfaces/IPacket"
+    ]
+  }
+}

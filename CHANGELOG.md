@@ -6,6 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2024-05-30
+### Added
+- Neoforge support
+
+### Changed
+- Mod publishing
+- Multiloader setup
+
+### Fixed
+- Packet delaying causing packet order issues
+
+### Removed
+- Forge support (temporary)
+
 ## [1.3.3] - 2024-02-18
 ### Added
 - Antixray can now be used client-side (useful for LAN)

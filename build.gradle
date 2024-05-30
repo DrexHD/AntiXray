@@ -85,6 +85,7 @@ publishMods {
             projectId = "511697"
             file = fabricJar
             modLoaders.add("fabric")
+            modLoaders.add("quilt")
             displayName = nameFormat.formatted("Fabric")
         }
 
@@ -92,6 +93,7 @@ publishMods {
             from modrinthOpts
             file = fabricJar
             modLoaders.add("fabric")
+            modLoaders.add("quilt")
             displayName = nameFormat.formatted("Fabric")
         }
     }

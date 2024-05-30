@@ -15,6 +15,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.*;
 import net.minecraft.world.level.chunk.storage.ChunkSerializer;
+import net.minecraft.world.level.chunk.storage.RegionStorageInfo;
 import net.minecraft.world.level.lighting.LevelLightEngine;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -33,7 +34,7 @@ public abstract class ChunkSerializerMixin {
         ),
         locals = LocalCapture.CAPTURE_FAILHARD
     )
-    private static void addPresetValues(ServerLevel serverLevel, PoiManager poiManager, ChunkPos chunkPos, CompoundTag compoundTag, CallbackInfoReturnable<ProtoChunk> cir, ChunkPos chunkPos2, UpgradeData upgradeData, boolean b, ListTag listTag, int i, LevelChunkSection[] levelChunkSections, boolean b2, ChunkSource chunkSource, LevelLightEngine levelLightEngine, Registry<Biome> registry, Codec<PalettedContainer<Holder<Biome>>> codec, boolean b3, int j, CompoundTag tag, int k, int l, PalettedContainer<BlockState> blockStatePalette) {
+    private static void addPresetValues(ServerLevel serverLevel, PoiManager poiManager, RegionStorageInfo regionStorageInfo, ChunkPos chunkPos, CompoundTag compoundTag, CallbackInfoReturnable<ProtoChunk> cir, ChunkPos chunkPos2, UpgradeData upgradeData, boolean b, ListTag listTag, int i, LevelChunkSection[] levelChunkSections, boolean b2, ChunkSource chunkSource, LevelLightEngine levelLightEngine, Registry<Biome> registry, Codec<PalettedContainer<Holder<Biome>>> codec, boolean b3, int j, CompoundTag tag, int k, int l, PalettedContainer<BlockState> blockStatePalette) {
         ((IChunkSection) levelChunkSections[l]).init(serverLevel.getSectionYFromSectionIndex(l) << 4);
         //noinspection unchecked
         final IPalettedContainer<BlockState> container = (IPalettedContainer<BlockState>) blockStatePalette;

@@ -121,7 +121,7 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
     private ChunkAccess getChunkAccess(ServerChunkCache chunkCache, int chunkX, int chunkZ) {
         ChunkHolder chunkHolder = chunkCache.getVisibleChunkIfPresent(ChunkPos.asLong(chunkX, chunkZ));
         if (chunkHolder != null) {
-            ChunkAccess chunkAccess = chunkHolder.getLastAvailable();
+            ChunkAccess chunkAccess = chunkHolder.getLatestChunk();
             if (chunkAccess != null) {
                 return chunkAccess;
             } else {

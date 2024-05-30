@@ -1,28 +1,26 @@
 name: build
-on:
-  pull_request:
-  push:
-    branches:
-      - '**'
+on: [pull_request, push]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: validate gradle wrapper
-        uses: gradle/wrapper-validation-action@v1
-      - name: setup jdk 17
-        uses: actions/setup-java@v1
+        uses: gradle/wrapper-validation-action@v2
+      - name: setup jdk 21
+        uses: actions/setup-java@v4
         with:
-          java-version: 17
+          java-version: 21
+          distribution: 'microsoft'
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
       - name: build
         run: ./gradlew build
       - name: capture build artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: Build-Artifacts
+          name: Artifacts
           path: |
             **/build/libs/

@@ -1,7 +1,9 @@
 package me.drex.antixray.common.mixin;
 
+import me.drex.antixray.common.AntiXray;
 import me.drex.antixray.common.interfaces.IChunkPacket;
 import me.drex.antixray.common.interfaces.IChunkPacketData;
+import me.drex.antixray.common.interfaces.IClientboundChunkBatchStartPacket;
 import me.drex.antixray.common.util.ChunkPacketInfo;
 import me.drex.antixray.common.util.Util;
 import me.drex.antixray.common.util.controller.ChunkPacketBlockController;
@@ -22,18 +24,23 @@ import java.util.BitSet;
 
 @Mixin(ClientboundLevelChunkWithLightPacket.class)
 public abstract class ClientboundLevelChunkWithLightPacketMixin implements IChunkPacket {
-    @Unique
-    private volatile boolean ready = false;
 
     @Shadow
     @Final
     private ClientboundLevelChunkPacketData chunkData;
+
+    @Unique
+    boolean antixray$ready = false;
+
+    @Unique
+    IClientboundChunkBatchStartPacket antixray$batchStartPacket;
 
     @Inject(
         method = "<init>(Lnet/minecraft/world/level/chunk/LevelChunk;Lnet/minecraft/world/level/lighting/LevelLightEngine;Ljava/util/BitSet;Ljava/util/BitSet;)V",
         at = @At("TAIL")
     )
     private void onInit(LevelChunk chunk, LevelLightEngine levelLightEngine, BitSet bitSet, BitSet bitSet2, CallbackInfo ci) {
+        this.antixray$batchStartPacket = AntiXray.BATCH_START_PACKET.get();
         final ClientboundLevelChunkWithLightPacket packet = (ClientboundLevelChunkWithLightPacket) (Object) this;
         final ChunkPacketBlockController controller = Util.getBlockController(chunk.getLevel());
         final ChunkPacketInfo<BlockState> packetInfo = controller.getChunkPacketInfo(packet, chunk);
@@ -42,12 +49,15 @@ public abstract class ClientboundLevelChunkWithLightPacketMixin implements IChun
     }
 
     @Override
-    public boolean isReady() {
-        return ready;
+    public boolean isAntixray$ready() {
+        return antixray$ready;
     }
 
     @Override
-    public void setReady(boolean ready) {
-        this.ready = ready;
+    public void antixray$setReady(boolean antixray$ready) {
+        this.antixray$ready = antixray$ready;
+        antixray$batchStartPacket.antixray$notifyChunkReady();
     }
+
+
 }

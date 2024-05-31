@@ -6,14 +6,19 @@
     "ChunkAccessMixin",
     "ChunkSerializerMixin",
     "ClientboundBundlePacketMixin",
+    "ClientboundChunkBatchStartPacketAccessor",
     "ClientboundLevelChunkPacketDataMixin",
     "ClientboundLevelChunkWithLightPacketMixin",
     "ConnectionMixin",
     "LevelChunkSectionMixin",
     "LevelMixin",
     "PalettedContainerMixin",
+    "PlayerChunkSenderMixin",
     "ServerLevelMixin",
     "ServerPlayerGameModeMixin"
+  ],
+  "server": [
+    "ClientboundChunkBatchStartPacketMixin"
   ],
   "injectors": {
     "defaultRequire": 1

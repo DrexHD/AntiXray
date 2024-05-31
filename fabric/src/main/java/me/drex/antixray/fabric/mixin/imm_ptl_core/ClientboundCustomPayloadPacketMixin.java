@@ -15,7 +15,7 @@ public abstract class ClientboundCustomPayloadPacketMixin implements IPacket {
     private CustomPacketPayload payload;
 
     @Override
-    public boolean isReady() {
+    public boolean isAntixray$ready() {
         if (payload instanceof IPayload redirectionPayload) {
             return redirectionPayload.isReady();
         }

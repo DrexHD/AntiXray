@@ -19,7 +19,7 @@ public abstract class ClientboundBundlePacketMixin extends BundlePacket<ClientGa
     }
 
     @Override
-    public boolean isReady() {
+    public boolean isAntixray$ready() {
         boolean isReady = true;
         for (Packet<? super ClientGamePacketListener> subPacket : this.subPackets()) {
             isReady &= Util.isReady(subPacket);

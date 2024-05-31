@@ -94,7 +94,7 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
     @Override
     public void modifyBlocks(ClientboundLevelChunkWithLightPacket chunkPacket, ChunkPacketInfo<BlockState> chunkPacketInfo) {
         if (!(chunkPacketInfo instanceof ChunkPacketInfoAntiXray antiXrayInfo)) {
-            ((IChunkPacket) chunkPacket).setReady(true);
+            ((IChunkPacket) chunkPacket).antixray$setReady(true);
             return;
         }
 
@@ -304,7 +304,7 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
             }
         }
 
-        ((IChunkPacket) chunkPacketInfoAntiXray.getChunkPacket()).setReady(true);
+        ((IChunkPacket) chunkPacketInfoAntiXray.getChunkPacket()).antixray$setReady(true);
     }
 
     private void obfuscateLayer(int y, BitStorageReader bitStorageReader, BitStorageWriter bitStorageWriter, boolean[] solid, boolean[] obfuscate, int[] presetBlockStateBits, boolean[][] current, boolean[][] next, boolean[][] nextNext, LevelChunkSection[] nearbyChunkSections, IntSupplier random) {

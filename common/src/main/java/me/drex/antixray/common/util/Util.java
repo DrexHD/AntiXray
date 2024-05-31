@@ -31,7 +31,7 @@ public final class Util {
 
     public static boolean isReady(Packet<?> packet) {
         if (packet instanceof IPacket iPacket) {
-            return iPacket.isReady();
+            return iPacket.isAntixray$ready();
         }
         return true;
     }

@@ -9,7 +9,7 @@ import java.nio.file.Path;
 public class AntiXrayNeoforge extends AntiXray {
 
     public AntiXrayNeoforge() {
-        super(Platform.FORGE);
+        super(Platform.NEOFORGE);
     }
 
     @Override

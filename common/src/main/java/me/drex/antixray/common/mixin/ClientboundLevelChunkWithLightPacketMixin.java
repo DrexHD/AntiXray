@@ -56,7 +56,10 @@ public abstract class ClientboundLevelChunkWithLightPacketMixin implements IChun
     @Override
     public void antixray$setReady(boolean antixray$ready) {
         this.antixray$ready = antixray$ready;
-        antixray$batchStartPacket.antixray$notifyChunkReady();
+        if (antixray$batchStartPacket != null) {
+            // Chunk packets may not have a batch start packet, if they are manually sent by other mods
+            antixray$batchStartPacket.antixray$notifyChunkReady();
+        }
     }
 
 

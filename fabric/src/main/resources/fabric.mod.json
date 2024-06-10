@@ -21,7 +21,6 @@
     "antixray.common.mixins.json",
     "antixray.fabric.mixins.json"
   ],
-  "accessWidener": "antixray.accesswidener",
   "depends": {
     "fabricloader": ">=0.12.6",
     "java": ">=17"

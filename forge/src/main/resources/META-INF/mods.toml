@@ -11,6 +11,3 @@ authors = "Drex"
 description = '''
 This mod implements Papers 0367-Anti-Xray.patch!
 '''
-
-[custom.mc-publish]
-modrinth = "sml2FMaA"

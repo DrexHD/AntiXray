@@ -1,7 +1,7 @@
 package me.drex.antixray.forge;
 
-import me.drex.antixray.AntiXray;
-import me.drex.antixray.util.Platform;
+import me.drex.antixray.common.AntiXray;
+import me.drex.antixray.common.util.Platform;
 import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.nio.file.Path;

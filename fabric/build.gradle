@@ -29,7 +29,7 @@ dependencies {
 
     runtimeOnly(include("com.moandjiezana.toml:toml4j:${project.toml_version}"))
 
-    modCompileOnly("com.github.iPortalTeam.ImmersivePortalsMod:imm_ptl_core:${project.fabric_imm_ptl_core_version}") {
+    modCompileOnly("com.github.iPortalTeam:ImmersivePortalsMod:${project.fabric_imm_ptl_version}") {
         exclude(group: "net.fabricmc.fabric-api")
         transitive(false)
     }

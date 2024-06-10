@@ -21,15 +21,15 @@ import java.util.List;
 @Mixin(PlayerChunkSender.class)
 public abstract class PlayerChunkSenderMixin {
 
-    @Redirect(
+    @WrapOperation(
         method = "sendNextChunks",
         at = @At(
-            value = "FIELD",
-            target = "Lnet/minecraft/network/protocol/game/ClientboundChunkBatchStartPacket;INSTANCE:Lnet/minecraft/network/protocol/game/ClientboundChunkBatchStartPacket;"
+            value = "NEW",
+            target = "()Lnet/minecraft/network/protocol/game/ClientboundChunkBatchStartPacket;"
         )
     )
-    private ClientboundChunkBatchStartPacket addBatchSizeArgument(@Local List<LevelChunk> list, @Share("startPacket") LocalRef<IClientboundChunkBatchStartPacket> ipacketRef) {
-        ClientboundChunkBatchStartPacket startPacket = ClientboundChunkBatchStartPacketAccessor.init();
+    private ClientboundChunkBatchStartPacket addBatchSizeArgument(Operation<ClientboundChunkBatchStartPacket> original, @Local List<LevelChunk> list, @Share("startPacket") LocalRef<IClientboundChunkBatchStartPacket> ipacketRef) {
+        ClientboundChunkBatchStartPacket startPacket = original.call();
         IClientboundChunkBatchStartPacket iPacket = (IClientboundChunkBatchStartPacket) startPacket;
         iPacket.antixray$setBatchSize(list.size());
         ipacketRef.set(iPacket);

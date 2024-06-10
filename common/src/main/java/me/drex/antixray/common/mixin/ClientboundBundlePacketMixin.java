@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.Mixin;
  */
 @Mixin(ClientboundBundlePacket.class)
 public abstract class ClientboundBundlePacketMixin extends BundlePacket<ClientGamePacketListener> implements IPacket {
-    protected ClientboundBundlePacketMixin(Iterable<Packet<? super ClientGamePacketListener>> iterable) {
+    protected ClientboundBundlePacketMixin(Iterable<Packet<ClientGamePacketListener>> iterable) {
         super(iterable);
     }
 

@@ -6,7 +6,6 @@
     "ChunkAccessMixin",
     "ChunkSerializerMixin",
     "ClientboundBundlePacketMixin",
-    "ClientboundChunkBatchStartPacketAccessor",
     "ClientboundLevelChunkPacketDataMixin",
     "ClientboundLevelChunkWithLightPacketMixin",
     "ConnectionMixin",

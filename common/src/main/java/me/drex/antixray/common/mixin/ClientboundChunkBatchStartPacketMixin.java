@@ -22,8 +22,7 @@ public abstract class ClientboundChunkBatchStartPacketMixin implements IClientbo
         return new StreamCodec<>() {
             @Override
             public ClientboundChunkBatchStartPacket decode(ByteBuf object) {
-                // This mixin is only applied on the server, we don't care about decoding
-                throw new UnsupportedOperationException();
+                return ClientboundChunkBatchStartPacket.INSTANCE;
             }
 
             @Override

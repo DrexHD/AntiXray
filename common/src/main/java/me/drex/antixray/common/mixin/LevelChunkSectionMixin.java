@@ -44,8 +44,8 @@ public abstract class LevelChunkSectionMixin implements IChunkSection {
     public void addBlockPresets(Level level) {
         // Add preset block states
         BlockState[] presetBlockStates = null;
-        if (level instanceof ILevel levelInterface) {
-            final ChunkPacketBlockController controller = levelInterface.getChunkPacketBlockController();
+        if (level instanceof ILevel) {
+            final ChunkPacketBlockController controller = ((ILevel) level).getChunkPacketBlockController();
             if (controller != null) {
                 presetBlockStates = controller.getPresetBlockStates(level, this.bottomBlockY);
             }

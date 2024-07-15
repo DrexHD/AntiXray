@@ -56,7 +56,7 @@ allprojects {
 
 publishMods {
     changelog = fetchChangelog()
-    type = STABLE
+    type = BETA
 
     def nameFormat = "AntiXray %s ${version.get()}"
     def fabric = findProject(':fabric')

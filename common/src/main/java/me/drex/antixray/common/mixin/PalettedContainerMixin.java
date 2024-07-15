@@ -1,20 +1,17 @@
 package me.drex.antixray.common.mixin;
 
-import me.drex.antixray.common.interfaces.IPalettedContainer;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import me.drex.antixray.common.util.Arguments;
 import me.drex.antixray.common.util.ChunkPacketInfo;
 import net.minecraft.core.IdMap;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.VarInt;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.BitStorage;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.ai.village.poi.PoiManager;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.Palette;
 import net.minecraft.world.level.chunk.PalettedContainer;
-import net.minecraft.world.level.chunk.storage.ChunkSerializer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -25,17 +22,12 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Mixin(PalettedContainer.class)
-public abstract class PalettedContainerMixin<T> implements IPalettedContainer<T> {
+public abstract class PalettedContainerMixin<T> {
     @Unique
     private T[] presetValues;
-
-    @Unique
-    private List<T> paletteEntries;
 
     @Shadow
     private volatile PalettedContainer.Data<T> data;
@@ -47,12 +39,6 @@ public abstract class PalettedContainerMixin<T> implements IPalettedContainer<T>
     private IdMap<T> registry;
 
     @Shadow
-    public abstract void acquire();
-
-    @Shadow
-    public abstract void release();
-
-    @Shadow
     public abstract int onResize(int i, T object);
 
     @Shadow
@@ -62,8 +48,47 @@ public abstract class PalettedContainerMixin<T> implements IPalettedContainer<T>
         method = "<init>(Lnet/minecraft/core/IdMap;Lnet/minecraft/world/level/chunk/PalettedContainer$Strategy;Lnet/minecraft/world/level/chunk/PalettedContainer$Configuration;Lnet/minecraft/util/BitStorage;Ljava/util/List;)V",
         at = @At("TAIL")
     )
-    private void prepareVariables(IdMap<T> idMap, PalettedContainer.Strategy strategy, PalettedContainer.Configuration<T> configuration, BitStorage bitStorage, List<T> list, CallbackInfo ci) {
-        this.paletteEntries = list;
+    private void addPresetValuesWithEntries(IdMap<T> idList, PalettedContainer.Strategy strategy, PalettedContainer.Configuration<T> configuration, BitStorage storage, List<T> paletteEntries, CallbackInfo ci) {
+        //noinspection unchecked
+        this.presetValues = (T[]) Arguments.PRESET_VALUES.get();
+
+        if (presetValues != null && (configuration.factory() == PalettedContainer.Strategy.SINGLE_VALUE_PALETTE_FACTORY ? this.data.palette().valueFor(0) != Blocks.AIR.defaultBlockState() : configuration.factory() != PalettedContainer.Strategy.GLOBAL_PALETTE_FACTORY)) {
+            // In 1.18 Mojang unfortunately removed code that already handled possible resize operations on read from disk for us
+            // We readd this here but in a smarter way than it was before
+            int maxSize = 1 << configuration.bits();
+
+            for (T presetValue : presetValues) {
+                if (this.data.palette().getSize() >= maxSize) {
+                    java.util.Set<T> allValues = new java.util.HashSet<>(paletteEntries);
+                    allValues.addAll(Arrays.asList(presetValues));
+                    int newBits = Mth.ceillog2(allValues.size());
+
+                    if (newBits > configuration.bits()) {
+                        this.onResize(newBits, null);
+                    }
+
+                    break;
+                }
+
+                this.data.palette().idFor(presetValue);
+            }
+        }
+    }
+
+    @Inject(
+        method = "<init>(Lnet/minecraft/core/IdMap;Ljava/lang/Object;Lnet/minecraft/world/level/chunk/PalettedContainer$Strategy;)V"
+        , at = @At("TAIL")
+    )
+    public void addPresetValuesInit(IdMap idMap, Object object, PalettedContainer.Strategy strategy, CallbackInfo ci) {
+        this.presetValues = (T[]) Arguments.PRESET_VALUES.get();
+    }
+
+    @Inject(
+        method = "<init>(Lnet/minecraft/core/IdMap;Lnet/minecraft/world/level/chunk/PalettedContainer$Strategy;Lnet/minecraft/world/level/chunk/PalettedContainer$Data;)V",
+        at = @At("TAIL")
+    )
+    public void addPresetValuesInit(IdMap idMap, PalettedContainer.Strategy strategy, PalettedContainer.Data data, CallbackInfo ci) {
+        this.presetValues = (T[]) Arguments.PRESET_VALUES.get();
     }
 
     @Redirect(
@@ -97,70 +122,38 @@ public abstract class PalettedContainerMixin<T> implements IPalettedContainer<T>
         return object == null ? -1 : palette.idFor(object);
     }
 
-    /**
-     * Adds preset values after initialization of this PalettedContainer.
-     * Only use this method after {@link PalettedContainer#PalettedContainer(IdMap, PalettedContainer.Strategy, PalettedContainer.Configuration, BitStorage, List)}.
-     * For now, this is only used in {@link ChunkSerializer#read(ServerLevel, PoiManager, ChunkPos, CompoundTag)}
-     * if the palette gets read from NBT.
-     */
-    @Override
-    public void addPresetValuesWithEntries(T[] presetValues) {
-        this.presetValues = presetValues;
-        PalettedContainer.Configuration<T> provider = this.data.configuration();
-        if (presetValues != null && (provider.factory() == PalettedContainer.Strategy.SINGLE_VALUE_PALETTE_FACTORY ? this.data.palette().valueFor(0) != Blocks.AIR.defaultBlockState() : provider.factory() != PalettedContainer.Strategy.GLOBAL_PALETTE_FACTORY)) {
-            // In 1.18 Mojang unfortunately removed code that already handled possible resize operations on read from disk for us
-            // We read this here but in a smarter way than it was before
-            int maxSize = 1 << provider.bits();
+    @Inject(
+        method = "write",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/world/level/chunk/PalettedContainer$Data;write(Lnet/minecraft/network/FriendlyByteBuf;)V",
+            shift = At.Shift.AFTER
+        )
+    )
+    public void setPresetValues(FriendlyByteBuf friendlyByteBuf, CallbackInfo ci) {
+        // custom arguments
+        ChunkPacketInfo<BlockState> chunkPacketInfo = Arguments.PACKET_INFO.get();
+        Integer chunkSectionIndex = Arguments.CHUNK_SECTION_INDEX.get();
 
-            for (T presetValue : presetValues) {
-                if (this.data.palette().getSize() >= maxSize) {
-                    Set<T> allValues = new HashSet<>(this.paletteEntries);
-                    allValues.addAll(Arrays.asList(presetValues));
-                    int newBits = Mth.ceillog2(allValues.size());
-
-                    if (newBits > provider.bits()) {
-                        this.onResize(newBits, null);
-                    }
-
-                    break;
-                }
-
-                this.data.palette().idFor(presetValue);
-            }
+        if (chunkPacketInfo != null) {
+            chunkPacketInfo.setPresetValues(chunkSectionIndex, (BlockState[]) this.presetValues);
         }
     }
 
-    /**
-     * Adds preset values after initialization of this PalettedContainer.
-     * Use this method after {@link PalettedContainer#PalettedContainer(IdMap, Object, PalettedContainer.Strategy)}.
-     * or {@link PalettedContainer#copy()})}.
-     */
-    @Override
-    public void addPresetValues(T[] presetValues) {
-        this.presetValues = presetValues;
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buf, ChunkPacketInfo<T> chunkPacketInfo, int bottomBlockY) {
-        this.acquire();
+    @WrapOperation(
+        method = {"copy", "recreate"},
+        at = @At(
+            value = "NEW",
+            target = "(Lnet/minecraft/core/IdMap;Lnet/minecraft/world/level/chunk/PalettedContainer$Strategy;Lnet/minecraft/world/level/chunk/PalettedContainer$Data;)Lnet/minecraft/world/level/chunk/PalettedContainer;"
+        )
+    )
+    private PalettedContainer<T> addPresetValuesCopy(IdMap<T> idMap, PalettedContainer.Strategy strategy, PalettedContainer.Data<T> data, Operation<PalettedContainer<T>> original) {
+        var previous = Arguments.PRESET_VALUES.get();
+        Arguments.PRESET_VALUES.set(presetValues);
         try {
-            buf.writeByte(this.data.storage().getBits());
-            this.data.palette().write(buf);
-            if (chunkPacketInfo != null) {
-                // Bottom block to 0 based chunk section index
-                int chunkSectionIndex = (bottomBlockY >> 4) - chunkPacketInfo.getChunk().getMinSection();
-                chunkPacketInfo.setBits(chunkSectionIndex, this.data.configuration().bits());
-                chunkPacketInfo.setPalette(chunkSectionIndex, this.data.palette());
-                chunkPacketInfo.setIndex(chunkSectionIndex, buf.writerIndex() + VarInt.getByteSize(this.data.storage().getRaw().length));
-            }
-
-            buf.writeLongArray(this.data.storage().getRaw());
-            if (chunkPacketInfo != null) {
-                int chunkSectionIndex = (bottomBlockY >> 4) - chunkPacketInfo.getChunk().getMinSection();
-                chunkPacketInfo.setPresetValues(chunkSectionIndex, this.presetValues);
-            }
+            return original.call(idMap, strategy, data);
         } finally {
-            this.release();
+            Arguments.PRESET_VALUES.set(previous);
         }
     }
 

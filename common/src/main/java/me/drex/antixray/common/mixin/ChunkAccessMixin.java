@@ -1,48 +1,49 @@
 package me.drex.antixray.common.mixin;
 
-import me.drex.antixray.common.interfaces.IChunkSection;
-import me.drex.antixray.common.util.Util;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
+import me.drex.antixray.common.util.Arguments;
 import net.minecraft.core.Registry;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunkSection;
-import net.minecraft.world.level.chunk.UpgradeData;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(ChunkAccess.class)
 public abstract class ChunkAccessMixin {
 
-    @Unique
-    private static void replaceMissingSections(LevelHeightAccessor accessor, Registry<Biome> registry, LevelChunkSection[] levelChunkSections) {
-        // [VanillaCopy] Re-added LevelHeightAccessor, which was removed from replaceMissingSections in 23w16a (1.20)
-        for (int i = 0; i < levelChunkSections.length; i++) {
-            if (levelChunkSections[i] == null) {
-                levelChunkSections[i] = new LevelChunkSection(registry);
-                Level level = Util.getLevel(accessor);
-                if (level instanceof ServerLevel serverLevel) {
-                    ((IChunkSection) levelChunkSections[i]).init(accessor.getSectionYFromSectionIndex(i) << 4);
-                    ((IChunkSection) levelChunkSections[i]).addBlockPresets(serverLevel);
-                }
-            }
+    @WrapOperation(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/chunk/ChunkAccess;replaceMissingSections(Lnet/minecraft/core/Registry;[Lnet/minecraft/world/level/chunk/LevelChunkSection;)V"))
+    public void setChunkAccessInstanceArgument(Registry<Biome> registry, LevelChunkSection[] chunkSections, Operation<Void> original) {
+        // set argument
+        var previous = Arguments.CHUNK_ACCESS.get();
+        Arguments.CHUNK_ACCESS.set((ChunkAccess) (Object) this);
+        try {
+            original.call(registry, chunkSections);
+        } finally {
+            Arguments.CHUNK_ACCESS.set(previous);
         }
     }
 
-    @Redirect(
-        method = "<init>",
+    @WrapOperation(
+        method = "replaceMissingSections",
         at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/world/level/chunk/ChunkAccess;replaceMissingSections(Lnet/minecraft/core/Registry;[Lnet/minecraft/world/level/chunk/LevelChunkSection;)V"
+            value = "NEW", target = "(Lnet/minecraft/core/Registry;)Lnet/minecraft/world/level/chunk/LevelChunkSection;"
         )
     )
-    private void initializeChunkSection(Registry<Biome> registry, LevelChunkSection[] levelChunkSections, ChunkPos chunkPos, UpgradeData upgradeData, LevelHeightAccessor levelHeightAccessor) {
-        replaceMissingSections(levelHeightAccessor, registry, levelChunkSections);
+    private static LevelChunkSection setChunkSectionIndexArgument(Registry<Biome> arg, Operation<LevelChunkSection> original, @Local int i) {
+        // custom arguments
+        ChunkAccess thisChunkAccess = Arguments.CHUNK_ACCESS.get(); // simulate instance method
+
+        // set argument
+        var previous = Arguments.CHUNK_SECTION_INDEX.get();
+        Arguments.CHUNK_SECTION_INDEX.set(thisChunkAccess.levelHeightAccessor.getSectionYFromSectionIndex(i));
+        try {
+            return original.call(arg);
+        } finally {
+            Arguments.CHUNK_SECTION_INDEX.set(previous);
+        }
     }
 
 }

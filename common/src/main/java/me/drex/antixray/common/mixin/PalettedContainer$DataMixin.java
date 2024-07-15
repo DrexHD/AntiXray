@@ -1,8 +1,9 @@
 package me.drex.antixray.common.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import me.drex.antixray.common.util.Arguments;
 import me.drex.antixray.common.util.ChunkPacketInfo;
-import net.minecraft.core.Holder;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.VarInt;
 import net.minecraft.util.BitStorage;
@@ -13,42 +14,31 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PalettedContainer.Data.class)
 public abstract class PalettedContainer$DataMixin<T> {
-
-    @Shadow
-    @Final
-    private PalettedContainer.Configuration<T> configuration;
-
     @Shadow
     @Final
     Palette<T> palette;
 
-    @Shadow
-    @Final
-    BitStorage storage;
-
-    @Inject(
+    @WrapOperation(
         method = "write",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/network/FriendlyByteBuf;writeLongArray([J)Lnet/minecraft/network/FriendlyByteBuf;"
+            target = "Lnet/minecraft/util/BitStorage;getRaw()[J"
         )
     )
-    public void initializeChunkPacketInfo(FriendlyByteBuf buf, CallbackInfo ci) {
+    public long[] initializeChunkPacketInfo(BitStorage storage, Operation<long[]> original, FriendlyByteBuf buf) {
         // custom arguments
         ChunkPacketInfo<BlockState> chunkPacketInfo = Arguments.PACKET_INFO.get();
         Integer chunkSectionIndex = Arguments.CHUNK_SECTION_INDEX.get();
 
         if (chunkPacketInfo != null) {
-            chunkPacketInfo.setBits(chunkSectionIndex, this.configuration.bits());
+            chunkPacketInfo.setBits(chunkSectionIndex, storage.getBits());
             //noinspection unchecked
             chunkPacketInfo.setPalette(chunkSectionIndex, (Palette<BlockState>) this.palette);
             chunkPacketInfo.setIndex(chunkSectionIndex, buf.writerIndex() + VarInt.getByteSize(storage.getRaw().length));
         }
+        return original.call(storage);
     }
-
 }

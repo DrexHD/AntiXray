@@ -64,9 +64,9 @@ components.java {
 }
 
 processResources {
-    inputs.property "version", version
+    inputs.property "mod_version", mod_version
 
-    filesMatching("META-INF/forge.mods.toml") {
-        expand "version": version
+    filesMatching("META-INF/mods.toml") {
+        expand "mod_version": mod_version
     }
 }

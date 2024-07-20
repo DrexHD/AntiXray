@@ -59,9 +59,9 @@ components.java {
 }
 
 processResources {
-    inputs.property "version", version
+    inputs.property "mod_version", mod_version
 
     filesMatching("META-INF/neoforge.mods.toml") {
-        expand "version": version
+        expand "mod_version": mod_version
     }
 }

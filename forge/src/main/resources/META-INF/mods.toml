@@ -5,7 +5,7 @@ license = "MIT"
 
 [[mods]]
 modId = "antixray"
-version = "${version}"
+version = "${mod_version}"
 displayName = "AntiXray"
 authors = "Drex"
 description = '''

@@ -5,10 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.4.3] - 2024-07-20
 ### Changed
 - Enable forge builds
 - Improve solid block check for modded blocks
 - Improve mod compatibility
+
+### Fixed
+- Class not found warnings at startup
 
 ## [1.4.2] - 2024-06-17
 ### Fixed

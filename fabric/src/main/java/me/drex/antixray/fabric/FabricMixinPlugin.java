@@ -23,7 +23,7 @@ public class FabricMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        if (mixinClassName.startsWith("me.drex.antixray.mixin.compat.imm_ptl_core")) {
+        if (mixinClassName.startsWith("me.drex.antixray.fabric.mixin.imm_ptl_core")) {
             return IMMERSIVE_PORTALS_CORE;
         }
         return true;

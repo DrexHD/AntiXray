@@ -8,7 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.4.3] - 2024-07-20
 ### Changed
-- Enable forge builds
 - Improve solid block check for modded blocks
 - Improve mod compatibility
 

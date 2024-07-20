@@ -59,9 +59,9 @@ components.java {
 }
 
 processResources {
-    inputs.property "version", version
+    inputs.property "mod_version", mod_version
 
     filesMatching("fabric.mod.json") {
-        expand "version": version
+        expand "mod_version": mod_version
     }
 }

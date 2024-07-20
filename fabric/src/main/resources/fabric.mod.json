@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "antixray",
-  "version": "${version}",
+  "version": "${mod_version}",
   "name": "AntiXray",
   "description": "This mod implements Papers 0367-Anti-Xray.patch!",
   "authors": [

@@ -11,9 +11,6 @@
     "net/minecraft/class_3218": [
       "me/drex/antixray/common/interfaces/ILevel"
     ],
-    "net/minecraft/class_2658": [
-      "me/drex/antixray/common/interfaces/IPacket"
-    ],
     "net/minecraft/class_8042": [
       "me/drex/antixray/common/interfaces/IPacket"
     ],

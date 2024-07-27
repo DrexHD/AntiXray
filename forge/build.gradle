@@ -17,7 +17,7 @@ configurations {
 
 loom {
     forge {
-        mixinConfig "antixray.common.mixins.json"
+        mixinConfig "antixray.common.mixins.json", "antixray.forge.mixins.json"
         convertAccessWideners.set true
     }
 }
@@ -32,7 +32,8 @@ dependencies {
     include(forgeRuntimeLibrary("com.moandjiezana.toml:toml4j:${project.toml_version}"))
 
     // Mixin Extras
-    include(forgeRuntimeLibrary("io.github.llamalad7:mixinextras-forge:${project.mixin_extras}"))
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${project.mixin_extras}"))
+    implementation(include("io.github.llamalad7:mixinextras-forge:${project.mixin_extras}"))
 
     // Allows running other mods in dev environment
     modLocalRuntime(fileTree(dir: 'runtime-mods', include: '*.jar'))

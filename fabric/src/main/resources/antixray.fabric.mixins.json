@@ -4,8 +4,6 @@
   "compatibilityLevel": "JAVA_17",
   "plugin": "me.drex.antixray.fabric.FabricMixinPlugin",
   "mixins": [
-    "imm_ptl_core.ClientboundCustomPayloadPacketMixin",
-    "imm_ptl_core.PacketRedirection$PayloadMixin"
   ],
   "injectors": {
     "defaultRequire": 1

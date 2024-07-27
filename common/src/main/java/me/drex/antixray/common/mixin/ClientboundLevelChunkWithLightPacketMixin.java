@@ -29,9 +29,6 @@ public abstract class ClientboundLevelChunkWithLightPacketMixin implements IChun
     @Unique
     boolean antixray$ready = false;
 
-    @Unique
-    IClientboundChunkBatchStartPacket antixray$batchStartPacket;
-
     @WrapOperation(
         method = "<init>(Lnet/minecraft/world/level/chunk/LevelChunk;Lnet/minecraft/world/level/lighting/LevelLightEngine;Ljava/util/BitSet;Ljava/util/BitSet;)V",
         at = @At(
@@ -44,9 +41,6 @@ public abstract class ClientboundLevelChunkWithLightPacketMixin implements IChun
         @Share("controller") LocalRef<ChunkPacketBlockController> controllerLocalRef,
         @Share("chunkPacketInfo") LocalRef<ChunkPacketInfo<BlockState>> chunkPacketInfoLocalRef
     ) {
-        // custom argument
-        this.antixray$batchStartPacket = Arguments.BATCH_START_PACKET.get();
-
         final ChunkPacketBlockController controller = Util.getBlockController(chunk.getLevel());
         final ChunkPacketInfo<BlockState> packetInfo = controller.getChunkPacketInfo((ClientboundLevelChunkWithLightPacket) (Object) this, chunk);
 
@@ -82,10 +76,6 @@ public abstract class ClientboundLevelChunkWithLightPacketMixin implements IChun
     @Override
     public void antixray$setReady(boolean antixray$ready) {
         this.antixray$ready = antixray$ready;
-        if (antixray$batchStartPacket != null) {
-            // Chunk packets may not have a batch start packet, if they are manually sent by other mods
-            antixray$batchStartPacket.antixray$notifyChunkReady();
-        }
     }
 
 

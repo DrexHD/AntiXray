@@ -20,28 +20,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientboundLevelChunkPacketData.class)
 public abstract class ClientboundLevelChunkPacketDataMixin {
-    @Shadow
-    @Final
-    private byte[] buffer;
-
-    @Inject(
-        method = "<init>(Lnet/minecraft/world/level/chunk/LevelChunk;)V",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/network/protocol/game/ClientboundLevelChunkPacketData;extractChunkData(Lnet/minecraft/network/FriendlyByteBuf;Lnet/minecraft/world/level/chunk/LevelChunk;)V"
-        )
-    )
-    private void setChunkPacketInfoBuffer(LevelChunk levelChunk, CallbackInfo ci) {
-        // custom arguments
+    // 1.20.1 - Moved setBuffer to extractChunkData, because mixins can't inject early enough into constructors
+    @Inject(method = "extractChunkData", at = @At("HEAD"))
+    private static void initializeChunkSectionIndex(FriendlyByteBuf friendlyByteBuf, LevelChunk levelChunk, CallbackInfo ci, @Share("chunkSectionIndex") LocalIntRef chunkSectionIndexRef) {
         ChunkPacketInfo<BlockState> chunkPacketInfo = Arguments.PACKET_INFO.get();
 
         if (chunkPacketInfo != null) {
-            chunkPacketInfo.setBuffer(this.buffer);
+            chunkPacketInfo.setBuffer(friendlyByteBuf.array());
         }
-    }
-
-    @Inject(method = "extractChunkData", at = @At("HEAD"))
-    private static void initializeChunkSectionIndex(FriendlyByteBuf friendlyByteBuf, LevelChunk levelChunk, CallbackInfo ci, @Share("chunkSectionIndex") LocalIntRef chunkSectionIndexRef) {
         chunkSectionIndexRef.set(0);
     }
 

@@ -5,7 +5,6 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import me.drex.antixray.common.util.Arguments;
 import me.drex.antixray.common.util.ChunkPacketInfo;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.VarInt;
 import net.minecraft.util.BitStorage;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.Palette;
@@ -41,7 +40,7 @@ public abstract class PalettedContainer$DataMixin<T> {
             chunkPacketInfo.setBits(chunkSectionIndex, storage.getBits());
             //noinspection unchecked
             chunkPacketInfo.setPalette(chunkSectionIndex, (Palette<BlockState>) this.palette);
-            chunkPacketInfo.setIndex(chunkSectionIndex, buf.writerIndex() + VarInt.getByteSize(storage.getRaw().length));
+            chunkPacketInfo.setIndex(chunkSectionIndex, buf.writerIndex() + FriendlyByteBuf.getVarIntSize(storage.getRaw().length));
         }
         return original.call(storage);
     }

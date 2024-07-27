@@ -13,10 +13,6 @@
     ],
     "net/minecraft/class_8042": [
       "me/drex/antixray/common/interfaces/IPacket"
-    ],
-    "net/minecraft/class_8739": [
-      "me/drex/antixray/common/interfaces/IClientboundChunkBatchStartPacket",
-      "me/drex/antixray/common/interfaces/IPacket"
     ]
   }
 }

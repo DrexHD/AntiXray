@@ -29,6 +29,10 @@ public abstract class LevelChunkSectionMixin {
         )
     )
     public PalettedContainer<BlockState> setPresetValuesArgument(IdMap<BlockState> idMap, Object defaultValue, PalettedContainer.Strategy strategy, Operation<PalettedContainer<BlockState>> original) {
+        if (((Object) this).getClass() != LevelChunkSection.class) {
+            // Compatibility with Flywheel's VirtualChunkSection
+            return original.call(idMap, defaultValue, strategy);
+        }
         // custom arguments
         ChunkAccess chunkAccess = Arguments.CHUNK_ACCESS.get();
         Integer chunkSectionIndex = Arguments.CHUNK_SECTION_INDEX.get();

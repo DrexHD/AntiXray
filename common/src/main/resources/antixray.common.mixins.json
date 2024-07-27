@@ -12,6 +12,7 @@
     "ConnectionMixin",
     "LevelChunkSectionMixin",
     "LevelMixin",
+    "PalettedContainer$DataMixin",
     "PalettedContainerMixin",
     "PlayerChunkSenderMixin",
     "ServerLevelMixin",

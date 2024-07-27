@@ -208,7 +208,7 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
         for (int chunkSectionIndex = 0; chunkSectionIndex <= maxChunkSectionIndex; chunkSectionIndex++) {
             if (chunkPacketInfoAntiXray.isWritten(chunkSectionIndex) && chunkPacketInfoAntiXray.getPresetValues(chunkSectionIndex) != null) {
                 if (chunkPacketInfoAntiXray.getPalette(chunkSectionIndex) instanceof GlobalPalette) {
-                    presetBlockStateBits = getPresetBlockStateBits(level, chunkSectionIndex + chunk.getMinSection());
+                    presetBlockStateBits = getPresetBlockStateBits(level, (chunkSectionIndex + chunk.getMinSection()) << 4);
                 } else {
                     BlockState[] presetBlockStates = chunkPacketInfoAntiXray.getPresetValues(chunkSectionIndex);
 

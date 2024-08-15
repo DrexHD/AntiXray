@@ -93,6 +93,15 @@ public abstract class PalettedContainerMixin<T> {
         this.antiXray$presetValues = (T[]) Arguments.PRESET_VALUES.get();
     }
 
+    @Inject(
+        method = "<init>(Lnet/minecraft/world/level/chunk/PalettedContainer;)V",
+        at = @At("TAIL")
+    )
+    public void addPresetValuesInit(PalettedContainer<T> palettedContainer, CallbackInfo ci) {
+        //noinspection unchecked
+        this.antiXray$presetValues = (T[]) Arguments.PRESET_VALUES.get();
+    }
+
     @Redirect(
         method = "onResize",
         at = @At(
@@ -146,14 +155,15 @@ public abstract class PalettedContainerMixin<T> {
         method = "copy",
         at = @At(
             value = "NEW",
-            target = "(Lnet/minecraft/core/IdMap;Lnet/minecraft/world/level/chunk/PalettedContainer$Strategy;Lnet/minecraft/world/level/chunk/PalettedContainer$Data;)Lnet/minecraft/world/level/chunk/PalettedContainer;"
+            target = "(Lnet/minecraft/world/level/chunk/PalettedContainer;)Lnet/minecraft/world/level/chunk/PalettedContainer;"
         )
     )
-    private PalettedContainer<T> addPresetValuesCopy(IdMap<T> idMap, PalettedContainer.Strategy strategy, PalettedContainer.Data<T> data, Operation<PalettedContainer<T>> original) {
+    // IdMap<T> idMap, PalettedContainer.Strategy strategy, PalettedContainer.Data<T> data, Operation<PalettedContainer<T>> original
+    private PalettedContainer<T> addPresetValuesCopy(PalettedContainer<T> palettedContainer, Operation<PalettedContainer<T>> original) {
         var previous = Arguments.PRESET_VALUES.get();
         Arguments.PRESET_VALUES.set(antiXray$presetValues);
         try {
-            return original.call(idMap, strategy, data);
+            return original.call(palettedContainer);
         } finally {
             Arguments.PRESET_VALUES.set(previous);
         }

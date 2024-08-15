@@ -27,7 +27,7 @@ import java.util.List;
 @Mixin(PalettedContainer.class)
 public abstract class PalettedContainerMixin<T> {
     @Unique
-    private T[] presetValues;
+    private T[] antiXray$presetValues;
 
     @Shadow
     private volatile PalettedContainer.Data<T> data;
@@ -50,17 +50,17 @@ public abstract class PalettedContainerMixin<T> {
     )
     private void addPresetValuesWithEntries(IdMap<T> idList, PalettedContainer.Strategy strategy, PalettedContainer.Configuration<T> configuration, BitStorage storage, List<T> paletteEntries, CallbackInfo ci) {
         //noinspection unchecked
-        this.presetValues = (T[]) Arguments.PRESET_VALUES.get();
+        this.antiXray$presetValues = (T[]) Arguments.PRESET_VALUES.get();
 
-        if (presetValues != null && (configuration.factory() == PalettedContainer.Strategy.SINGLE_VALUE_PALETTE_FACTORY ? this.data.palette().valueFor(0) != Blocks.AIR.defaultBlockState() : configuration.factory() != PalettedContainer.Strategy.GLOBAL_PALETTE_FACTORY)) {
+        if (antiXray$presetValues != null && (configuration.factory() == PalettedContainer.Strategy.SINGLE_VALUE_PALETTE_FACTORY ? this.data.palette().valueFor(0) != Blocks.AIR.defaultBlockState() : configuration.factory() != PalettedContainer.Strategy.GLOBAL_PALETTE_FACTORY)) {
             // In 1.18 Mojang unfortunately removed code that already handled possible resize operations on read from disk for us
             // We readd this here but in a smarter way than it was before
             int maxSize = 1 << configuration.bits();
 
-            for (T presetValue : presetValues) {
+            for (T presetValue : antiXray$presetValues) {
                 if (this.data.palette().getSize() >= maxSize) {
                     java.util.Set<T> allValues = new java.util.HashSet<>(paletteEntries);
-                    allValues.addAll(Arrays.asList(presetValues));
+                    allValues.addAll(Arrays.asList(antiXray$presetValues));
                     int newBits = Mth.ceillog2(allValues.size());
 
                     if (newBits > configuration.bits()) {
@@ -79,16 +79,18 @@ public abstract class PalettedContainerMixin<T> {
         method = "<init>(Lnet/minecraft/core/IdMap;Ljava/lang/Object;Lnet/minecraft/world/level/chunk/PalettedContainer$Strategy;)V"
         , at = @At("TAIL")
     )
-    public void addPresetValuesInit(IdMap idMap, Object object, PalettedContainer.Strategy strategy, CallbackInfo ci) {
-        this.presetValues = (T[]) Arguments.PRESET_VALUES.get();
+    public void addPresetValuesInit(IdMap<T> idMap, Object object, PalettedContainer.Strategy strategy, CallbackInfo ci) {
+        //noinspection unchecked
+        this.antiXray$presetValues = (T[]) Arguments.PRESET_VALUES.get();
     }
 
     @Inject(
         method = "<init>(Lnet/minecraft/core/IdMap;Lnet/minecraft/world/level/chunk/PalettedContainer$Strategy;Lnet/minecraft/world/level/chunk/PalettedContainer$Data;)V",
         at = @At("TAIL")
     )
-    public void addPresetValuesInit(IdMap idMap, PalettedContainer.Strategy strategy, PalettedContainer.Data data, CallbackInfo ci) {
-        this.presetValues = (T[]) Arguments.PRESET_VALUES.get();
+    public void addPresetValuesInit(IdMap<T> idMap, PalettedContainer.Strategy strategy, PalettedContainer.Data<T> data, CallbackInfo ci) {
+        //noinspection unchecked
+        this.antiXray$presetValues = (T[]) Arguments.PRESET_VALUES.get();
     }
 
     @Redirect(
@@ -99,9 +101,9 @@ public abstract class PalettedContainerMixin<T> {
         )
     )
     private PalettedContainer.Data<T> addPresetValues(PalettedContainer<T> container, PalettedContainer.Data<T> data, int bits, int i, T object) {
-        if (this.presetValues != null && object != null && data.configuration().factory() == PalettedContainer.Strategy.SINGLE_VALUE_PALETTE_FACTORY) {
+        if (this.antiXray$presetValues != null && object != null && data.configuration().factory() == PalettedContainer.Strategy.SINGLE_VALUE_PALETTE_FACTORY) {
             int duplicates = 0;
-            List<T> presetValues = Arrays.asList(this.presetValues);
+            List<T> presetValues = Arrays.asList(this.antiXray$presetValues);
             duplicates += presetValues.contains(object) ? 1 : 0;
             duplicates += presetValues.contains(data.palette().valueFor(0)) ? 1 : 0;
             bits = Mth.ceillog2((1 << this.strategy.calculateBitsForSerialization(this.registry, 1 << bits)) + presetValues.size() - duplicates);
@@ -118,7 +120,7 @@ public abstract class PalettedContainerMixin<T> {
         )
     )
     private int addPresetValues(Palette<T> palette, T object) {
-        this.addPresetValues();
+        this.antiXray$addPresetValues();
         return object == null ? -1 : palette.idFor(object);
     }
 
@@ -136,12 +138,12 @@ public abstract class PalettedContainerMixin<T> {
         Integer chunkSectionIndex = Arguments.CHUNK_SECTION_INDEX.get();
 
         if (chunkPacketInfo != null) {
-            chunkPacketInfo.setPresetValues(chunkSectionIndex, (BlockState[]) this.presetValues);
+            chunkPacketInfo.setPresetValues(chunkSectionIndex, (BlockState[]) this.antiXray$presetValues);
         }
     }
 
     @WrapOperation(
-        method = {"copy", "recreate"},
+        method = "copy",
         at = @At(
             value = "NEW",
             target = "(Lnet/minecraft/core/IdMap;Lnet/minecraft/world/level/chunk/PalettedContainer$Strategy;Lnet/minecraft/world/level/chunk/PalettedContainer$Data;)Lnet/minecraft/world/level/chunk/PalettedContainer;"
@@ -149,7 +151,7 @@ public abstract class PalettedContainerMixin<T> {
     )
     private PalettedContainer<T> addPresetValuesCopy(IdMap<T> idMap, PalettedContainer.Strategy strategy, PalettedContainer.Data<T> data, Operation<PalettedContainer<T>> original) {
         var previous = Arguments.PRESET_VALUES.get();
-        Arguments.PRESET_VALUES.set(presetValues);
+        Arguments.PRESET_VALUES.set(antiXray$presetValues);
         try {
             return original.call(idMap, strategy, data);
         } finally {
@@ -157,9 +159,27 @@ public abstract class PalettedContainerMixin<T> {
         }
     }
 
-    private void addPresetValues() {
-        if (this.presetValues != null && this.data.configuration().factory() != PalettedContainer.Strategy.GLOBAL_PALETTE_FACTORY) {
-            for (T presetValue : this.presetValues) {
+    @WrapOperation(
+        method = "recreate",
+        at = @At(
+            value = "NEW",
+            target = "(Lnet/minecraft/core/IdMap;Ljava/lang/Object;Lnet/minecraft/world/level/chunk/PalettedContainer$Strategy;)Lnet/minecraft/world/level/chunk/PalettedContainer;"
+        )
+    )
+    private PalettedContainer<T> addPresetValuesRecreate(IdMap<T> idMap, Object object, PalettedContainer.Strategy strategy, Operation<PalettedContainer<T>> original) {
+        var previous = Arguments.PRESET_VALUES.get();
+        Arguments.PRESET_VALUES.set(antiXray$presetValues);
+        try {
+            return original.call(idMap, strategy, strategy);
+        } finally {
+            Arguments.PRESET_VALUES.set(previous);
+        }
+    }
+
+    @Unique
+    private void antiXray$addPresetValues() {
+        if (this.antiXray$presetValues != null && this.data.configuration().factory() != PalettedContainer.Strategy.GLOBAL_PALETTE_FACTORY) {
+            for (T presetValue : this.antiXray$presetValues) {
                 this.data.palette().idFor(presetValue);
             }
         }

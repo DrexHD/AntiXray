@@ -170,7 +170,7 @@ public abstract class PalettedContainerMixin<T> {
         var previous = Arguments.PRESET_VALUES.get();
         Arguments.PRESET_VALUES.set(antiXray$presetValues);
         try {
-            return original.call(idMap, strategy, strategy);
+            return original.call(idMap, object, strategy);
         } finally {
             Arguments.PRESET_VALUES.set(previous);
         }

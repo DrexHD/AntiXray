@@ -201,7 +201,7 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
         LevelChunkSection[] nearbyChunkSections = new LevelChunkSection[4];
         LevelChunk chunk = chunkPacketInfoAntiXray.getChunk();
         Level level = chunk.getLevel();
-        int maxChunkSectionIndex = Math.min((maxBlockHeight >> 4) - chunk.getMinSection(), chunk.getSectionsCount() - 1);
+        int maxChunkSectionIndex = Math.min((maxBlockHeight >> 4) - chunk.getMinSectionY(), chunk.getSectionsCount() - 1);
         bitStorageReader.setBuffer(chunkPacketInfoAntiXray.getBuffer());
         bitStorageWriter.setBuffer(chunkPacketInfoAntiXray.getBuffer());
         int numberOfBlocks = presetBlockStateBits.length;
@@ -209,7 +209,7 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
         for (int chunkSectionIndex = 0; chunkSectionIndex <= maxChunkSectionIndex; chunkSectionIndex++) {
             if (chunkPacketInfoAntiXray.isWritten(chunkSectionIndex) && chunkPacketInfoAntiXray.getPresetValues(chunkSectionIndex) != null) {
                 if (chunkPacketInfoAntiXray.getPalette(chunkSectionIndex) instanceof GlobalPalette) {
-                    presetBlockStateBits = getPresetBlockStateBits(level, (chunkSectionIndex + chunk.getMinSection()) << 4);
+                    presetBlockStateBits = getPresetBlockStateBits(level, (chunkSectionIndex + chunk.getMinSectionY()) << 4);
                 } else {
                     BlockState[] presetBlockStates = chunkPacketInfoAntiXray.getPresetValues(chunkSectionIndex);
 

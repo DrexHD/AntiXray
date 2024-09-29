@@ -64,7 +64,7 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
             }
         }
 
-        EmptyLevelChunk emptyChunk = new EmptyLevelChunk(level, new ChunkPos(0, 0), level.registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(Biomes.PLAINS));
+        EmptyLevelChunk emptyChunk = new EmptyLevelChunk(level, new ChunkPos(0, 0), level.registryAccess().lookupOrThrow(Registries.BIOME).getOrThrow(Biomes.PLAINS));
 
         Block.BLOCK_STATE_REGISTRY.iterator().forEachRemaining((blockState) -> {
                 solidGlobal.put(blockState, isSolid(emptyChunk, blockState, lavaObscures));

@@ -75,7 +75,7 @@ public class WorldConfig {
                 ResourceLocation location = ResourceLocation.read(stringReader);
                 if (isTag) {
                     TagKey<Block> tagKey = TagKey.create(Registries.BLOCK, location);
-                    Optional<HolderSet.Named<Block>> optional = BuiltInRegistries.BLOCK.getTag(tagKey);
+                    Optional<HolderSet.Named<Block>> optional = BuiltInRegistries.BLOCK.get(tagKey);
                     if (optional.isPresent()) {
                         for (Holder<Block> holder : optional.get()) {
                             result.add(holder.value());

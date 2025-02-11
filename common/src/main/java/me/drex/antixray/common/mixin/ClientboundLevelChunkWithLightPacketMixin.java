@@ -10,6 +10,7 @@ import me.drex.antixray.common.util.Arguments;
 import me.drex.antixray.common.util.ChunkPacketInfo;
 import me.drex.antixray.common.util.Util;
 import me.drex.antixray.common.util.controller.ChunkPacketBlockController;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkPacketData;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.world.level.block.state.BlockState;
@@ -72,6 +73,14 @@ public abstract class ClientboundLevelChunkWithLightPacketMixin implements IChun
         @Share("chunkPacketInfo") LocalRef<ChunkPacketInfo<BlockState>> chunkPacketInfoLocalRef
     ) {
         controllerLocalRef.get().modifyBlocks((ClientboundLevelChunkWithLightPacket) (Object) this, chunkPacketInfoLocalRef.get());
+    }
+
+    @Inject(
+        method = "<init>(Lnet/minecraft/network/RegistryFriendlyByteBuf;)V",
+        at = @At("TAIL")
+    )
+    public void markReady(RegistryFriendlyByteBuf registryFriendlyByteBuf, CallbackInfo ci) {
+        this.antixray$ready = true;
     }
 
     @Override

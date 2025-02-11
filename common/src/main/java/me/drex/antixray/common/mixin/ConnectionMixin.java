@@ -1,6 +1,8 @@
 package me.drex.antixray.common.mixin;
 
 import com.google.common.collect.Queues;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.netty.channel.Channel;
 import me.drex.antixray.common.util.Util;
 import net.minecraft.network.Connection;
@@ -8,9 +10,7 @@ import net.minecraft.network.PacketSendListener;
 import net.minecraft.network.protocol.Packet;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Queue;
 import java.util.function.BooleanSupplier;
@@ -58,31 +58,39 @@ public abstract class ConnectionMixin {
         if (this.antiXray$isActionReady.isEmpty() && Util.isReady(packet)) {
             this.sendPacket(packet, listener, flush);
         } else {
-            pendingActions.add(connection -> this.sendPacket(packet, listener, flush));
-            antiXray$isActionReady.add(() -> Util.isReady(packet));
+            synchronized (this.pendingActions) {
+                pendingActions.add(connection -> this.sendPacket(packet, listener, flush));
+                antiXray$isActionReady.add(() -> Util.isReady(packet));
+            }
         }
     }
 
-    @Inject(
+    @WrapOperation(
         method = "send(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketSendListener;Z)V",
         at = @At(
             value = "INVOKE",
             target = "Ljava/util/Queue;add(Ljava/lang/Object;)Z"
         )
     )
-    public void addToActionReadyQueue(Packet<?> packet, PacketSendListener listener, boolean flush, CallbackInfo ci) {
-        antiXray$isActionReady.add(() -> Util.isReady(packet));
+    public <E> boolean addToActionReadyQueue(Queue<E> instance, E e, Operation<Boolean> original, Packet<?> packet) {
+        synchronized (this.pendingActions) {
+            antiXray$isActionReady.add(() -> Util.isReady(packet));
+            return original.call(instance, e);
+        }
     }
 
-    @Inject(
+    @WrapOperation(
         method = {"flushChannel", "runOnceConnected"},
         at = @At(
             value = "INVOKE",
             target = "Ljava/util/Queue;add(Ljava/lang/Object;)Z"
         )
     )
-    public void addToActionReadyQueue(CallbackInfo ci) {
-        antiXray$isActionReady.add(() -> true);
+    public <E> boolean addToActionReadyQueue(Queue<E> instance, E e, Operation<Boolean> original) {
+        synchronized (this.pendingActions) {
+            antiXray$isActionReady.add(() -> true);
+            return original.call(instance, e);
+        }
     }
 
 }

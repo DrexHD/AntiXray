@@ -19,6 +19,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class WorldConfig {
     public boolean enabled = false;
@@ -70,6 +72,11 @@ public class WorldConfig {
             try {
                 StringReader stringReader = new StringReader(blockId);
                 boolean isTag = false;
+                Consumer<Block> blockConsumer = result::add;
+                if (stringReader.canRead() && stringReader.peek() == '!') {
+                    blockConsumer = result::remove;
+                    stringReader.skip();
+                }
                 if (stringReader.canRead() && stringReader.peek() == '#') {
                     isTag = true;
                     stringReader.skip();
@@ -80,7 +87,7 @@ public class WorldConfig {
                     Optional<HolderSet.Named<Block>> optional = BuiltInRegistries.BLOCK.get(tagKey);
                     if (optional.isPresent()) {
                         for (Holder<Block> holder : optional.get()) {
-                            result.add(holder.value());
+                            blockConsumer.accept(holder.value());
                         }
                     } else {
                         AntiXray.LOGGER.warn("Unknown block tag id: \"{}\"", blockId);
@@ -88,7 +95,7 @@ public class WorldConfig {
                 } else {
                     Optional<Block> optional = BuiltInRegistries.BLOCK.getOptional(location);
                     optional.ifPresentOrElse(
-                        result::add,
+                        blockConsumer,
                         () -> AntiXray.LOGGER.warn("Unknown block id: \"{}\"", blockId)
                     );
                 }

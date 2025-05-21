@@ -16,8 +16,8 @@ engineMode = 3
 maxBlockHeight = 256
 updateRadius = 2
 lavaObscures = false
-hiddenBlocks = ["#c:ores", "raw_copper_block", "raw_iron_block", "raw_gold_block"]
-replacementBlocks = ["stone", "deepslate", "andesite", "calcite", "diorite", "dirt", "granite", "gravel", "sand", "tuff", "mossy_cobblestone", "obsidian", "clay", "infested_stone", "amethyst_block", "budding_amethyst", "chest"]
+hiddenBlocks = ["#c:ores", "raw_copper_block", "raw_iron_block", "raw_gold_block", "!#antixray:hidden_only_ores"]
+replacementBlocks = ["#antixray:hidden_only_ores", "stone", "deepslate", "andesite", "calcite", "diorite", "dirt", "granite", "gravel", "sand", "tuff", "mossy_cobblestone", "obsidian", "clay", "infested_stone", "amethyst_block", "budding_amethyst", "chest"]
 
 [the_nether]
 enabled = true
@@ -47,6 +47,9 @@ it is recommended to increase this value)
 
 `replacementBlocks` is a list of blocks that will be obfuscated, but not used as fake blocks *(Engine mode 2/3 only)*
 
+*Blocks / block tags can be prefixed `!` to remove them from the block list.
+The rules are applied from left to right, removals should be specified after additions. **(since 1.4.10)***
+
 ### Engine Modes
 
 |                                                                    Info                                                                     |            Image            |
@@ -62,6 +65,11 @@ modify a lot of blocks at once, eg: explosions)
 ### Custom Dimensions
 
 To configure antixray in custom dimensions, specify the dimension id like this: `["custom:cool_world"]`
+
+## Mod Developers
+
+Ore blocks added to the `#antixray:hidden_only_ores` block tag will be hidden from the world, but not used as fake ore.
+This can be useful if your ore has effects, such as particles or sounds, that could cause problems. **(since 1.4.10)**
 
 ## About
 

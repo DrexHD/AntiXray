@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `#antixray:hidden_only_ores` block tag for mod developers
+
+### Changed
+- Allow negating blocks / block tags in the config
+
 ### Fixed
 - Potential networking issues
 - Incompatibility with ServerReplay (@senseiwells)

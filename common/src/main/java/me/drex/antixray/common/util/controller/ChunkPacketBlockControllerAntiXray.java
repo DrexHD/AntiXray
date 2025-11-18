@@ -143,41 +143,81 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
     }
 
     private void updateNearbyBlocks(ServerLevel level, BlockPos blockPos) {
-        if (updateRadius >= 2) {
-            BlockPos temp = blockPos.west();
-            updateBlock(level, temp);
-            updateBlock(level, temp.west());
-            updateBlock(level, temp.below());
-            updateBlock(level, temp.above());
-            updateBlock(level, temp.north());
-            updateBlock(level, temp.south());
-            updateBlock(level, temp = blockPos.east());
-            updateBlock(level, temp.east());
-            updateBlock(level, temp.below());
-            updateBlock(level, temp.above());
-            updateBlock(level, temp.north());
-            updateBlock(level, temp.south());
-            updateBlock(level, temp = blockPos.below());
-            updateBlock(level, temp.below());
-            updateBlock(level, temp.north());
-            updateBlock(level, temp.south());
-            updateBlock(level, temp = blockPos.above());
-            updateBlock(level, temp.above());
-            updateBlock(level, temp.north());
-            updateBlock(level, temp.south());
-            updateBlock(level, temp = blockPos.north());
-            updateBlock(level, temp.north());
-            updateBlock(level, temp = blockPos.south());
-            updateBlock(level, temp.south());
-        } else if (updateRadius == 1) {
-            updateBlock(level, blockPos.west());
-            updateBlock(level, blockPos.east());
-            updateBlock(level, blockPos.below());
-            updateBlock(level, blockPos.above());
-            updateBlock(level, blockPos.north());
-            updateBlock(level, blockPos.south());
+        if (updateRadius > 0) {
+            updateBlock(level, blockPos);
+            updateAbove(level, blockPos.above(), updateRadius-1);
+            updateSouth(level, blockPos.south(), updateRadius-1);
+            updateWest(level, blockPos.west(), updateRadius-1);
+            updateNorth(level, blockPos.north(), updateRadius-1);
+            updateEast(level, blockPos.east(), updateRadius-1);
+            updateBelow(level, blockPos.below(), updateRadius-1);
         } else {
             // Do nothing if updateRadius <= 0 (test mode)
+        }
+    }
+
+    private void updateAbove(ServerLevel level, BlockPos blockPos, int depth) {
+        if (depth > 0) {
+            updateBlock(level, blockPos);
+            updateAbove(level, blockPos.above(), depth - 1);
+            updateSouth(level, blockPos.south(), depth - 1);
+            updateWest(level, blockPos.west(), depth - 1);
+            updateNorth(level, blockPos.north(), depth - 1);
+            updateEast(level, blockPos.east(), depth - 1);
+        } else if (depth == 0) {
+            updateBlock(level, blockPos);
+        }
+    }
+
+    private void updateSouth(ServerLevel level, BlockPos blockPos, int depth) {
+        if (depth > 0) {
+            updateBlock(level, blockPos);
+            updateSouth(level, blockPos.south(), depth - 1);
+            updateWest(level, blockPos.west(), depth - 1);
+            updateEast(level, blockPos.east(), depth - 1);
+            updateBelow(level, blockPos.below(), depth - 1);
+        } else if (depth == 0) {
+            updateBlock(level, blockPos);
+        }
+    }
+
+    private void updateWest(ServerLevel level, BlockPos blockPos, int depth) {
+        if (depth > 0) {
+            updateBlock(level, blockPos);
+            updateWest(level, blockPos.west(), depth - 1);
+            updateNorth(level, blockPos.north(), depth - 1);
+            updateBelow(level, blockPos.below(), depth - 1);
+        } else if (depth == 0) {
+            updateBlock(level, blockPos);
+        }
+    }
+
+    private void updateNorth(ServerLevel level, BlockPos blockPos, int depth) {
+        if (depth > 0) {
+            updateNorth(level, blockPos.north(), depth - 1);
+            updateEast(level, blockPos.east(), depth - 1);
+            updateBelow(level, blockPos.below(), depth - 1);
+        } else if (depth == 0) {
+            updateBlock(level, blockPos);
+        }
+    }
+
+    private void updateEast(ServerLevel level, BlockPos blockPos, int depth) {
+        if (depth > 0) {
+            updateBlock(level, blockPos);
+            updateEast(level, blockPos.east(), depth - 1);
+            updateBelow(level, blockPos.below(), depth - 1);
+        } else if (depth == 0) {
+            updateBlock(level, blockPos);
+        }
+    }
+
+    private void updateBelow(ServerLevel level, BlockPos blockPos, int depth) {
+        if (depth > 0) {
+            updateBlock(level, blockPos);
+            updateBelow(level, blockPos.below(), depth - 1);
+        } else if (depth == 0) {
+            updateBlock(level, blockPos);
         }
     }
 

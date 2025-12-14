@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.*;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.world.phys.shapes.CollisionContext;
 
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -367,7 +368,7 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
     }
 
     private static boolean isSolid(EmptyLevelChunk emptyChunk, BlockState blockState, boolean lavaObscures) {
-        return (blockState.isCollisionShapeFullBlock(emptyChunk, BlockPos.ZERO) && blockState.canOcclude()) || (lavaObscures && blockState == Blocks.LAVA.defaultBlockState());
+        return (Block.isShapeFullBlock(blockState.getVisualShape(emptyChunk, BlockPos.ZERO, CollisionContext.empty())) && blockState.canOcclude()) || (lavaObscures && blockState == Blocks.LAVA.defaultBlockState());
         // Comparing blockState == Blocks.LAVA.defaultBlockState() instead of blockState.getBlock() == Blocks.LAVA ensures that only "stationary lava" is used
     }
 

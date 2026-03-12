@@ -36,19 +36,21 @@ public abstract class LevelChunkSectionMixin {
         // custom arguments
         ChunkAccess chunkAccess = Arguments.CHUNK_ACCESS.get();
         Integer chunkSectionIndex = Arguments.CHUNK_SECTION_INDEX.get();
-
-        Level level = Util.getLevel(chunkAccess.levelHeightAccessor);
-        ChunkPacketBlockController controller = Util.getBlockController(level);
-        if (controller != null) {
-            final BlockState[] presetValues = controller.getPresetBlockStates(level, chunkSectionIndex << 4);
-            var previous = Arguments.PRESET_VALUES.get();
-            Arguments.PRESET_VALUES.set(presetValues);
-            try {
-                return original.call(idMap, defaultValue, strategy);
-            } finally {
-                Arguments.PRESET_VALUES.set(previous);
+        if (chunkAccess != null && chunkSectionIndex != null) {
+            Level level = Util.getLevel(chunkAccess.levelHeightAccessor);
+            ChunkPacketBlockController controller = Util.getBlockController(level);
+            if (controller != null) {
+                final BlockState[] presetValues = controller.getPresetBlockStates(level, chunkSectionIndex << 4);
+                var previous = Arguments.PRESET_VALUES.get();
+                Arguments.PRESET_VALUES.set(presetValues);
+                try {
+                    return original.call(idMap, defaultValue, strategy);
+                } finally {
+                    Arguments.PRESET_VALUES.set(previous);
+                }
             }
         }
+
         return original.call(idMap, defaultValue, strategy);
     }
 

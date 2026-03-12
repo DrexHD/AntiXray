@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Potential networking issues
 - Incompatibility with ServerReplay (@senseiwells)
 - Soul Sand not being considered solid
+- Incorrect palette being used for fake ores in high density chunk section
 
 ## [1.4.6] - 2024-08-16
 ### Fixed

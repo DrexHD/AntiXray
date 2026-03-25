@@ -34,7 +34,9 @@ public abstract class ClientboundLevelChunkPacketDataMixin {
     private void setChunkPacketInfoBuffer(LevelChunk levelChunk, CallbackInfo ci) {
         if (Arguments.PACKET_INFO.isBound()) {
             ChunkPacketInfo<BlockState> chunkPacketInfo = Arguments.PACKET_INFO.get();
-            chunkPacketInfo.setBuffer(this.buffer);
+            if (chunkPacketInfo != null) {
+                chunkPacketInfo.setBuffer(this.buffer);
+            }
         }
     }
 

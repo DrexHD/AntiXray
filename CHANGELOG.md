@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.8] - 2026-04-24
+### Added
+- Compatibility with Sable (library used by Create Aeronautics)
+
 ## [1.4.7] - 2026-03-12
 ### Added
 - `#antixray:hidden_only_ores` block tag for mod developers

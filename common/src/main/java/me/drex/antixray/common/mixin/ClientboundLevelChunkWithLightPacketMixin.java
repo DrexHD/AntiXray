@@ -4,12 +4,15 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
+import dev.ryanhcode.sable.companion.SableCompanion;
+import me.drex.antixray.common.compat.SableCompat;
 import me.drex.antixray.common.interfaces.IChunkPacket;
 import me.drex.antixray.common.interfaces.IClientboundChunkBatchStartPacket;
 import me.drex.antixray.common.util.Arguments;
 import me.drex.antixray.common.util.ChunkPacketInfo;
 import me.drex.antixray.common.util.Util;
 import me.drex.antixray.common.util.controller.ChunkPacketBlockController;
+import me.drex.antixray.common.util.controller.DisabledChunkPacketBlockController;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkPacketData;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
@@ -48,7 +51,12 @@ public abstract class ClientboundLevelChunkWithLightPacketMixin implements IChun
         // custom argument
         this.antixray$batchStartPacket = Arguments.BATCH_START_PACKET.get();
 
-        final ChunkPacketBlockController controller = Util.getBlockController(chunk.getLevel());
+        final ChunkPacketBlockController controller;
+        if (SableCompat.isInPlotGrid(chunk.getLevel(), chunk.getPos())) {
+            controller = DisabledChunkPacketBlockController.NO_OPERATION_INSTANCE;
+        } else {
+            controller = Util.getBlockController(chunk.getLevel());
+        }
         final ChunkPacketInfo<BlockState> packetInfo = controller.getChunkPacketInfo((ClientboundLevelChunkWithLightPacket) (Object) this, chunk);
 
         controllerLocalRef.set(controller);

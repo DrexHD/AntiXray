@@ -2,6 +2,7 @@ package me.drex.antixray.neoforge;
 
 import me.drex.antixray.common.AntiXray;
 import me.drex.antixray.common.util.Platform;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLPaths;
 
 import java.nio.file.Path;
@@ -20,5 +21,10 @@ public class AntiXrayNeoforge extends AntiXray {
     @Override
     public String getConfigFileName() {
         return "antixray-neoforge.toml";
+    }
+
+    @Override
+    public boolean isModLoaded(String name) {
+        return ModList.get().isLoaded(name);
     }
 }

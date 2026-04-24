@@ -22,4 +22,6 @@ public abstract class AntiXray {
 
     public abstract String getConfigFileName();
 
+    public abstract boolean isModLoaded(String name);
+
 }

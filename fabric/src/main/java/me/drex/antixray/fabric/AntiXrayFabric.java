@@ -21,4 +21,9 @@ public class AntiXrayFabric extends AntiXray {
     public String getConfigFileName() {
         return "antixray-fabric.toml";
     }
+
+    @Override
+    public boolean isModLoaded(String name) {
+        return FabricLoader.getInstance().isModLoaded(name);
+    }
 }

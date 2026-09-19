@@ -31,13 +31,13 @@ public class DisabledChunkPacketBlockController implements ChunkPacketBlockContr
     }
 
     @Override
-    public ChunkPacketInfo<BlockState> getChunkPacketInfo(ClientboundLevelChunkWithLightPacket chunkPacket, LevelChunk chunk) {
+    public ChunkPacketInfo<BlockState> getChunkPacketInfo(LevelChunk chunk) {
         return null;
     }
 
     @Override
     public void modifyBlocks(ClientboundLevelChunkWithLightPacket chunkPacket, ChunkPacketInfo<BlockState> chunkPacketInfo) {
-        ((IChunkPacket) chunkPacket).antixray$setReady(true);
+        IChunkPacket.antixray$setReady(chunkPacket, true);
     }
 
     @Override

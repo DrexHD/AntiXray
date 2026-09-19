@@ -83,9 +83,9 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
     }
 
     @Override
-    public ChunkPacketInfoAntiXray getChunkPacketInfo(ClientboundLevelChunkWithLightPacket chunkPacket, LevelChunk chunk) {
+    public ChunkPacketInfoAntiXray getChunkPacketInfo(LevelChunk chunk) {
         // Return a new instance to collect data and objects in the right state while creating the chunk packet for thread safe access later
-        return new ChunkPacketInfoAntiXray(chunkPacket, chunk, this);
+        return new ChunkPacketInfoAntiXray(chunk, this);
     }
 
     @Override
@@ -98,7 +98,7 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
     @Override
     public void modifyBlocks(ClientboundLevelChunkWithLightPacket chunkPacket, ChunkPacketInfo<BlockState> chunkPacketInfo) {
         if (!(chunkPacketInfo instanceof ChunkPacketInfoAntiXray antiXrayInfo)) {
-            ((IChunkPacket) chunkPacket).antixray$setReady(true);
+            IChunkPacket.antixray$setReady(chunkPacket, true);
             return;
         }
 
@@ -294,7 +294,7 @@ public abstract class ChunkPacketBlockControllerAntiXray implements ChunkPacketB
             }
         }
 
-        ((IChunkPacket) chunkPacketInfoAntiXray.getChunkPacket()).antixray$setReady(true);
+        IChunkPacket.antixray$setReady(chunkPacketInfoAntiXray.getChunkPacket(), true);
     }
 
     private void obfuscateLayer(int y, BitStorageReader bitStorageReader, BitStorageWriter bitStorageWriter, boolean[] solid, boolean[] obfuscate, int[] presetBlockStateBits, boolean[][] current, boolean[][] next, boolean[][] nextNext, LevelChunkSection[] nearbyChunkSections, IntSupplier random) {

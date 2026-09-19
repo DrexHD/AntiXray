@@ -16,7 +16,7 @@ public interface ChunkPacketBlockController {
 
     BlockState[] getPresetBlockStates(Level level, int bottomBlockY);
 
-    ChunkPacketInfo<BlockState> getChunkPacketInfo(ClientboundLevelChunkWithLightPacket chunkPacket, LevelChunk chunk);
+    ChunkPacketInfo<BlockState> getChunkPacketInfo(LevelChunk chunk);
 
     void modifyBlocks(ClientboundLevelChunkWithLightPacket chunkPacket, ChunkPacketInfo<BlockState> chunkPacketInfo);
 

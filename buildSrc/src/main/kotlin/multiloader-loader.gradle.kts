@@ -42,6 +42,8 @@ tasks {
         curseforge {
             accessToken.set(providers.environmentVariable("CURSEFORGE_TOKEN"))
             minecraftVersions.addAll((project.property("curseforge_minecraft_versions") as String).split(", "))
+	    client = true
+	    server = true
         }
 
         modrinth {
@@ -53,7 +55,7 @@ tasks {
         github {
             accessToken.set(providers.environmentVariable("GITHUB_TOKEN"))
             repository.set(providers.environmentVariable("GITHUB_REPOSITORY").orElse("DrexHD/AntiXray"))
-            commitish.set(providers.environmentVariable("GITHUB_REF_NAME").orElse("26.1"))
+            commitish.set(providers.environmentVariable("GITHUB_REF_NAME").orElse("main"))
         }
     }
 }

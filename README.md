@@ -55,7 +55,7 @@ The rules are applied from left to right, removals should be specified after add
 |                                                                    Info                                                                     |            Image            |
 |:-------------------------------------------------------------------------------------------------------------------------------------------:|:---------------------------:|
 |                                             **Anti xray disabled:** This is just for reference                                              |   ![](media/disabled.png)   |
-| **EngineMode 1:** This mode will replace all fully obscured (no air around) blocks from `hiddenBlocks` with blocks from `replacementBlocks` | ![](media/enginemode-1.png) |
+| **EngineMode 1:** This mode will replace all fully obscured (no air around) blocks from `hiddenBlocks` with other fake blocks, `stone` (`deepslate` at y < 0), `netherrack`, or `end_stone` based on the dimension. | ![](media/enginemode-1.png) |
 |   **EngineMode 2:** This mode will replace all blocks from `hiddenBlocks` and `replacementBlocks` with random blocks from `hiddenBlocks`    | ![](media/enginemode-2.png) |
 |                 **EngineMode 3 (recommended):** Works very similar to engine mode 2, but works better with slow connections                 | ![](media/enginemode-3.png) |
 

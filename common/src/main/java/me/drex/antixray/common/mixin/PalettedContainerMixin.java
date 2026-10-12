@@ -89,9 +89,13 @@ public abstract class PalettedContainerMixin<T> {
 
                     if (newBits > configuration.bitsInMemory()) {
                         this.onResize(newBits, null);
+                        break;
                     }
 
-                    break;
+                    // Loaded palettes can retain duplicate slots after missing blocks
+                    // resolve to the same state. A small unique-value count does not
+                    // mean every preset has already been inserted. Fall through to
+                    // idFor so a missing preset is added with a valid resize callback.
                 }
 
                 this.data.palette().idFor(presetValue, (PalettedContainer) (Object) this);

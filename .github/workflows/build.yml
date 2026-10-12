@@ -16,6 +16,8 @@ jobs:
           distribution: 'microsoft'
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
+      - name: test loaded palette presets
+        run: python3 tests/test_preset_palettes.py
       - name: build
         run: ./gradlew build
       - name: capture build artifacts

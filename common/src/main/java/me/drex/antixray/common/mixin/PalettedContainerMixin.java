@@ -89,9 +89,10 @@ public abstract class PalettedContainerMixin<T> {
 
                     if (newBits > configuration.bitsInMemory()) {
                         this.onResize(newBits, null);
+                        // onResize guarantees that all preset values are added
+                        break;
                     }
 
-                    break;
                 }
 
                 this.data.palette().idFor(presetValue, (PalettedContainer) (Object) this);

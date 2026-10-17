@@ -69,6 +69,8 @@ public abstract class PalettedContainerMixin<T> {
     )
     private void addPresetValuesWithEntries(Strategy<T> strategy, Configuration configuration, BitStorage bitStorage, Palette<T> palette, CallbackInfo ci) {
         antiXray$initializePresetValues();
+        
+        if (!Arguments.PALETTE_ENTRIES.isBound()) return;
         //noinspection unchecked
         List<T> paletteEntries = (List<T>) Arguments.PALETTE_ENTRIES.get();
 
